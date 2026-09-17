@@ -9,7 +9,7 @@ var disengaged: Array[Entity] = []
 
 var entity_folder: Node2D
 
-func _ready() -> void:
+func _init() -> void:
 	print(combatants)
 
 func add_combatant(entity: Entity, respect_disengagement: bool = false) -> void:
