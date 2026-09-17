@@ -29,6 +29,8 @@ func _process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact_menu"):
+		if not has_component(&"interactor"):
+			return
 		var mouse_position := root_entity.get_global_mouse_position()
 		var world := root_entity.get_world_2d().direct_space_state
 		var params := PhysicsPointQueryParameters2D.new()
@@ -50,6 +52,35 @@ func _unhandled_input(event: InputEvent) -> void:
 					found_target = true
 				break
 		if not found_target:
-			interaction_menu.hide.call_deferred()
+			interaction_menu.hide()
 	if event.is_action_pressed("select"):
 		interaction_menu._on_empty_pressed()
+	if event.is_action_pressed("quick_attack"):
+		if not has_component(&"interactor"):
+			return
+		if not has_component(&"stat_block"):
+			return
+		var mouse_position := root_entity.get_global_mouse_position()
+		var world := root_entity.get_world_2d().direct_space_state
+		var params := PhysicsPointQueryParameters2D.new()
+		params.position = mouse_position
+		params.collide_with_areas = true
+		params.collide_with_bodies = true
+		var intersections := world.intersect_point(params)
+		var visible_interactions: Array
+		for intersection in intersections:
+			if intersection["collider"] is Entity:
+				if intersection["collider"] == root_entity:
+					continue
+				if not intersection["collider"].has_component(&"interactable"):
+					continue
+				visible_interactions = intersection["collider"].get_component(&"interactable").get_interactions(root_entity)
+				var attack_interaction: Interaction
+				if not visible_interactions.is_empty():
+					for created_interaction in visible_interactions:
+						if created_interaction.interaction_id == &"attack":
+							attack_interaction = created_interaction
+				if attack_interaction:
+					if attack_interaction.can_perform(root_entity,intersection["collider"]):
+						attack_interaction.perform(root_entity,intersection["collider"])
+				break

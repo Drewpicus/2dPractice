@@ -32,9 +32,17 @@ func _ready() -> void:
 
 #Action functions
 
+##Damages Entity for [param amount] HP
+func damage(amount: int) -> int:
+	return _change_health(-1 * amount)
+	
+##Heals Entity for [param amount] HP
+func heal(amount: int) -> int:
+	return _change_health(amount)
+
 ##Changes health by amount, negative values will damage and positive values will heal.
 ##Returns new health.
-func change_health(amount : int) -> int:
+func _change_health(amount : int) -> int:
 	health = clamp(health + amount,0,max_health)
 	return health
 

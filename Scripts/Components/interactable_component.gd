@@ -6,6 +6,9 @@
 extends EntityComponent
 class_name InteractableComponent
 
+##Returns an array of created Interaction objects based on the
+##suggested Interactions from the [param _interactor] Entity's components
+
 func get_interactions(_interactor: Entity) -> Array[Interaction]:
 	var suggestion_ids: Dictionary = {}
 	var interactions: Array[Interaction] = []
@@ -20,7 +23,7 @@ func get_interactions(_interactor: Entity) -> Array[Interaction]:
 	for interaction_id in suggestion_ids:
 		var interaction := InteractionRegistry.create_interaction(interaction_id)
 		
-		if interaction == null:
+		if not interaction:
 			continue
 		
 		interactions.append(interaction)

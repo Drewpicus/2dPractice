@@ -53,7 +53,6 @@ shape = SubResource("CircleShape2D_0xm2m")
 [node name="Components" type="Node2D" parent="GameWorld/Entities/Player" unique_id=1133228964]
 
 [node name="InfoComponent" parent="GameWorld/Entities/Player/Components" unique_id=1685845071 instance=ExtResource("4_82xsv")]
-entity_name = "Player"
 description = "A walking, talking guy!"
 
 [node name="InventoryComponent" parent="GameWorld/Entities/Player/Components" unique_id=392187487 instance=ExtResource("5_efxa6")]
@@ -78,9 +77,8 @@ base_strength = 1.0
 [node name="Camera2D" type="Camera2D" parent="GameWorld/Entities/Player" unique_id=1269920283]
 script = ExtResource("16_82xsv")
 
-[node name="Tree" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=842891499]
+[node name="Tree" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=834797728]
 position = Vector2(216, -131)
-motion_mode = 1
 script = ExtResource("1_entity")
 
 [node name="Sprite2D" type="Sprite2D" parent="GameWorld/Entities/Tree" unique_id=66657874]
@@ -94,7 +92,6 @@ shape = SubResource("CircleShape2D_2cqfq")
 [node name="Components" type="Node2D" parent="GameWorld/Entities/Tree" unique_id=2037527070]
 
 [node name="InfoComponent" parent="GameWorld/Entities/Tree/Components" unique_id=1092253199 instance=ExtResource("4_82xsv")]
-entity_name = "Chestnut Tree"
 description = "A tall tree, old as balls..."
 
 [node name="HealthComponent" parent="GameWorld/Entities/Tree/Components" unique_id=1422573704 instance=ExtResource("8_ycdy4")]
@@ -122,7 +119,6 @@ shape = SubResource("CircleShape2D_2cqfq")
 [node name="Components" type="Node2D" parent="GameWorld/Entities/Rock" unique_id=1818871568]
 
 [node name="InfoComponent" parent="GameWorld/Entities/Rock/Components" unique_id=937617371 instance=ExtResource("4_82xsv")]
-entity_name = "Rock"
 description = "The pioneers used to ride these babies for miles."
 
 [node name="CapabilityComponent" parent="GameWorld/Entities/Rock/Components" unique_id=2096623672 instance=ExtResource("14_82xsv")]

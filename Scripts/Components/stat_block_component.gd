@@ -1,4 +1,4 @@
-extends Node
+extends EntityComponent
 class_name StatBlockComponent
 
 @export var base_strength : float
@@ -7,7 +7,7 @@ class_name StatBlockComponent
 
 var stat_max := 30.0
 
-signal stat_changed(stat:String,new_value:float)
+signal stat_changed(stat:int,new_value:float)
 
 func update_base_stat(stat:int,change:float) -> float:
 	match stat:
