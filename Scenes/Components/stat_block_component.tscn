@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cjgjbri4a3g5v"]
+
+[ext_resource type="Script" uid="uid://nqwujv14t4yr" path="res://Scripts/Components/stat_block_component.gd" id="1_d7o4k"]
+
+[node name="StatBlockComponent" type="Node" unique_id=1990223150]
+script = ExtResource("1_d7o4k")

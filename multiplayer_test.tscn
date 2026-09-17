@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://bo56sx156225f"]
+
+[ext_resource type="Script" uid="uid://ddh86kvaax42s" path="res://multiplayer_test.gd" id="1_3fc8k"]
+[ext_resource type="PackedScene" uid="uid://sfy08mg1flag" path="res://player.tscn" id="2_sjw14"]
+
+[node name="MultiplayerTest" type="Control" unique_id=973594464]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(3, 3)
+script = ExtResource("1_3fc8k")
+player_scene = ExtResource("2_sjw14")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1226640326]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -58.0
+offset_top = -46.5
+offset_right = 58.0
+offset_bottom = 46.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AddressInput" type="LineEdit" parent="VBoxContainer" unique_id=125276332]
+layout_mode = 2
+text = "24.61.224.177"
+placeholder_text = "IP Address"
+
+[node name="HostButton" type="Button" parent="VBoxContainer" unique_id=1748965461]
+layout_mode = 2
+text = "Host Server"
+
+[node name="JoinButton" type="Button" parent="VBoxContainer" unique_id=215656344]
+layout_mode = 2
+text = "Join Server"
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=183196049]
+layout_mode = 2
+text = "Not Connected"
+
+[node name="Players" type="Node2D" parent="." unique_id=1724099150]
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1315023640]
+spawn_path = NodePath("../Players")

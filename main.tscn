@@ -1,0 +1,151 @@
+[gd_scene format=3 uid="uid://dpwlkx6ax84hn"]
+
+[ext_resource type="Script" uid="uid://y87ikykg53o3" path="res://Scripts/entity.gd" id="1_entity"]
+[ext_resource type="Texture2D" uid="uid://b57wr2y5wmhwr" path="res://real man.png" id="1_ig7tw"]
+[ext_resource type="PackedScene" uid="uid://c8n5ywuq4wexl" path="res://Scenes/Components/info_component.tscn" id="4_82xsv"]
+[ext_resource type="PackedScene" uid="uid://bow6p41t1x85q" path="res://Scenes/Components/inventory_component.tscn" id="5_efxa6"]
+[ext_resource type="Script" uid="uid://caaua8fku7py0" path="res://Scripts/Components/movement_component.gd" id="5_lquwl"]
+[ext_resource type="Script" uid="uid://ccl8ohs1254p2" path="res://Scripts/Components/ai_controller_component.gd" id="7_272bh"]
+[ext_resource type="PackedScene" uid="uid://bsr5ll3bx03e0" path="res://Scenes/Components/movement_component.tscn" id="7_cegan"]
+[ext_resource type="PackedScene" uid="uid://cxlyp3n6c4geg" path="res://Scenes/Components/health_component.tscn" id="8_ycdy4"]
+[ext_resource type="PackedScene" uid="uid://cjgjbri4a3g5v" path="res://Scenes/Components/stat_block_component.tscn" id="9_82xsv"]
+[ext_resource type="PackedScene" uid="uid://r7mj8yd1ehck" path="res://Scenes/Components/interactable_component.tscn" id="10_w48qg"]
+[ext_resource type="PackedScene" uid="uid://bb5qmpg0y7lu1" path="res://Scenes/Components/interactor_component.tscn" id="11_getpj"]
+[ext_resource type="PackedScene" uid="uid://bhx14ew2krkso" path="res://Scenes/Components/player_controller_component.tscn" id="12_ryguw"]
+[ext_resource type="Texture2D" uid="uid://bde2ei0igaxqp" path="res://tree.png" id="13_vivmo"]
+[ext_resource type="PackedScene" uid="uid://lhrom4t368bh" path="res://Scenes/Components/combat_component.tscn" id="14_074og"]
+[ext_resource type="PackedScene" uid="uid://bulbbqbt15p6m" path="res://Scenes/Components/capability_component.tscn" id="14_82xsv"]
+[ext_resource type="Texture2D" uid="uid://cj1v4stwgsnfu" path="res://rock.png" id="16_2cqfq"]
+[ext_resource type="Script" uid="uid://b3utf12ccv8b6" path="res://Scripts/player_camera.gd" id="16_82xsv"]
+[ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/interaction_menu.gd" id="21_getpj"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0xm2m"]
+radius = 16.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2cqfq"]
+radius = 16.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_getpj"]
+resource_name = "PenisSphere"
+radius = 9.934
+
+[sub_resource type="Theme" id="Theme_getpj"]
+default_font_size = 25
+
+[node name="Main" type="Node2D" unique_id=1528092559]
+
+[node name="GameWorld" type="Node2D" parent="." unique_id=1632414103]
+
+[node name="Entities" type="Node2D" parent="GameWorld" unique_id=120306238]
+
+[node name="Player" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=314898668]
+motion_mode = 1
+script = ExtResource("1_entity")
+
+[node name="Sprite2D" type="Sprite2D" parent="GameWorld/Entities/Player" unique_id=1839778079]
+texture = ExtResource("1_ig7tw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameWorld/Entities/Player" unique_id=1940968263]
+shape = SubResource("CircleShape2D_0xm2m")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="GameWorld/Entities/Player" unique_id=1452423651]
+
+[node name="Components" type="Node2D" parent="GameWorld/Entities/Player" unique_id=1133228964]
+
+[node name="InfoComponent" parent="GameWorld/Entities/Player/Components" unique_id=1685845071 instance=ExtResource("4_82xsv")]
+entity_name = "Player"
+description = "A walking, talking guy!"
+
+[node name="InventoryComponent" parent="GameWorld/Entities/Player/Components" unique_id=392187487 instance=ExtResource("5_efxa6")]
+
+[node name="MovementComponent" parent="GameWorld/Entities/Player/Components" unique_id=2084706374 instance=ExtResource("7_cegan")]
+
+[node name="HealthComponent" parent="GameWorld/Entities/Player/Components" unique_id=1882472742 instance=ExtResource("8_ycdy4")]
+
+[node name="StatBlockComponent" parent="GameWorld/Entities/Player/Components" unique_id=1990223150 instance=ExtResource("9_82xsv")]
+base_strength = 1.0
+
+[node name="InteractableComponent" parent="GameWorld/Entities/Player/Components" unique_id=281961154 instance=ExtResource("10_w48qg")]
+
+[node name="InteractorComponent" parent="GameWorld/Entities/Player/Components" unique_id=236647028 instance=ExtResource("11_getpj")]
+
+[node name="PlayerControllerComponent" parent="GameWorld/Entities/Player/Components" unique_id=866909914 instance=ExtResource("12_ryguw")]
+
+[node name="CombatComponent" parent="GameWorld/Entities/Player/Components" unique_id=333536677 instance=ExtResource("14_074og")]
+
+[node name="CapabilityComponent" parent="GameWorld/Entities/Player/Components" unique_id=2138748879 instance=ExtResource("14_82xsv")]
+
+[node name="Camera2D" type="Camera2D" parent="GameWorld/Entities/Player" unique_id=1269920283]
+script = ExtResource("16_82xsv")
+
+[node name="Tree" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=842891499]
+position = Vector2(216, -131)
+motion_mode = 1
+script = ExtResource("1_entity")
+
+[node name="Sprite2D" type="Sprite2D" parent="GameWorld/Entities/Tree" unique_id=66657874]
+texture = ExtResource("13_vivmo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameWorld/Entities/Tree" unique_id=1118641129]
+shape = SubResource("CircleShape2D_2cqfq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="GameWorld/Entities/Tree" unique_id=791943523]
+
+[node name="Components" type="Node2D" parent="GameWorld/Entities/Tree" unique_id=2037527070]
+
+[node name="InfoComponent" parent="GameWorld/Entities/Tree/Components" unique_id=1092253199 instance=ExtResource("4_82xsv")]
+entity_name = "Chestnut Tree"
+description = "A tall tree, old as balls..."
+
+[node name="HealthComponent" parent="GameWorld/Entities/Tree/Components" unique_id=1422573704 instance=ExtResource("8_ycdy4")]
+starting_health = 2
+
+[node name="InteractableComponent" parent="GameWorld/Entities/Tree/Components" unique_id=10291584 instance=ExtResource("10_w48qg")]
+
+[node name="MovementComponent" type="Node" parent="GameWorld/Entities/Tree/Components" unique_id=620010992]
+script = ExtResource("5_lquwl")
+speed = 50.0
+
+[node name="Rock" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=423764536]
+position = Vector2(-250, 152)
+motion_mode = 1
+script = ExtResource("1_entity")
+
+[node name="Sprite2D" type="Sprite2D" parent="GameWorld/Entities/Rock" unique_id=85437505]
+texture = ExtResource("16_2cqfq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameWorld/Entities/Rock" unique_id=1433835539]
+shape = SubResource("CircleShape2D_2cqfq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="GameWorld/Entities/Rock" unique_id=375706073]
+
+[node name="Components" type="Node2D" parent="GameWorld/Entities/Rock" unique_id=1818871568]
+
+[node name="InfoComponent" parent="GameWorld/Entities/Rock/Components" unique_id=937617371 instance=ExtResource("4_82xsv")]
+entity_name = "Rock"
+description = "The pioneers used to ride these babies for miles."
+
+[node name="CapabilityComponent" parent="GameWorld/Entities/Rock/Components" unique_id=2096623672 instance=ExtResource("14_82xsv")]
+capabilities = Array[StringName]([&"possessive"])
+
+[node name="InventoryComponent" parent="GameWorld/Entities/Rock/Components" unique_id=2139806301 instance=ExtResource("5_efxa6")]
+items = Array[Resource]([SubResource("SphereShape3D_getpj")])
+
+[node name="InteractableComponent" parent="GameWorld/Entities/Rock/Components" unique_id=397985752 instance=ExtResource("10_w48qg")]
+
+[node name="HealthComponent" parent="GameWorld/Entities/Rock/Components" unique_id=936156409 instance=ExtResource("8_ycdy4")]
+
+[node name="CombatComponent" parent="GameWorld/Entities/Rock/Components" unique_id=68597077 instance=ExtResource("14_074og")]
+
+[node name="AIControllerComponent" type="Node" parent="." unique_id=1099161692]
+script = ExtResource("7_272bh")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1044784727]
+
+[node name="InteractionMenu" type="PanelContainer" parent="UI" unique_id=1503330071]
+visible = false
+theme = SubResource("Theme_getpj")
+script = ExtResource("21_getpj")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/InteractionMenu" unique_id=1503330072]
+layout_mode = 2

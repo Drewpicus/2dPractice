@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://sfy08mg1flag"]
+
+[ext_resource type="Script" uid="uid://b6txdvyad55dg" path="res://player.gd" id="1_onrkg"]
+[ext_resource type="Texture2D" uid="uid://b57wr2y5wmhwr" path="res://real man.png" id="2_i3pqv"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hqtel"]
+radius = 16.0
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_onrkg"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 0
+properties/1/path = NodePath(".:network_position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[node name="Player" type="CharacterBody2D" unique_id=520613219]
+script = ExtResource("1_onrkg")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1482429518]
+texture = ExtResource("2_i3pqv")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1719714508]
+shape = SubResource("CircleShape2D_hqtel")
+disabled = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=2108483193]
+replication_config = SubResource("SceneReplicationConfig_onrkg")

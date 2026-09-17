@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dw3rlpauf7dna"]
+
+[ext_resource type="Script" uid="uid://cs83to3biwwal" path="res://Scripts/hitbox.gd" id="1_id7pq"]
+[ext_resource type="Texture2D" uid="uid://b2f2vc8vytkg6" path="res://ball.png" id="2_d206e"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4c57u"]
+
+[node name="Hurtbox" type="Area2D" unique_id=1560989920]
+script = ExtResource("1_id7pq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=652226716]
+shape = SubResource("CircleShape2D_4c57u")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1120592928]
+texture = ExtResource("2_d206e")
