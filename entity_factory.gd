@@ -8,11 +8,11 @@ static func build(entity: EntityDefinition) -> Entity:
 	
 	new_entity.name = entity.entity_name
 	new_entity.get_node("Sprite2D").texture = entity.sprite
-	new_entity.get_node("CollisionShape2D").shape = entity.collision_shape.duplicate()
+	if entity.collision_shape:
+		new_entity.get_node("CollisionShape2D").shape = entity.collision_shape.duplicate()
 	
 	for component in entity.components:
-		var key = component.keys()[0] as StringName
-		new_entity.add_component(key,component[key])
+		new_entity.add_component(component.component_id,component.parameters)
 	
 	return new_entity
 

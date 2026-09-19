@@ -5,4 +5,4 @@ class_name EntityDefinition
 @export var sprite: Texture2D
 @export var collision_shape: Shape2D
 
-@export var components: Array[Dictionary]
+@export var components: Array[EntityComponentDefinition]

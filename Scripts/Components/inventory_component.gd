@@ -7,14 +7,15 @@ const DROPPED_ITEM_SCENE: PackedScene = preload("res://dropped_item.tscn")
 
 signal items_updated
 
-func _ready() -> void:
-	var health_component = get_component(&"health")
-	if health_component:
-		health_component.health_depleted.connect(drop_all_items)
-
 func add_item(item: Resource) -> void:
 	items.append(item)
 	items_updated.emit()
+
+func take_all_items() -> Array[Item]:
+	var new_inventory := items.duplicate()
+	items.clear()
+	items_updated.emit()
+	return new_inventory
 
 func drop_all_items() -> void:
 	for item in items:

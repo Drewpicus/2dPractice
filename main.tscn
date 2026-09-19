@@ -172,6 +172,7 @@ description = "A nice guy, really just a nice green fellow."
 [node name="InteractorComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=1125360253 instance=ExtResource("11_getpj")]
 
 [node name="InventoryComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=206470173 instance=ExtResource("5_efxa6")]
+items = Array[ExtResource("17_82xsv")]([ExtResource("18_getpj")])
 
 [node name="AIControllerComponent" type="Node" parent="GameWorld/Entities/Goblin/Components" unique_id=1099161692]
 script = ExtResource("7_272bh")
