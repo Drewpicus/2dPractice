@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://c8n5ywuq4wexl" path="res://Scenes/Components/info_component.tscn" id="4_82xsv"]
 [ext_resource type="Script" uid="uid://b3utf12ccv8b6" path="res://Scripts/player_camera.gd" id="4_ryguw"]
 [ext_resource type="PackedScene" uid="uid://bow6p41t1x85q" path="res://Scenes/Components/inventory_component.tscn" id="5_efxa6"]
-[ext_resource type="Script" uid="uid://caaua8fku7py0" path="res://Scripts/Components/movement_component.gd" id="5_lquwl"]
 [ext_resource type="Script" uid="uid://ccl8ohs1254p2" path="res://Scripts/Components/ai_controller_component.gd" id="7_272bh"]
 [ext_resource type="PackedScene" uid="uid://bsr5ll3bx03e0" path="res://Scenes/Components/movement_component.tscn" id="7_cegan"]
 [ext_resource type="PackedScene" uid="uid://cxlyp3n6c4geg" path="res://Scenes/Components/health_component.tscn" id="8_ycdy4"]
@@ -14,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://r7mj8yd1ehck" path="res://Scenes/Components/interactable_component.tscn" id="10_w48qg"]
 [ext_resource type="PackedScene" uid="uid://bb5qmpg0y7lu1" path="res://Scenes/Components/interactor_component.tscn" id="11_getpj"]
 [ext_resource type="Texture2D" uid="uid://bde2ei0igaxqp" path="res://tree.png" id="13_vivmo"]
+[ext_resource type="PackedScene" uid="uid://cow8rlq2jdmo7" path="res://Scenes/Components/equipment_component.tscn" id="14_0odxb"]
 [ext_resource type="PackedScene" uid="uid://lhrom4t368bh" path="res://Scenes/Components/combat_component.tscn" id="14_074og"]
 [ext_resource type="PackedScene" uid="uid://bulbbqbt15p6m" path="res://Scenes/Components/capability_component.tscn" id="14_82xsv"]
 [ext_resource type="Texture2D" uid="uid://cj1v4stwgsnfu" path="res://rock.png" id="16_2cqfq"]
@@ -83,6 +83,8 @@ base_strength = 1.0
 
 [node name="CapabilityComponent" parent="GameWorld/Entities/Player/Components" unique_id=2138748879 instance=ExtResource("14_82xsv")]
 
+[node name="EquipmentComponent" parent="GameWorld/Entities/Player/Components" unique_id=1165157158 instance=ExtResource("14_0odxb")]
+
 [node name="Tree" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=834797728]
 position = Vector2(216, -131)
 script = ExtResource("1_entity")
@@ -100,10 +102,7 @@ shape = SubResource("CircleShape2D_2cqfq")
 [node name="InfoComponent" parent="GameWorld/Entities/Tree/Components" unique_id=1092253199 instance=ExtResource("4_82xsv")]
 description = "A tall tree, old as balls..."
 
-[node name="InteractorComponent" parent="GameWorld/Entities/Tree/Components" unique_id=184089856 instance=ExtResource("11_getpj")]
-
 [node name="CapabilityComponent" parent="GameWorld/Entities/Tree/Components" unique_id=1668476005 instance=ExtResource("14_82xsv")]
-capabilities = Array[StringName]([&"possessive"])
 
 [node name="InventoryComponent" parent="GameWorld/Entities/Tree/Components" unique_id=2139806301 instance=ExtResource("5_efxa6")]
 items = Array[ExtResource("17_82xsv")]([ExtResource("18_getpj"), ExtResource("18_getpj"), ExtResource("18_getpj")])
@@ -112,9 +111,6 @@ items = Array[ExtResource("17_82xsv")]([ExtResource("18_getpj"), ExtResource("18
 starting_health = 2
 
 [node name="InteractableComponent" parent="GameWorld/Entities/Tree/Components" unique_id=10291584 instance=ExtResource("10_w48qg")]
-
-[node name="MovementComponent" type="Node" parent="GameWorld/Entities/Tree/Components" unique_id=620010992]
-script = ExtResource("5_lquwl")
 
 [node name="Rock" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=423764536]
 position = Vector2(-250, 152)
