@@ -17,6 +17,9 @@
 [ext_resource type="PackedScene" uid="uid://bulbbqbt15p6m" path="res://Scenes/Components/capability_component.tscn" id="14_82xsv"]
 [ext_resource type="Texture2D" uid="uid://cj1v4stwgsnfu" path="res://rock.png" id="16_2cqfq"]
 [ext_resource type="Script" uid="uid://b3utf12ccv8b6" path="res://Scripts/player_camera.gd" id="16_82xsv"]
+[ext_resource type="Script" uid="uid://bu0e3fksd35vt" path="res://item.gd" id="17_82xsv"]
+[ext_resource type="Resource" uid="uid://cm46tjfmcqtt8" path="res://stick.tres" id="18_getpj"]
+[ext_resource type="PackedScene" uid="uid://ewb3cluh0to0" path="res://dropped_item.tscn" id="19_getpj"]
 [ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/interaction_menu.gd" id="21_getpj"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0xm2m"]
@@ -24,10 +27,6 @@ radius = 16.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2cqfq"]
 radius = 16.0
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_getpj"]
-resource_name = "PenisSphere"
-radius = 9.934
 
 [sub_resource type="Theme" id="Theme_getpj"]
 default_font_size = 25
@@ -68,13 +67,13 @@ base_strength = 1.0
 
 [node name="InteractorComponent" parent="GameWorld/Entities/Player/Components" unique_id=236647028 instance=ExtResource("11_getpj")]
 
-[node name="PlayerControllerComponent" parent="GameWorld/Entities/Player/Components" unique_id=866909914 instance=ExtResource("12_ryguw")]
-
 [node name="CombatComponent" parent="GameWorld/Entities/Player/Components" unique_id=333536677 instance=ExtResource("14_074og")]
+
+[node name="PlayerControllerComponent" parent="GameWorld/Entities/Player/Components" unique_id=866909914 instance=ExtResource("12_ryguw")]
 
 [node name="CapabilityComponent" parent="GameWorld/Entities/Player/Components" unique_id=2138748879 instance=ExtResource("14_82xsv")]
 
-[node name="Camera2D" type="Camera2D" parent="GameWorld/Entities/Player" unique_id=1269920283]
+[node name="Camera2D" type="Camera2D" parent="GameWorld/Entities/Player/Components" unique_id=1269920283]
 script = ExtResource("16_82xsv")
 
 [node name="Tree" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=834797728]
@@ -94,6 +93,14 @@ shape = SubResource("CircleShape2D_2cqfq")
 [node name="InfoComponent" parent="GameWorld/Entities/Tree/Components" unique_id=1092253199 instance=ExtResource("4_82xsv")]
 description = "A tall tree, old as balls..."
 
+[node name="InteractorComponent" parent="GameWorld/Entities/Tree/Components" unique_id=184089856 instance=ExtResource("11_getpj")]
+
+[node name="CapabilityComponent" parent="GameWorld/Entities/Tree/Components" unique_id=1668476005 instance=ExtResource("14_82xsv")]
+capabilities = Array[StringName]([&"possessive"])
+
+[node name="InventoryComponent" parent="GameWorld/Entities/Tree/Components" unique_id=2139806301 instance=ExtResource("5_efxa6")]
+items = Array[ExtResource("17_82xsv")]([ExtResource("18_getpj"), ExtResource("18_getpj"), ExtResource("18_getpj")])
+
 [node name="HealthComponent" parent="GameWorld/Entities/Tree/Components" unique_id=1422573704 instance=ExtResource("8_ycdy4")]
 starting_health = 2
 
@@ -101,7 +108,6 @@ starting_health = 2
 
 [node name="MovementComponent" type="Node" parent="GameWorld/Entities/Tree/Components" unique_id=620010992]
 script = ExtResource("5_lquwl")
-speed = 50.0
 
 [node name="Rock" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=423764536]
 position = Vector2(-250, 152)
@@ -122,19 +128,21 @@ shape = SubResource("CircleShape2D_2cqfq")
 description = "The pioneers used to ride these babies for miles."
 
 [node name="CapabilityComponent" parent="GameWorld/Entities/Rock/Components" unique_id=2096623672 instance=ExtResource("14_82xsv")]
-capabilities = Array[StringName]([&"possessive"])
-
-[node name="InventoryComponent" parent="GameWorld/Entities/Rock/Components" unique_id=2139806301 instance=ExtResource("5_efxa6")]
-items = Array[Resource]([SubResource("SphereShape3D_getpj")])
 
 [node name="InteractableComponent" parent="GameWorld/Entities/Rock/Components" unique_id=397985752 instance=ExtResource("10_w48qg")]
+
+[node name="MovementComponent" parent="GameWorld/Entities/Rock/Components" unique_id=16291397 instance=ExtResource("7_cegan")]
+
+[node name="AIControllerComponent" type="Node" parent="GameWorld/Entities/Rock/Components" unique_id=1099161692]
+script = ExtResource("7_272bh")
 
 [node name="HealthComponent" parent="GameWorld/Entities/Rock/Components" unique_id=936156409 instance=ExtResource("8_ycdy4")]
 
 [node name="CombatComponent" parent="GameWorld/Entities/Rock/Components" unique_id=68597077 instance=ExtResource("14_074og")]
 
-[node name="AIControllerComponent" type="Node" parent="." unique_id=1099161692]
-script = ExtResource("7_272bh")
+[node name="DroppedItem" parent="GameWorld/Entities" unique_id=57117086 instance=ExtResource("19_getpj")]
+position = Vector2(-318, -93)
+item = ExtResource("18_getpj")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1044784727]
 

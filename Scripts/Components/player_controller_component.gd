@@ -41,22 +41,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			interaction_menu.show_interactions(visible_interactions,root_entity,target)
 	if event.is_action_pressed("select"):
 		interaction_menu._on_empty_pressed()
-	if event.is_action_pressed("quick_attack"):
-		var target := _get_entity_under_mouse()
-		if not target:
-			return
-		if not target.has_component(&"interactable"):
-			return
-		var interactions: Array[Interaction] = target.get_component(&"interactable").get_interactions(root_entity)
-		var selected_interaction: Interaction
-		if not interactions.is_empty():
-			for created_interaction in interactions:
-				if created_interaction.interaction_id == &"attack":
-					selected_interaction = created_interaction
-		if selected_interaction:
-			if selected_interaction.can_perform(root_entity,target):
-				selected_interaction.perform(root_entity,target)
-	_quick_action(event,"quick_inspect",&"info",&"interact",_get_entity_under_mouse(false))
+	_quick_action(event,"quick_attack",&"health",&"attack")
+	_quick_action(event,"quick_inspect",&"info",&"inspect",_get_entity_under_mouse(false))
+	_quick_action(event,"test",&"inventory",&"pickpocket")
 
 func _quick_action(event: InputEvent, input: StringName, component: StringName, interaction: StringName, target: Variant = _get_entity_under_mouse()):
 	if event.is_action_pressed(input):
