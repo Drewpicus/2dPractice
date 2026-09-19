@@ -18,6 +18,7 @@ const COMPONENT_SCENES: Dictionary = {
 	&"combat": preload("res://Scenes/Components/combat_component.tscn"),
 	&"stat_block": preload("res://Scenes/Components/stat_block_component.tscn"),
 	&"inventory": preload("res://Scenes/Components/inventory_component.tscn"),
+	&"remains": preload("res://Scenes/Components/remains_component.tscn"),
 	#ai controller
 	#status effect
 }

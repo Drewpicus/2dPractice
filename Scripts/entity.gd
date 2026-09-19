@@ -13,6 +13,9 @@ func _ready() -> void:
 		health_component.health_depleted.connect(die)
 
 func die() -> void:
+	var remains_component = get_component(&"remains")
+	if remains_component:
+		remains_component.spawn_remains()
 	queue_free()
 
 ##Add a component to the component folder, based on name, e.g. &"health"

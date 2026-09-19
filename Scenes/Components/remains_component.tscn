@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://csowv21hir14f"]
+
+[ext_resource type="Script" uid="uid://vof67tkfgwmu" path="res://Scripts/Components/remains_component.gd" id="1_wcva8"]
+
+[node name="RemainsComponent" type="Node" unique_id=636626653]
+script = ExtResource("1_wcva8")

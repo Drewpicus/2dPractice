@@ -1,5 +1,4 @@
 extends EntityComponent
-
 class_name AIControllerComponent
 
 var movement_component : MovementComponent
@@ -12,7 +11,7 @@ func _ready() -> void:
 	dir = new_direction()
 	if not movement_component:
 		return
-	movement_component.speed = 50
+	movement_component.speed = 20
 
 func _process(delta: float) -> void:
 	if not movement_component:

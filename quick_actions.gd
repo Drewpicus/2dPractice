@@ -9,3 +9,4 @@ const QUICK_ACTIONS: Dictionary = {
 }
 
 static func perform_quick_action():
+ pass

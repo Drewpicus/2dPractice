@@ -2,7 +2,9 @@
 
 [ext_resource type="Script" uid="uid://y87ikykg53o3" path="res://Scripts/entity.gd" id="1_entity"]
 [ext_resource type="Texture2D" uid="uid://b57wr2y5wmhwr" path="res://real man.png" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://drf25g4krf434" path="res://Scripts/Components/player_controller_component.gd" id="3_getpj"]
 [ext_resource type="PackedScene" uid="uid://c8n5ywuq4wexl" path="res://Scenes/Components/info_component.tscn" id="4_82xsv"]
+[ext_resource type="Script" uid="uid://b3utf12ccv8b6" path="res://Scripts/player_camera.gd" id="4_ryguw"]
 [ext_resource type="PackedScene" uid="uid://bow6p41t1x85q" path="res://Scenes/Components/inventory_component.tscn" id="5_efxa6"]
 [ext_resource type="Script" uid="uid://caaua8fku7py0" path="res://Scripts/Components/movement_component.gd" id="5_lquwl"]
 [ext_resource type="Script" uid="uid://ccl8ohs1254p2" path="res://Scripts/Components/ai_controller_component.gd" id="7_272bh"]
@@ -11,21 +13,24 @@
 [ext_resource type="PackedScene" uid="uid://cjgjbri4a3g5v" path="res://Scenes/Components/stat_block_component.tscn" id="9_82xsv"]
 [ext_resource type="PackedScene" uid="uid://r7mj8yd1ehck" path="res://Scenes/Components/interactable_component.tscn" id="10_w48qg"]
 [ext_resource type="PackedScene" uid="uid://bb5qmpg0y7lu1" path="res://Scenes/Components/interactor_component.tscn" id="11_getpj"]
-[ext_resource type="PackedScene" uid="uid://bhx14ew2krkso" path="res://Scenes/Components/player_controller_component.tscn" id="12_ryguw"]
 [ext_resource type="Texture2D" uid="uid://bde2ei0igaxqp" path="res://tree.png" id="13_vivmo"]
 [ext_resource type="PackedScene" uid="uid://lhrom4t368bh" path="res://Scenes/Components/combat_component.tscn" id="14_074og"]
 [ext_resource type="PackedScene" uid="uid://bulbbqbt15p6m" path="res://Scenes/Components/capability_component.tscn" id="14_82xsv"]
 [ext_resource type="Texture2D" uid="uid://cj1v4stwgsnfu" path="res://rock.png" id="16_2cqfq"]
-[ext_resource type="Script" uid="uid://b3utf12ccv8b6" path="res://Scripts/player_camera.gd" id="16_82xsv"]
 [ext_resource type="Script" uid="uid://bu0e3fksd35vt" path="res://item.gd" id="17_82xsv"]
 [ext_resource type="Resource" uid="uid://cm46tjfmcqtt8" path="res://stick.tres" id="18_getpj"]
-[ext_resource type="PackedScene" uid="uid://ewb3cluh0to0" path="res://dropped_item.tscn" id="19_getpj"]
+[ext_resource type="Texture2D" uid="uid://dlder6a3g8lv3" path="res://Scripts/goblin.png" id="19_ryguw"]
 [ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/interaction_menu.gd" id="21_getpj"]
+[ext_resource type="PackedScene" uid="uid://csowv21hir14f" path="res://Scenes/Components/remains_component.tscn" id="21_ryguw"]
+[ext_resource type="Resource" uid="uid://dqrnuc7bhm1pn" path="res://goblin_corpse.tres" id="22_d13ii"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0xm2m"]
 radius = 16.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2cqfq"]
+radius = 16.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_d13ii"]
 radius = 16.0
 
 [sub_resource type="Theme" id="Theme_getpj"]
@@ -51,6 +56,12 @@ shape = SubResource("CircleShape2D_0xm2m")
 
 [node name="Components" type="Node2D" parent="GameWorld/Entities/Player" unique_id=1133228964]
 
+[node name="PlayerControllerComponent" type="Node2D" parent="GameWorld/Entities/Player/Components" unique_id=31185465]
+script = ExtResource("3_getpj")
+
+[node name="Camera2D" type="Camera2D" parent="GameWorld/Entities/Player/Components/PlayerControllerComponent" unique_id=1452244776]
+script = ExtResource("4_ryguw")
+
 [node name="InfoComponent" parent="GameWorld/Entities/Player/Components" unique_id=1685845071 instance=ExtResource("4_82xsv")]
 description = "A walking, talking guy!"
 
@@ -69,12 +80,7 @@ base_strength = 1.0
 
 [node name="CombatComponent" parent="GameWorld/Entities/Player/Components" unique_id=333536677 instance=ExtResource("14_074og")]
 
-[node name="PlayerControllerComponent" parent="GameWorld/Entities/Player/Components" unique_id=866909914 instance=ExtResource("12_ryguw")]
-
 [node name="CapabilityComponent" parent="GameWorld/Entities/Player/Components" unique_id=2138748879 instance=ExtResource("14_82xsv")]
-
-[node name="Camera2D" type="Camera2D" parent="GameWorld/Entities/Player/Components" unique_id=1269920283]
-script = ExtResource("16_82xsv")
 
 [node name="Tree" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=834797728]
 position = Vector2(216, -131)
@@ -133,16 +139,50 @@ description = "The pioneers used to ride these babies for miles."
 
 [node name="MovementComponent" parent="GameWorld/Entities/Rock/Components" unique_id=16291397 instance=ExtResource("7_cegan")]
 
-[node name="AIControllerComponent" type="Node" parent="GameWorld/Entities/Rock/Components" unique_id=1099161692]
-script = ExtResource("7_272bh")
-
 [node name="HealthComponent" parent="GameWorld/Entities/Rock/Components" unique_id=936156409 instance=ExtResource("8_ycdy4")]
 
 [node name="CombatComponent" parent="GameWorld/Entities/Rock/Components" unique_id=68597077 instance=ExtResource("14_074og")]
 
-[node name="DroppedItem" parent="GameWorld/Entities" unique_id=57117086 instance=ExtResource("19_getpj")]
-position = Vector2(-318, -93)
-item = ExtResource("18_getpj")
+[node name="Goblin" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=842891499]
+position = Vector2(198, 95)
+motion_mode = 1
+script = ExtResource("1_entity")
+
+[node name="Sprite2D" type="Sprite2D" parent="GameWorld/Entities/Goblin" unique_id=920778754]
+texture = ExtResource("19_ryguw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameWorld/Entities/Goblin" unique_id=237356574]
+shape = SubResource("CircleShape2D_d13ii")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="GameWorld/Entities/Goblin" unique_id=1894285346]
+
+[node name="Components" type="Node2D" parent="GameWorld/Entities/Goblin" unique_id=1936502166]
+
+[node name="HealthComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=1898991826 instance=ExtResource("8_ycdy4")]
+max_health = 5
+
+[node name="CapabilityComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=497487874 instance=ExtResource("14_82xsv")]
+capabilities = Array[StringName]([&"possessive"])
+
+[node name="InfoComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=772125187 instance=ExtResource("4_82xsv")]
+description = "A nice guy, really just a nice green fellow."
+
+[node name="InteractableComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=679915086 instance=ExtResource("10_w48qg")]
+
+[node name="InteractorComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=1125360253 instance=ExtResource("11_getpj")]
+
+[node name="InventoryComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=206470173 instance=ExtResource("5_efxa6")]
+
+[node name="AIControllerComponent" type="Node" parent="GameWorld/Entities/Goblin/Components" unique_id=1099161692]
+script = ExtResource("7_272bh")
+
+[node name="MovementComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=1129791833 instance=ExtResource("7_cegan")]
+speed = 20.0
+
+[node name="RemainsComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=636626653 instance=ExtResource("21_ryguw")]
+remains = ExtResource("22_d13ii")
+
+[node name="StatBlockComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=750857139 instance=ExtResource("9_82xsv")]
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1044784727]
 

@@ -2,7 +2,6 @@ extends EntityComponent
 class_name PlayerControllerComponent
 
 @export var movement_component : MovementComponent
-@export var hitbox : Area2D
 @export var interaction_menu: InteractionMenu
 
 func _ready() -> void:
@@ -11,17 +10,11 @@ func _ready() -> void:
 		push_warning(self," has no Components node, Player Controller will be disabled")
 		return
 	
-	if not movement_component:
-		movement_component = component_folder.get_node_or_null("MovementComponent")
-	if not hitbox:
-		hitbox = component_folder.get_parent().get_node_or_null("Hitbox")
+	movement_component = get_component(&"movement")
 	if not interaction_menu:
 		interaction_menu = get_tree().root.get_node_or_null("Main/UI/InteractionMenu")
 
 func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed("space") and hitbox:
-		hitbox.activate_for_one_frame()
-		print("hitbox active")
 	if not movement_component:
 		return
 	var dir = Input.get_vector("move_left","move_right","move_up","move_down")
