@@ -7,8 +7,12 @@ const DROPPED_ITEM_SCENE: PackedScene = preload("res://dropped_item.tscn")
 
 signal items_updated
 
-func add_item(item: Resource) -> void:
+func add_item(item: Item) -> void:
 	items.append(item)
+	items_updated.emit()
+
+func add_items(new_items: Array[Item]) -> void:
+	items.append_array(new_items)
 	items_updated.emit()
 
 func take_all_items() -> Array[Item]:

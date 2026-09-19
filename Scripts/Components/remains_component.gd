@@ -9,14 +9,13 @@ class_name RemainsComponent
 func spawn_remains() -> Entity:
 	var remains_entity: Entity
 	if remains:
-		remains_entity = EntityFactory.spawn(remains,root_entity.global_position,get_tree().root.get_node("Main/GameWorld/Entities"))
+		remains_entity = EntityFactory.spawn(remains,root_entity.global_position,root_entity.get_parent())
 		
 		var inventory = get_component(&"inventory") as InventoryComponent
 		if inventory:
 			var remains_inventory = remains_entity.get_component(&"inventory") as InventoryComponent
 			if remains_inventory:
 				var all_items = inventory.take_all_items()
-				for item in all_items:
-					remains_inventory.add_item(item)
+				remains_inventory.add_items(all_items)
 		
 	return remains_entity

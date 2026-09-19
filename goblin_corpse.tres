@@ -4,6 +4,9 @@
 [ext_resource type="Script" uid="uid://0l7q2hvlm5mj" path="res://entity_definition.gd" id="1_plt2h"]
 [ext_resource type="Texture2D" uid="uid://caycjc8offvuw" path="res://Scripts/dead_goblin.png" id="2_46k4g"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_dboa7"]
+radius = 16.0
+
 [sub_resource type="Resource" id="Resource_ymxu3"]
 script = ExtResource("1_dboa7")
 component_id = &"info"
@@ -26,5 +29,6 @@ metadata/_custom_type_script = "uid://ct7ynu8lawguy"
 script = ExtResource("1_plt2h")
 entity_name = "Goblin Corpse"
 sprite = ExtResource("2_46k4g")
+collision_shape = SubResource("CircleShape2D_dboa7")
 components = Array[ExtResource("1_dboa7")]([SubResource("Resource_ymxu3"), SubResource("Resource_dboa7"), SubResource("Resource_n4yqb")])
 metadata/_custom_type_script = "uid://0l7q2hvlm5mj"
