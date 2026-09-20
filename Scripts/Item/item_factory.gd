@@ -9,6 +9,6 @@ static func build(definition: ItemDefinition) -> Item:
 	item.sprite = definition.sprite
 
 	for component in definition.components:
-		item.components.append(component.duplicate(true))
+		item.add_component(component.component_id, component.parameters)
 
 	return item

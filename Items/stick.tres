@@ -1,18 +1,21 @@
 [gd_resource type="Resource" script_class="ItemDefinition" format=3 uid="uid://cm46tjfmcqtt8"]
 
-[ext_resource type="Script" uid="uid://b2x8dvqwdn1pf" path="res://Scripts/Item/item_component.gd" id="1_q64ul"]
+[ext_resource type="Script" uid="uid://bhd5ft55pgo22" path="res://Scripts/Item/item_component_definition.gd" id="1_ce5rc"]
 [ext_resource type="Script" uid="uid://bu0e3fksd35vt" path="res://Scripts/Item/item_definition.gd" id="2_2fjkh"]
-[ext_resource type="Script" uid="uid://dduoeyiw7b4bg" path="res://Scripts/ItemComponents/equippable_item_component.gd" id="2_xbcci"]
 [ext_resource type="Texture2D" uid="uid://b2t20oyb4v62r" path="res://stick.png" id="4_s6gmk"]
 
-[sub_resource type="Resource" id="Resource_fnejt"]
-script = ExtResource("2_xbcci")
-slots = Array[StringName]([&"mainhand", &"offhand"])
-metadata/_custom_type_script = "uid://dduoeyiw7b4bg"
+[sub_resource type="Resource" id="Resource_ce5rc"]
+script = ExtResource("1_ce5rc")
+component_id = &"equippable"
+parameters = Dictionary[StringName, Variant]({
+&"slots": [&"mainhand", &"offhand"]
+})
+metadata/_custom_type_script = "uid://bhd5ft55pgo22"
 
 [resource]
+resource_name = "Stick"
 script = ExtResource("2_2fjkh")
 item_name = "Stick"
 sprite = ExtResource("4_s6gmk")
-components = Array[ExtResource("1_q64ul")]([SubResource("Resource_fnejt")])
+components = Array[ExtResource("1_ce5rc")]([SubResource("Resource_ce5rc")])
 metadata/_custom_type_script = "uid://bu0e3fksd35vt"
