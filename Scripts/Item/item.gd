@@ -3,7 +3,7 @@ class_name Item
 
 var item_name: String
 var sprite: Texture2D
-@export var definition: ItemDefinition
+var definition: ItemDefinition
 var components: Array[ItemComponent]
 
 func get_component(id: StringName) -> ItemComponent:

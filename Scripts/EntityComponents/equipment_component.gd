@@ -1,7 +1,7 @@
 extends EntityComponent
 class_name EquipmentComponent
 
-@export var slots: Array[StringName]
+@export var slots: Array
 @export var use_default_slots: bool = true
 var default_slots: Array[StringName] = [&"mainhand",&"offhand",&"head",&"chest",&"legs",&"feet"]
 var equipment: Dictionary[StringName,Item] = {}
@@ -37,6 +37,9 @@ func equip(slot: StringName, item: Item) -> bool:
 	if item not in inventory.items:
 		return false
 	
+	for existing_slot in slots:
+		if get_equipment(existing_slot) == item:
+			unequip(existing_slot)
 	equipment[slot] = item
 	equipment_updated.emit()
 	return true

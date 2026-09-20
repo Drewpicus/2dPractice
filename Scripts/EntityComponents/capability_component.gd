@@ -8,7 +8,7 @@ extends EntityComponent
 class_name CapabilityComponent
 
 ##possessive: Entity owns the items in their inventory
-@export var capabilities: Array[StringName] = []
+@export var capabilities: Array = []
 
 ##Returns true if the Entity has the given [param capablity]
 func has_capability(capability: StringName) -> bool:

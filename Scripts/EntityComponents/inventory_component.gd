@@ -23,8 +23,8 @@ func add_items(new_items: Array[Item]) -> void:
 func remove_item(item: Item) -> Item:
 	if item not in items:
 		return null
-	item_removed.emit(item)
 	items.erase(item)
+	item_removed.emit(item)
 	items_updated.emit()
 	return item
 
@@ -45,18 +45,18 @@ func remove_items(items_to_remove: Array[Item],ignore_missing: bool = true) -> A
 
 func take_all_items() -> Array[Item]:
 	var new_inventory := items.duplicate()
-	for item in items:
-		item_removed.emit(item)
 	items.clear()
+	for item in new_inventory:
+		item_removed.emit(item)
 	items_updated.emit()
 	return new_inventory
 
 func drop_all_items() -> void:
-	for item in items:
+	var all_items := items
+	items.clear()
+	for item in all_items:
 		_spawn_loot_pickup(item, root_entity.global_position)
 		item_removed.emit(item)
-		
-	items.clear()
 	items_updated.emit()
 
 ## @deprecated dropped items may be old
