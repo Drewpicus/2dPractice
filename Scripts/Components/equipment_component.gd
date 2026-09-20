@@ -42,7 +42,7 @@ func equip(slot: StringName, item: Item) -> bool:
 	return true
 
 func unequip(slot: StringName) -> Item:
-	var item: Item = equipment[slot]
+	var item = equipment.get(slot) as Item
 	equipment.erase(slot)
 	equipment_updated.emit()
 	return item
@@ -54,6 +54,6 @@ func has_equipment(slot: StringName) -> bool:
 	return equipment.get(slot) != null
 
 func _on_item_removed(item: Item) -> void:
-	for slot in slots:
-		if item == equipment[slot]:
+	for slot in equipment.keys():
+		if item == equipment.get(slot) as Item:
 			unequip(slot)

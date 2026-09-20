@@ -17,7 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://lhrom4t368bh" path="res://Scenes/Components/combat_component.tscn" id="14_074og"]
 [ext_resource type="PackedScene" uid="uid://bulbbqbt15p6m" path="res://Scenes/Components/capability_component.tscn" id="14_82xsv"]
 [ext_resource type="Texture2D" uid="uid://cj1v4stwgsnfu" path="res://rock.png" id="16_2cqfq"]
-[ext_resource type="Script" uid="uid://bu0e3fksd35vt" path="res://item.gd" id="17_82xsv"]
+[ext_resource type="Script" uid="uid://bu0e3fksd35vt" path="res://item_definition.gd" id="17_82xsv"]
 [ext_resource type="Resource" uid="uid://cm46tjfmcqtt8" path="res://stick.tres" id="18_getpj"]
 [ext_resource type="Texture2D" uid="uid://dlder6a3g8lv3" path="res://Scripts/goblin.png" id="19_ryguw"]
 [ext_resource type="Resource" uid="uid://cry8mqpvac1mb" path="res://goblin_coin.tres" id="20_1u8w0"]

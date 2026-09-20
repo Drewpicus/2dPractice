@@ -1,15 +1,36 @@
 extends Resource
 class_name Item
 
-@export var item_name: String
-@export var sprite: Texture2D
-@export var components: Array[ItemComponent]
+@export var definition: ItemDefinition
 
 func get_component(id: StringName) -> ItemComponent:
-	for component in components:
-		if component.get_id() == id:
-			return component
-	return null
+	if not definition:
+		return null
+	return definition.get_component(id)
 
 func has_component(id: StringName) -> bool:
-	return get_component(id) != null
+	if not definition:
+		return false
+	return definition.has_component(id)
+
+func add_component(component:StringName,parameters:Dictionary={}) -> ItemComponent:
+	if not definition.components:
+		return
+
+	if component.is_empty():
+		return
+	
+	if has_component(component):
+		return
+	
+	var new_component: ItemComponent = ItemComponent.new()
+	new_component.component_id = component
+	
+	
+	if not parameters.is_empty():
+		for key in parameters.keys():
+			if key in new_component:
+				new_component.set(key,parameters[key])
+	
+	
+	return new_component
