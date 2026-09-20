@@ -3,13 +3,15 @@ class_name PlayerControllerComponent
 
 @export var movement_component : MovementComponent
 @export var interaction_menu: InteractionMenu
+@export var inventory_menu: InventoryMenu
 
 func _ready() -> void:
 	var component_folder = get_parent()
 	if not component_folder:
 		push_warning(self," has no Components node, Player Controller will be disabled")
 		return
-	
+	if not inventory_menu:
+		inventory_menu = get_tree().root.get_node_or_null("Main/UI/InventoryMenu")
 	movement_component = get_component(&"movement")
 	if not interaction_menu:
 		interaction_menu = get_tree().root.get_node_or_null("Main/UI/InteractionMenu")
@@ -21,6 +23,12 @@ func _process(_delta: float) -> void:
 	movement_component.input_direction = dir
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("inventory"):
+		if inventory_menu.visible:
+			inventory_menu.close_inventory()
+		else:
+			interaction_menu.hide()
+			inventory_menu.show_inventory(root_entity, root_entity)
 	if event.is_action_pressed("interact_menu"):
 		var target := _get_entity_under_mouse()
 		if not target:

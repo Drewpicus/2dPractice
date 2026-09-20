@@ -23,6 +23,7 @@
 [ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/interaction_menu.gd" id="21_getpj"]
 [ext_resource type="PackedScene" uid="uid://csowv21hir14f" path="res://Scenes/Components/remains_component.tscn" id="21_ryguw"]
 [ext_resource type="Resource" uid="uid://dqrnuc7bhm1pn" path="res://goblin_corpse.tres" id="22_d13ii"]
+[ext_resource type="Script" uid="uid://cpefuibv0hxx" path="res://inventory_menu.gd" id="24_1u8w0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0xm2m"]
 radius = 16.0
@@ -194,3 +195,26 @@ script = ExtResource("21_getpj")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/InteractionMenu" unique_id=1503330072]
 layout_mode = 2
+
+[node name="InventoryMenu" type="PanelContainer" parent="UI" unique_id=917256915]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("24_1u8w0")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/InventoryMenu" unique_id=209366124]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UI/InventoryMenu/VBoxContainer" unique_id=963951323]
+layout_mode = 2
+text = "Inventory"
+
+[node name="ItemList" type="ItemList" parent="UI/InventoryMenu/VBoxContainer" unique_id=1723063017]
+custom_minimum_size = Vector2(300, 200)
+layout_mode = 2
+
+[node name="Actions" type="HBoxContainer" parent="UI/InventoryMenu/VBoxContainer" unique_id=962565959]
+layout_mode = 2
+
+[node name="Close" type="Button" parent="UI/InventoryMenu/VBoxContainer" unique_id=1555944978]
+layout_mode = 2
+text = "Close"
