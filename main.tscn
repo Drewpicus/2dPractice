@@ -18,9 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://bulbbqbt15p6m" path="res://Scenes/Components/capability_component.tscn" id="14_82xsv"]
 [ext_resource type="Texture2D" uid="uid://cj1v4stwgsnfu" path="res://rock.png" id="16_2cqfq"]
 [ext_resource type="Script" uid="uid://bu0e3fksd35vt" path="res://item_definition.gd" id="17_82xsv"]
-[ext_resource type="Resource" uid="uid://cm46tjfmcqtt8" path="res://stick.tres" id="18_getpj"]
 [ext_resource type="Texture2D" uid="uid://dlder6a3g8lv3" path="res://Scripts/goblin.png" id="19_ryguw"]
-[ext_resource type="Resource" uid="uid://cry8mqpvac1mb" path="res://goblin_coin.tres" id="20_1u8w0"]
 [ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/interaction_menu.gd" id="21_getpj"]
 [ext_resource type="PackedScene" uid="uid://csowv21hir14f" path="res://Scenes/Components/remains_component.tscn" id="21_ryguw"]
 [ext_resource type="Resource" uid="uid://dqrnuc7bhm1pn" path="res://goblin_corpse.tres" id="22_d13ii"]
@@ -105,7 +103,6 @@ description = "A tall tree, old as balls..."
 [node name="CapabilityComponent" parent="GameWorld/Entities/Tree/Components" unique_id=1668476005 instance=ExtResource("14_82xsv")]
 
 [node name="InventoryComponent" parent="GameWorld/Entities/Tree/Components" unique_id=2139806301 instance=ExtResource("5_efxa6")]
-items = Array[ExtResource("17_82xsv")]([ExtResource("18_getpj"), ExtResource("18_getpj"), ExtResource("18_getpj")])
 
 [node name="HealthComponent" parent="GameWorld/Entities/Tree/Components" unique_id=1422573704 instance=ExtResource("8_ycdy4")]
 starting_health = 2
@@ -169,7 +166,7 @@ description = "A nice guy, really just a nice green fellow."
 [node name="InteractorComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=1125360253 instance=ExtResource("11_getpj")]
 
 [node name="InventoryComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=206470173 instance=ExtResource("5_efxa6")]
-items = Array[ExtResource("17_82xsv")]([ExtResource("18_getpj"), ExtResource("20_1u8w0")])
+items = Array[ExtResource("17_82xsv")]([null])
 
 [node name="AIControllerComponent" type="Node" parent="GameWorld/Entities/Goblin/Components" unique_id=1099161692]
 script = ExtResource("7_272bh")

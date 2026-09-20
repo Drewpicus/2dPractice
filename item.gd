@@ -1,7 +1,10 @@
 extends Resource
 class_name Item
 
-@export var definition: ItemDefinition
+var item_name: String
+var sprite: Texture2D
+var definition: ItemDefinition
+var components: Array[ItemComponent]
 
 func get_component(id: StringName) -> ItemComponent:
 	if not definition:
@@ -31,6 +34,5 @@ func add_component(component:StringName,parameters:Dictionary={}) -> ItemCompone
 		for key in parameters.keys():
 			if key in new_component:
 				new_component.set(key,parameters[key])
-	
 	
 	return new_component
