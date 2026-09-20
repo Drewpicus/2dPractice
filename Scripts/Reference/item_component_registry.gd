@@ -2,7 +2,7 @@ extends RefCounted
 class_name ItemComponentRegistry
 
 const COMPONENT_SCRIPTS: Dictionary = {
-	&"equippable": preload("res://equippable_item_component.gd"),
+	&"equippable": preload("res://Scripts/ItemComponents/equippable_item_component.gd"),
 }
 
 static func get_component_resource(component_name: StringName) -> ItemComponent:

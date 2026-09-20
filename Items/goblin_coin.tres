@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="ItemDefinition" format=3 uid="uid://cry8mqpvac1mb"]
 
-[ext_resource type="Script" uid="uid://b2x8dvqwdn1pf" path="res://item_component.gd" id="1_1aerr"]
-[ext_resource type="Script" uid="uid://bu0e3fksd35vt" path="res://item_definition.gd" id="2_e1353"]
-[ext_resource type="Script" uid="uid://dduoeyiw7b4bg" path="res://equippable_item_component.gd" id="2_jdtvs"]
+[ext_resource type="Script" uid="uid://b2x8dvqwdn1pf" path="res://Scripts/Item/item_component.gd" id="1_1aerr"]
+[ext_resource type="Script" uid="uid://bu0e3fksd35vt" path="res://Scripts/Item/item_definition.gd" id="2_e1353"]
+[ext_resource type="Script" uid="uid://dduoeyiw7b4bg" path="res://Scripts/ItemComponents/equippable_item_component.gd" id="2_jdtvs"]
 [ext_resource type="Texture2D" uid="uid://c7r50v41tfin8" path="res://goblin coin.png" id="4_0imyr"]
 
 [sub_resource type="Resource" id="Resource_jdtvs"]

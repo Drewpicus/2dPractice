@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://irmwa6b2bwko"]
 
-[ext_resource type="Script" uid="uid://y87ikykg53o3" path="res://Scripts/entity.gd" id="1_l7g7l"]
+[ext_resource type="Script" uid="uid://y87ikykg53o3" path="res://Scripts/Entity/entity.gd" id="1_l7g7l"]
 
 [node name="Entity" type="CharacterBody2D" unique_id=842891499]
 motion_mode = 1

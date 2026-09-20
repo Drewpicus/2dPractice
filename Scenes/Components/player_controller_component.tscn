@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bhx14ew2krkso"]
 
-[ext_resource type="Script" uid="uid://drf25g4krf434" path="res://Scripts/Components/player_controller_component.gd" id="1_sikvh"]
+[ext_resource type="Script" uid="uid://drf25g4krf434" path="res://Scripts/EntityComponents/player_controller_component.gd" id="1_sikvh"]
 [ext_resource type="Script" uid="uid://b3utf12ccv8b6" path="res://Scripts/player_camera.gd" id="2_ws87e"]
 
 [node name="PlayerControllerComponent" type="Node2D" unique_id=31185465]

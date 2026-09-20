@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bow6p41t1x85q"]
 
-[ext_resource type="Script" uid="uid://g26tg4l7f4gj" path="res://Scripts/Components/inventory_component.gd" id="1_dcfk4"]
+[ext_resource type="Script" uid="uid://g26tg4l7f4gj" path="res://Scripts/EntityComponents/inventory_component.gd" id="1_dcfk4"]
 
 [node name="InventoryComponent" type="Node" unique_id=392187487]
 script = ExtResource("1_dcfk4")

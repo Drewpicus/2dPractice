@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cow8rlq2jdmo7"]
 
-[ext_resource type="Script" uid="uid://digcomkx1k1gw" path="res://Scripts/Components/equipment_component.gd" id="1_hbr11"]
+[ext_resource type="Script" uid="uid://digcomkx1k1gw" path="res://Scripts/EntityComponents/equipment_component.gd" id="1_hbr11"]
 
 [node name="EquipmentComponent" type="Node" unique_id=1165157158]
 script = ExtResource("1_hbr11")
