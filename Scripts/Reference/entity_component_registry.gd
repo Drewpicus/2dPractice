@@ -1,5 +1,5 @@
 extends RefCounted
-class_name ComponentRegistry
+class_name EntityComponentRegistry
 
 const COMPONENT_SCENES: Dictionary = {
 	##Universal

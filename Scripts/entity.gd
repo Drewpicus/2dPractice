@@ -29,7 +29,7 @@ func add_component(component:StringName,parameters:Dictionary={}) -> Node:
 	if has_component(component):
 		return
 	
-	var component_scene: PackedScene = ComponentRegistry.get_component_scene(component)
+	var component_scene: PackedScene = EntityComponentRegistry.get_component_scene(component)
 	if component_scene == null:
 		return
 	
@@ -55,7 +55,7 @@ func remove_component(component:StringName) -> void:
 	if components_folder == null:
 		return
 	
-	var component_name: String = ComponentRegistry.get_component_name(component)
+	var component_name: String = EntityComponentRegistry.get_component_name(component)
 	if component_name.is_empty():
 		return
 	
@@ -70,7 +70,7 @@ func has_component(component:StringName) -> bool:
 
 ##Returns Component Node of a given name if an Entity has it, otherwise returns null
 func get_component(component:StringName) -> Node:
-	var component_name: String = ComponentRegistry.get_component_name(component)
+	var component_name: String = EntityComponentRegistry.get_component_name(component)
 	if not components_folder:
 		components_folder = get_node_or_null("Components")
 	return components_folder.get_node_or_null(component_name)
