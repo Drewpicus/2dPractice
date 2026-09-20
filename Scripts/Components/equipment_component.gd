@@ -13,6 +13,9 @@ func _ready() -> void:
 		slots.append_array(default_slots)
 
 func equip(slot: StringName, item: Item) -> void:
+	var inventory = get_component(&"inventory") as InventoryComponent
+	if item not in inventory.items:
+		return
 	equipment[slot] = item
 	equipment_updated.emit()
 
