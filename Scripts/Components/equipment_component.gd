@@ -11,12 +11,19 @@ signal equipment_updated
 func _ready() -> void:
 	if use_default_slots:
 		slots.append_array(default_slots)
+		
+	var inventory := get_component(&"inventory") as InventoryComponent
+	if inventory:
+		inventory.item_removed.connect(_on_item_removed)
 
 func equip(slot: StringName, item: Item) -> bool:
+	if not item:
+		return false
+	
 	if slot not in slots:
 		return false
 	
-	var equippable = item.get_component(&"equippable")
+	var equippable = item.get_component(&"equippable") as EquippableItemComponent
 	if not equippable:
 		return false
 	
@@ -35,7 +42,7 @@ func equip(slot: StringName, item: Item) -> bool:
 	return true
 
 func unequip(slot: StringName) -> Item:
-	var item = equipment.get(slot) as Item
+	var item: Item = equipment[slot]
 	equipment.erase(slot)
 	equipment_updated.emit()
 	return item
@@ -45,3 +52,8 @@ func get_equipment(slot: StringName) -> Item:
 
 func has_equipment(slot: StringName) -> bool:
 	return equipment.get(slot) != null
+
+func _on_item_removed(item: Item) -> void:
+	for slot in slots:
+		if item == equipment[slot]:
+			unequip(slot)

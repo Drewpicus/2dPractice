@@ -10,3 +10,6 @@ func get_component(id: StringName) -> ItemComponent:
 		if component.get_id() == id:
 			return component
 	return null
+
+func has_component(id: StringName) -> bool:
+	return get_component(id) != null
