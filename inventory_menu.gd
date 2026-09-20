@@ -24,13 +24,13 @@ func _ready() -> void:
 	_close_button.pressed.connect(close_inventory)
 
 
-func show_inventory(viewer: Entity, owner: Entity) -> void:
+func show_inventory(viewer: Entity, inv_owner: Entity) -> void:
 	_disconnect_sources()
 
 	_viewer = viewer
-	_owner = owner
+	_owner = inv_owner
 
-	_inventory = owner.get_component(&"inventory") as InventoryComponent
+	_inventory = inv_owner.get_component(&"inventory") as InventoryComponent
 
 	if not _inventory:
 		return
@@ -44,7 +44,7 @@ func show_inventory(viewer: Entity, owner: Entity) -> void:
 		if not _viewer_equipment.equipment_updated.is_connected(_rebuild_actions):
 			_viewer_equipment.equipment_updated.connect(_rebuild_actions)
 
-	_title.text = "%s Inventory" % owner.name
+	_title.text = "%s Inventory" % inv_owner.name
 
 	_selected_item = null
 

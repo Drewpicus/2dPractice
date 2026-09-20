@@ -30,6 +30,6 @@ script = ExtResource("1_plt2h")
 entity_name = "Goblin Corpse"
 sprite = ExtResource("2_46k4g")
 collision_shape = SubResource("CircleShape2D_dboa7")
-passthrough = true
+solid = true
 components = Array[ExtResource("1_dboa7")]([SubResource("Resource_ymxu3"), SubResource("Resource_dboa7"), SubResource("Resource_n4yqb")])
 metadata/_custom_type_script = "uid://0l7q2hvlm5mj"

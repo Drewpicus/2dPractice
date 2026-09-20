@@ -15,4 +15,11 @@ func can_perform(_interactor: Entity, _target: Entity) -> bool:
 	return true
 
 func perform(_interactor: Entity, _target: Entity) -> void:
-	print(_target.get_component(&"inventory").items)
+	var inventory_menu := _interactor.get_tree().root.get_node_or_null(
+		"Main/UI/InventoryMenu"
+	) as InventoryMenu
+
+	if not inventory_menu:
+		return
+
+	inventory_menu.show_inventory(_interactor, _target)

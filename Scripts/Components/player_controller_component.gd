@@ -76,12 +76,17 @@ func _get_entity_under_mouse(exclude_self: bool = true, is_interactable: bool = 
 	params.collide_with_bodies = include_bodies
 	var intersections := world.intersect_point(params)
 	for intersection in intersections:
-		if intersection["collider"] is Entity:
-			if exclude_self:
-				if intersection["collider"] == root_entity:
-					continue
-			if is_interactable:
-				if not intersection["collider"].has_component(&"interactable"):
-					continue
-			return intersection["collider"]
+		var collider := intersection["collider"] as Node
+		var entity := Entity.find_entity(collider)
+
+		if not entity:
+			continue
+
+		if exclude_self and entity == root_entity:
+			continue
+
+		if is_interactable and not entity.has_component(&"interactable"):
+			continue
+
+		return entity
 	return null
