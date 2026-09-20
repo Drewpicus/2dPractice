@@ -3,4 +3,10 @@ class_name Item
 
 @export var item_name: String
 @export var sprite: Texture2D
-@export var equippable: Array[StringName] #Array of Slot names
+@export var components: Array[ItemComponent]
+
+func get_component(id: StringName) -> ItemComponent:
+	for component in components:
+		if component.get_id() == id:
+			return component
+	return null
