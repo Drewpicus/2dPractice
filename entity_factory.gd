@@ -10,6 +10,7 @@ static func build(entity: EntityDefinition) -> Entity:
 	new_entity.get_node("Sprite2D").texture = entity.sprite
 	if entity.collision_shape:
 		new_entity.get_node("CollisionShape2D").shape = entity.collision_shape.duplicate()
+	new_entity.passthrough = entity.passthrough
 	
 	for component in entity.components:
 		new_entity.add_component(component.component_id,component.parameters)

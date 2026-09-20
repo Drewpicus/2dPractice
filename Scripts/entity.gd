@@ -1,15 +1,18 @@
 extends CharacterBody2D
 class_name Entity
 
-@onready var collision = $CollisionShape2D
+@onready var collision: CollisionShape2D = $CollisionShape2D
 @onready var components_folder = $Components
 
+var passthrough: bool = false
 var components: Array
 
 func _ready() -> void:
 	var health_component := get_component(&"health") as HealthComponent
 	if health_component:
 		health_component.health_depleted.connect(die)
+	if passthrough:
+		collision.disabled = true
 
 func die() -> void:
 	var remains_component = get_component(&"remains")
