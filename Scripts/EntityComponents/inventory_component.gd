@@ -70,7 +70,7 @@ func _spawn_loot_pickup(_item_resource: Item, _drop_position: Vector2) -> void:
 	print("Dropped %s" % [new_item])
 
 func get_interaction_suggestions() -> Array[StringName]:
-	var capabilities: CapabilityComponent = get_component(&"capability")
+	var capabilities: CapabilityComponent = get_component(&"base:capability")
 	if capabilities:
 		if capabilities.has_capability(&"possessive"):
 			return [&"pickpocket"]

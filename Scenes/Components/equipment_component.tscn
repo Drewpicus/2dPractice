@@ -4,3 +4,4 @@
 
 [node name="EquipmentComponent" type="Node" unique_id=1165157158]
 script = ExtResource("1_hbr11")
+component_id = &"base:equipment"

@@ -4,3 +4,4 @@
 
 [node name="InventoryComponent" type="Node" unique_id=392187487]
 script = ExtResource("1_dcfk4")
+component_id = &"base:inventory"

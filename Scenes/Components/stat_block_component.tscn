@@ -4,3 +4,4 @@
 
 [node name="StatBlockComponent" type="Node" unique_id=1990223150]
 script = ExtResource("1_d7o4k")
+component_id = &"base:stat_block"

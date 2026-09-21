@@ -30,12 +30,12 @@ func show_inventory(viewer: Entity, inv_owner: Entity) -> void:
 	_viewer = viewer
 	_owner = inv_owner
 
-	_inventory = inv_owner.get_component(&"inventory") as InventoryComponent
+	_inventory = inv_owner.get_component(&"base:inventory") as InventoryComponent
 
 	if not _inventory:
 		return
 
-	_viewer_equipment = viewer.get_component(&"equipment") as EquipmentComponent
+	_viewer_equipment = viewer.get_component(&"base:equipment") as EquipmentComponent
 
 	if not _inventory.items_updated.is_connected(_rebuild_items):
 		_inventory.items_updated.connect(_rebuild_items)
@@ -175,7 +175,7 @@ func _take_selected() -> void:
 	if not is_instance_valid(_viewer):
 		return
 
-	var viewer_inventory := _viewer.get_component(&"inventory") as InventoryComponent
+	var viewer_inventory := _viewer.get_component(&"base:inventory") as InventoryComponent
 
 	if not viewer_inventory:
 		return

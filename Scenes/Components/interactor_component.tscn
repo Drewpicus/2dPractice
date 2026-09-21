@@ -4,3 +4,4 @@
 
 [node name="InteractorComponent" type="Node2D" unique_id=184089856]
 script = ExtResource("1_h4tj3")
+component_id = &"base:interactor"

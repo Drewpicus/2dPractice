@@ -4,3 +4,4 @@
 
 [node name="InfoComponent" type="Node" unique_id=1685845071]
 script = ExtResource("1_wq0hn")
+component_id = &"base:info"

@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://dvuw4ec5x2m7l"]
+
+[ext_resource type="Script" uid="uid://ccl8ohs1254p2" path="res://Scripts/EntityComponents/ai_controller_component.gd" id="1_1vank"]
+
+[node name="AIControllerComponent" type="Node" unique_id=713813596]
+script = ExtResource("1_1vank")
+component_id = &"base:ai_controller"

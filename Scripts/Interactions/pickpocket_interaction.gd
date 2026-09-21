@@ -6,11 +6,11 @@ func _init() -> void:
 	interaction_name = "Pickpocket"
 
 func can_perform(_interactor: Entity, _target: Entity) -> bool:
-	if not _interactor.has_component(&"interactor"):
+	if not _interactor.has_component(&"base:interactor"):
 		return false
-	if not _target.has_component(&"inventory"):
+	if not _target.has_component(&"base:inventory"):
 		return false
-	if _interactor.global_position.distance_to(_target.global_position) > _interactor.get_component(&"interactor").reach:
+	if _interactor.global_position.distance_to(_target.global_position) > _interactor.get_component(&"base:interactor").reach:
 		return false
 	return true
 

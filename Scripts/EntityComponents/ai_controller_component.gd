@@ -6,7 +6,7 @@ var direction_timer : float = 1.0
 var dir : Vector2 = Vector2.ZERO
 
 func _ready() -> void:
-	movement_component = get_component(&"movement")
+	movement_component = get_component(&"base:movement")
 	
 	dir = new_direction()
 	if not movement_component:

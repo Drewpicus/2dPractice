@@ -12,7 +12,7 @@ func _ready() -> void:
 		return
 	if not inventory_menu:
 		inventory_menu = get_tree().root.get_node_or_null("Main/UI/InventoryMenu")
-	movement_component = get_component(&"movement")
+	movement_component = get_component(&"base:movement")
 	if not interaction_menu:
 		interaction_menu = get_tree().root.get_node_or_null("Main/UI/InteractionMenu")
 
@@ -35,15 +35,15 @@ func _unhandled_input(event: InputEvent) -> void:
 			interaction_menu.hide()
 			return
 		var visible_interactions: Array
-		if not target.has_component(&"interactable"):
+		if not target.has_component(&"base:interactable"):
 			return
-		visible_interactions = target.get_component(&"interactable").get_interactions(root_entity)
+		visible_interactions = target.get_component(&"base:interactable").get_interactions(root_entity)
 		if not visible_interactions.is_empty():
 			interaction_menu.show_interactions(visible_interactions,root_entity,target)
 	if event.is_action_pressed("select"):
 		interaction_menu._on_empty_pressed()
-	_quick_action(event,"quick_attack",&"health",&"attack")
-	_quick_action(event,"quick_inspect",&"info",&"inspect",_get_entity_under_mouse(false))
+	_quick_action(event,"quick_attack",&"base:health",&"attack")
+	_quick_action(event,"quick_inspect",&"base:info",&"inspect",_get_entity_under_mouse(false))
 
 func _quick_action(event: InputEvent, input: StringName, component: StringName, interaction: StringName, target: Variant = _get_entity_under_mouse()):
 	if event.is_action_pressed(input):
@@ -51,7 +51,7 @@ func _quick_action(event: InputEvent, input: StringName, component: StringName, 
 			return
 		if not target.has_component(component):
 			return
-		var interactions: Array[Interaction] = target.get_component(&"interactable").get_interactions(root_entity)
+		var interactions: Array[Interaction] = target.get_component(&"base:interactable").get_interactions(root_entity)
 		var selected_interaction: Interaction
 		if not interactions.is_empty():
 			for created_interaction in interactions:
@@ -84,7 +84,7 @@ func _get_entity_under_mouse(exclude_self: bool = true, is_interactable: bool = 
 		if exclude_self and entity == root_entity:
 			continue
 
-		if is_interactable and not entity.has_component(&"interactable"):
+		if is_interactable and not entity.has_component(&"base:interactable"):
 			continue
 
 		return entity

@@ -4,3 +4,4 @@
 
 [node name="RemainsComponent" type="Node" unique_id=636626653]
 script = ExtResource("1_wcva8")
+component_id = &"base:remains"

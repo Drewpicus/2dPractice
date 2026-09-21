@@ -4,3 +4,4 @@
 
 [node name="CombatComponent" type="Node" unique_id=333536677]
 script = ExtResource("1_5qkrw")
+component_id = &"base:combat"

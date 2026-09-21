@@ -18,8 +18,8 @@
 [ext_resource type="Texture2D" uid="uid://bde2ei0igaxqp" path="res://tree.png" id="15_hdf80"]
 [ext_resource type="Texture2D" uid="uid://cj1v4stwgsnfu" path="res://rock.png" id="16_jwpg7"]
 [ext_resource type="Texture2D" uid="uid://dlder6a3g8lv3" path="res://goblin.png" id="17_k2e45"]
-[ext_resource type="Script" uid="uid://ccl8ohs1254p2" path="res://Scripts/EntityComponents/ai_controller_component.gd" id="18_536cc"]
 [ext_resource type="PackedScene" uid="uid://csowv21hir14f" path="res://Scenes/Components/remains_component.tscn" id="19_aqgau"]
+[ext_resource type="PackedScene" uid="uid://dvuw4ec5x2m7l" path="res://Scenes/Components/ai_controller_component.tscn" id="19_gt3je"]
 [ext_resource type="Resource" uid="uid://dqrnuc7bhm1pn" path="res://Entities/goblin_corpse.tres" id="20_8cuat"]
 [ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/interaction_menu.gd" id="21_o1aky"]
 [ext_resource type="Script" uid="uid://cpefuibv0hxx" path="res://Scripts/inventory_menu.gd" id="22_kwxat"]
@@ -169,8 +169,7 @@ description = "A nice guy, really just a nice green fellow."
 
 [node name="InventoryComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=206470173 instance=ExtResource("6_1w6v2")]
 
-[node name="AIControllerComponent" type="Node" parent="GameWorld/Entities/Goblin/Components" unique_id=1099161692]
-script = ExtResource("18_536cc")
+[node name="AIControllerComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=713813596 instance=ExtResource("19_gt3je")]
 
 [node name="MovementComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=1129791833 instance=ExtResource("7_ueoa1")]
 speed = 20.0

@@ -4,3 +4,4 @@
 
 [node name="HealthComponent" type="Node" unique_id=1882472742]
 script = ExtResource("1_dgvmk")
+component_id = &"base:health"

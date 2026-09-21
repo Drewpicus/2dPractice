@@ -1,6 +1,8 @@
 extends Node
 class_name EntityComponent
 
+@export var component_id: StringName
+
 @onready var root_entity: Entity = Entity.find_entity(self)
 
 func get_component(component: StringName) -> Node:

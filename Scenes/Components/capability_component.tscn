@@ -4,3 +4,4 @@
 
 [node name="CapabilityComponent" type="Node" unique_id=2138748879]
 script = ExtResource("1_qvle4")
+component_id = &"base:capability"

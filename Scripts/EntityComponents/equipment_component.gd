@@ -12,7 +12,7 @@ func _ready() -> void:
 	if use_default_slots:
 		slots.append_array(default_slots)
 		
-	var inventory := get_component(&"inventory") as InventoryComponent
+	var inventory := get_component(&"base:inventory") as InventoryComponent
 	if inventory:
 		inventory.item_removed.connect(_on_item_removed)
 
@@ -30,7 +30,7 @@ func equip(slot: StringName, item: Item) -> bool:
 	if slot not in equippable.slots:
 		return false
 	
-	var inventory = get_component(&"inventory") as InventoryComponent
+	var inventory = get_component(&"base:inventory") as InventoryComponent
 	if not inventory:
 		return false
 		

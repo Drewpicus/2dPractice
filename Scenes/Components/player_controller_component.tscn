@@ -5,6 +5,7 @@
 
 [node name="PlayerControllerComponent" type="Node2D" unique_id=31185465]
 script = ExtResource("1_sikvh")
+component_id = &"base:player_controller"
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1452244776]
 script = ExtResource("2_ws87e")

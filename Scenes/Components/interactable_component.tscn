@@ -4,6 +4,7 @@
 
 [node name="InteractableComponent" type="Node2D" unique_id=679915086]
 script = ExtResource("1_m5r35")
+component_id = &"base:interactable"
 
 [node name="Area2D" type="Area2D" parent="." unique_id=640174719]
 

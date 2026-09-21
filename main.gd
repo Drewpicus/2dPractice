@@ -7,7 +7,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			print("Couldn't find Goblin")
 			return
 		
-		var inventory := goblin.get_component(&"inventory") as InventoryComponent
+		var inventory := goblin.get_component(&"base:inventory") as InventoryComponent
 		if not inventory:
 			print("Goblin has no inventory")
 			return

@@ -28,10 +28,10 @@ static func _is_valid_part(part: String) -> bool:
 	if part.is_empty():
 		return false
 	
-	for char in part:
-		if not (char >= "a" and char <= "z"
-		or char >= "0" and char <= "9"
-		or char == "_"
-		or char == "-"):
+	for character in part:
+		if not (character >= "a" and character <= "z"
+		or character >= "0" and character <= "9"
+		or character == "_"
+		or character == "-"):
 			return false
 	return true

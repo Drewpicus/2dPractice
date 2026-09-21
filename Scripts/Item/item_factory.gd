@@ -6,7 +6,7 @@ static func build(definition: ItemDefinition) -> Item:
 		return null
 	
 	if not GameID.is_valid(definition.item_id):
-		push_error("Invalid EItemDefinition ID: %s" % definition.item_id)
+		push_error("Invalid ItemDefinition ID: %s" % definition.item_id)
 		return null
 
 

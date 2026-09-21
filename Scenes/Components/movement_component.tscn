@@ -4,3 +4,4 @@
 
 [node name="MovementComponent" type="Node" unique_id=2084706374]
 script = ExtResource("1_2tsb6")
+component_id = &"base:movement"
