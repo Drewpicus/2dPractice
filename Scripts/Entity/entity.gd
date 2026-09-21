@@ -1,6 +1,7 @@
 extends CharacterBody2D
 class_name Entity
 
+var entity_id: StringName
 @onready var collision: CollisionShape2D = $CollisionShape2D
 @onready var components_folder = $Components
 

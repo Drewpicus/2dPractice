@@ -6,6 +6,7 @@ const ENTITY_SCENE: PackedScene = preload("res://Scenes/entity.tscn")
 static func build(entity: EntityDefinition) -> Entity:
 	var new_entity := ENTITY_SCENE.instantiate() as Entity
 	
+	new_entity.entity_id = entity.entity_id
 	new_entity.name = entity.entity_name
 	new_entity.get_node("Sprite2D").texture = entity.sprite
 	if entity.collision_shape:

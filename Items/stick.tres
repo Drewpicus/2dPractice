@@ -15,6 +15,7 @@ metadata/_custom_type_script = "uid://bhd5ft55pgo22"
 [resource]
 resource_name = "Stick"
 script = ExtResource("2_2fjkh")
+item_id = &"stick"
 item_name = "Stick"
 sprite = ExtResource("4_s6gmk")
 components = Array[ExtResource("1_ce5rc")]([SubResource("Resource_ce5rc")])

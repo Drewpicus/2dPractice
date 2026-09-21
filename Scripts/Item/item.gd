@@ -1,6 +1,7 @@
 extends Resource
 class_name Item
 
+var item_id: StringName
 var item_name: String
 var sprite: Texture2D
 var definition: ItemDefinition
