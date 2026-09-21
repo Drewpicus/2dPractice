@@ -7,4 +7,4 @@ class_name InfoComponent
 @export_multiline() var description: String
 
 func get_interaction_suggestions() -> Array[StringName]:
-	return [&"inspect"]
+	return [&"base:inspect"]

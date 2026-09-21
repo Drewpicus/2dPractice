@@ -42,8 +42,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			interaction_menu.show_interactions(visible_interactions,root_entity,target)
 	if event.is_action_pressed("select"):
 		interaction_menu._on_empty_pressed()
-	_quick_action(event,"quick_attack",&"base:health",&"attack")
-	_quick_action(event,"quick_inspect",&"base:info",&"inspect",_get_entity_under_mouse(false))
+	_quick_action(event,"quick_attack",&"base:health",&"base:attack")
+	_quick_action(event,"quick_inspect",&"base:info",&"base:inspect",_get_entity_under_mouse(false))
 
 func _quick_action(event: InputEvent, input: StringName, component: StringName, interaction: StringName, target: Variant = _get_entity_under_mouse()):
 	if event.is_action_pressed(input):

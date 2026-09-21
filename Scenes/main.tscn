@@ -158,7 +158,7 @@ shape = SubResource("CircleShape2D_d13ii")
 max_health = 5
 
 [node name="CapabilityComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=497487874 instance=ExtResource("13_neg2b")]
-capabilities = Array[StringName]([&"possessive"])
+capabilities = [&"base:possessive"]
 
 [node name="InfoComponent" parent="GameWorld/Entities/Goblin/Components" unique_id=772125187 instance=ExtResource("5_cbgmd")]
 description = "A nice guy, really just a nice green fellow."

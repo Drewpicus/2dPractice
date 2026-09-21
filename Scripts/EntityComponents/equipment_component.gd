@@ -23,7 +23,7 @@ func equip(slot: StringName, item: Item) -> bool:
 	if slot not in slots:
 		return false
 	
-	var equippable = item.get_component(&"equippable") as EquippableItemComponent
+	var equippable = item.get_component(&"base:equippable") as EquippableItemComponent
 	if not equippable:
 		return false
 	

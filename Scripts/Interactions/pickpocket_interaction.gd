@@ -2,7 +2,7 @@ extends Interaction
 class_name PickpocketInteraction
 
 func _init() -> void:
-	interaction_id = &"pickpocket"
+	interaction_id = &"base:pickpocket"
 	interaction_name = "Pickpocket"
 
 func can_perform(_interactor: Entity, _target: Entity) -> bool:

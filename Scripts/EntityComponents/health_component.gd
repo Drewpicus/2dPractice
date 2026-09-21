@@ -96,4 +96,4 @@ func is_full_health() -> bool:
 
 ##This component allows the Entity to be able to be attacked
 func get_interaction_suggestions() -> Array[StringName]:
-	return [&"attack"]
+	return [&"base:attack"]

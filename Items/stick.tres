@@ -6,9 +6,9 @@
 
 [sub_resource type="Resource" id="Resource_ce5rc"]
 script = ExtResource("1_ce5rc")
-component_id = &"equippable"
+component_id = &"base:equippable"
 parameters = Dictionary[StringName, Variant]({
-&"slots": [&"mainhand", &"offhand"]
+&"slots": [&"mainhand", &"offhand", &"asshole"]
 })
 metadata/_custom_type_script = "uid://bhd5ft55pgo22"
 

@@ -14,13 +14,15 @@ class_name CapabilityComponent
 func has_capability(capability: StringName) -> bool:
 	return capability in capabilities
 
-func add_capability(capability: StringName) -> void:
-	if capability.is_empty():
-		return
-	if capability in capabilities:
+func add_capability(capability_id: StringName) -> void:
+	if not GameID.is_valid(capability_id):
+		push_error("Invalid capability ID: %s" % capability_id)
 		return
 
-	capabilities.append(capability)
+	if capability_id in capabilities:
+		return
+
+	capabilities.append(capability_id)
 
 func remove_capability(capability: StringName) -> void:
 	capabilities.erase(capability)

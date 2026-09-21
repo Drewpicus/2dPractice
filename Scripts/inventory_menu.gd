@@ -138,7 +138,7 @@ func _rebuild_actions() -> void:
 	if not _viewer_equipment:
 		return
 
-	var equippable := _selected_item.get_component(&"equippable") as EquippableItemComponent
+	var equippable := _selected_item.get_component(&"base:equippable") as EquippableItemComponent
 
 	if not equippable:
 		return

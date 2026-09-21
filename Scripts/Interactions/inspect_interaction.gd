@@ -2,7 +2,7 @@ extends Interaction
 class_name InspectInteraction
 
 func _init() -> void:
-	interaction_id = &"inspect"
+	interaction_id = &"base:inspect"
 	interaction_name = "Inspect"
 
 func can_perform(_interactor: Entity, _target: Entity) -> bool:
