@@ -27,7 +27,7 @@ metadata/_custom_type_script = "uid://ct7ynu8lawguy"
 
 [resource]
 script = ExtResource("1_plt2h")
-entity_id = &"goblin_corpse"
+entity_id = &"base:goblin_corpse"
 entity_name = "Goblin Corpse"
 sprite = ExtResource("2_46k4g")
 collision_shape = SubResource("CircleShape2D_dboa7")

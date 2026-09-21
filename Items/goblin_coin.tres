@@ -6,7 +6,7 @@
 
 [resource]
 script = ExtResource("2_e1353")
-item_id = &"goblin_coin"
+item_id = &"base:goblin_coin"
 item_name = "Goblin Coin"
 sprite = ExtResource("4_0imyr")
 metadata/_custom_type_script = "uid://bu0e3fksd35vt"

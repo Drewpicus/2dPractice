@@ -3,20 +3,27 @@ class_name EntityFactory
 
 const ENTITY_SCENE: PackedScene = preload("res://Scenes/entity.tscn")
 
-static func build(entity: EntityDefinition) -> Entity:
-	var new_entity := ENTITY_SCENE.instantiate() as Entity
+static func build(definition: EntityDefinition) -> Entity:
+	if not definition:
+		return null
 	
-	new_entity.entity_id = entity.entity_id
-	new_entity.name = entity.entity_name
-	new_entity.get_node("Sprite2D").texture = entity.sprite
-	if entity.collision_shape:
-		new_entity.get_node("CollisionShape2D").shape = entity.collision_shape.duplicate()
-	new_entity.solid = entity.solid
+	if not GameID.is_valid(definition.entity_id):
+		push_error("Invalid EntityDefinition ID: %s" % definition.entity_id)
+		return null
 	
-	for component in entity.components:
-		new_entity.add_component(component.component_id,component.parameters)
+	var entity := ENTITY_SCENE.instantiate() as Entity
 	
-	return new_entity
+	entity.entity_id = definition.entity_id
+	entity.name = definition.entity_name
+	entity.get_node("Sprite2D").texture = definition.sprite
+	if definition.collision_shape:
+		entity.get_node("CollisionShape2D").shape = definition.collision_shape.duplicate()
+	entity.solid = definition.solid
+	
+	for component in definition.components:
+		entity.add_component(component.component_id,component.parameters)
+	
+	return entity
 
 static func spawn(entity: EntityDefinition, global_position: Vector2, parent: Node) -> Entity:
 	var new_entity = build(entity) as Entity

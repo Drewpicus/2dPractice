@@ -2,6 +2,14 @@ extends RefCounted
 class_name ItemFactory
 
 static func build(definition: ItemDefinition) -> Item:
+	if not definition:
+		return null
+	
+	if not GameID.is_valid(definition.item_id):
+		push_error("Invalid EItemDefinition ID: %s" % definition.item_id)
+		return null
+
+
 	var item := Item.new()
 	
 	item.item_id = definition.item_id
