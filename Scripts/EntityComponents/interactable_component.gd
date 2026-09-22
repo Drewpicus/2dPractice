@@ -12,10 +12,7 @@ func get_interactions(_interactor: Entity) -> Array[Interaction]:
 	var suggestion_ids: Dictionary = {}
 	var interactions: Array[Interaction] = []
 	
-	for component in root_entity.components_folder.get_children():
-		if not component is EntityComponent:
-			continue
-		
+	for component in root_entity.get_components():
 		for interaction_id in component.get_interaction_suggestions():
 			suggestion_ids[interaction_id] = true
 	

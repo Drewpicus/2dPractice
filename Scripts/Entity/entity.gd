@@ -3,10 +3,10 @@ class_name Entity
 
 var entity_id: StringName
 @onready var collision: CollisionShape2D = $CollisionShape2D
-@onready var components_folder = $Components
+var components_folder: Node
 
 var solid: bool = true
-var components: Array
+var _components: Dictionary[StringName, EntityComponent] = {}
 
 func _ready() -> void:
 	var health_component := get_component(&"base:health") as HealthComponent
@@ -14,6 +14,37 @@ func _ready() -> void:
 		health_component.health_depleted.connect(die)
 	if not solid:
 		collision.disabled = true
+
+##@deprecated will eventually be removed when all registering is procedural
+func _enter_tree() -> void:
+	var folder := get_node_or_null("Components")
+
+	if not folder:
+		return
+
+	for child in folder.get_children():
+		if child is EntityComponent:
+			_register_component(child)
+
+func _register_component(component: EntityComponent) -> bool:
+	if not component:
+		return false
+	
+	var component_id := component.component_id
+	
+	if not GameID.is_valid(component_id):
+		push_error("Invalid EntityComponent ID: %s" % component)
+		return false
+	
+	if _components.has(component_id):
+		if _components[component_id] == component:
+			return true
+			
+		push_error("Entity already has an EntityComponent with ID: %s" % component_id)
+		return false
+	
+	_components[component_id] = component
+	return true
 
 func die() -> void:
 	var remains_component = get_component(&"base:remains")
@@ -56,6 +87,10 @@ func add_component(component_id:StringName,parameters:Dictionary={}) -> EntityCo
 		if key in new_component:
 			new_component.set(key, parameters[key])
 	
+	if not _register_component(new_component):
+		new_component.free()
+		return null
+	
 	folder.add_child(new_component)
 	return new_component
 
@@ -65,25 +100,26 @@ func remove_component(component_id: StringName) -> void:
 
 	if not component:
 		return
-
+	
+	_components.erase(component_id)
 	component.queue_free()
 
 ##Returns true if the Entity has the given component
 func has_component(component_id: StringName) -> bool:
-	return get_component(component_id) != null
+	return _components.has(component_id)
 
 ##Returns Component Node of a given name if an Entity has it, otherwise returns null
 func get_component(component_id: StringName) -> EntityComponent:
-	var folder := _get_components_folder()
+	return _components.get(component_id)
 
-	if not folder:
-		return null
-
-	for child in folder.get_children():
-		if child is EntityComponent and child.component_id == component_id:
-			return child
-
-	return null
+##Returns Array of EntityComponents of the entity
+func get_components() -> Array[EntityComponent]:
+	var result : Array[EntityComponent] = []
+	
+	for component in _components.values():
+		result.append(component)
+	
+	return result
 
 ##Sets a collision shape to match with the Entity's
 func apply_entity_collision_to(target: CollisionShape2D) -> void:
