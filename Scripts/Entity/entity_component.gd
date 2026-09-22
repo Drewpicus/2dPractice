@@ -23,6 +23,7 @@ func _clear_owner() -> void:
 		if root_entity.component_removing.is_connected(_handle_component_removing):
 			root_entity.component_removing.disconnect(_handle_component_removing)
 
+	_sibling_watchers.clear()
 	root_entity = null
 
 ## Called when this component is added to an Entity.
@@ -41,37 +42,37 @@ func on_sibling_added(_component_id: StringName,_component: EntityComponent) -> 
 func on_sibling_removing(_component_id: StringName,_component: EntityComponent) -> void:
 	pass
 
-func watch_sibling(component_id: StringName, callback: Callable) -> void:
+func watch_sibling(_component_id: StringName, callback: Callable) -> void:
 	if not callback.is_valid():
 		return
 
-	if not _sibling_watchers.has(component_id):
-		_sibling_watchers[component_id] = []
+	if not _sibling_watchers.has(_component_id):
+		_sibling_watchers[_component_id] = []
 
-	if callback not in _sibling_watchers[component_id]:
-		_sibling_watchers[component_id].append(callback)
+	if callback not in _sibling_watchers[_component_id]:
+		_sibling_watchers[_component_id].append(callback)
 
-	callback.call(get_component(component_id))
+	callback.call(get_component(_component_id))
 
 func _handle_component_added(_component_id: StringName,component: EntityComponent) -> void:
 	if component == self:
 		return
 	
-	_notify_sibling_watchers(component_id, component)
+	_notify_sibling_watchers(_component_id, component)
 	on_sibling_added(_component_id, component)
 
 func _handle_component_removing(_component_id: StringName,component: EntityComponent) -> void:
 	if component == self:
 		return
 	
-	_notify_sibling_watchers(component_id, null)
+	_notify_sibling_watchers(_component_id, null)
 	on_sibling_removing(_component_id, component)
 
-func _notify_sibling_watchers(component_id: StringName,component: EntityComponent) -> void:
-	if not _sibling_watchers.has(component_id):
+func _notify_sibling_watchers(_component_id: StringName,component: EntityComponent) -> void:
+	if not _sibling_watchers.has(_component_id):
 		return
 
-	for callback in _sibling_watchers[component_id]:
+	for callback in _sibling_watchers[_component_id]:
 		callback.call(component)
 
 func get_component(_component_id: StringName) -> EntityComponent:
