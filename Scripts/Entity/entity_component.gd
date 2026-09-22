@@ -3,9 +3,21 @@ class_name EntityComponent
 
 @export var component_id: StringName
 
-@onready var root_entity: Entity = Entity.find_entity(self)
+var root_entity: Entity
 
-func get_component(component: StringName) -> Node:
+func _set_owner(owner: Entity) -> void:
+	root_entity = owner
+
+func _clear_owner() -> void:
+	root_entity = null
+
+func on_added() -> void:
+	pass
+
+func on_removing() -> void:
+	pass
+
+func get_component(component: StringName) -> EntityComponent:
 	if root_entity == null:
 		return null
 

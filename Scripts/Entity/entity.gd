@@ -44,6 +44,8 @@ func _register_component(component: EntityComponent) -> bool:
 		return false
 	
 	_components[component_id] = component
+	component._set_owner(self)
+	component.on_added()
 	return true
 
 func die() -> void:
@@ -90,7 +92,7 @@ func add_component(component_id:StringName,parameters:Dictionary={}) -> EntityCo
 	if not _register_component(new_component):
 		new_component.free()
 		return null
-	
+
 	folder.add_child(new_component)
 	return new_component
 
@@ -100,8 +102,10 @@ func remove_component(component_id: StringName) -> void:
 
 	if not component:
 		return
-	
+		
+	component.on_removing()
 	_components.erase(component_id)
+	component._clear_owner()
 	component.queue_free()
 
 ##Returns true if the Entity has the given component
