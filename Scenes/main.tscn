@@ -59,6 +59,7 @@ shape = SubResource("CircleShape2D_0xm2m")
 
 [node name="PlayerControllerComponent" type="Node2D" parent="GameWorld/Entities/Player/Components" unique_id=31185465]
 script = ExtResource("3_3pmx8")
+component_id = &"base:player_controller"
 
 [node name="Camera2D" type="Camera2D" parent="GameWorld/Entities/Player/Components/PlayerControllerComponent" unique_id=1452244776]
 script = ExtResource("4_u50mg")

@@ -5,16 +5,21 @@ var item_id: StringName
 var item_name: String
 var sprite: Texture2D
 var definition: ItemDefinition
-var components: Array[ItemComponent]
+var _components: Dictionary[StringName, ItemComponent] = {}
 
-func get_component(id: StringName) -> ItemComponent:
-	for component in components:
-		if component and component.get_id() == id:
-			return component
-	return null
+func get_component(component_id: StringName) -> ItemComponent:
+	return _components.get(component_id)
 
-func has_component(id: StringName) -> bool:
-	return get_component(id) != null
+func get_components() -> Array[ItemComponent]:
+	var result: Array[ItemComponent] = []
+
+	for component in _components.values():
+		result.append(component)
+
+	return result
+
+func has_component(component_id: StringName) -> bool:
+	return _components.has(component_id)
 
 func add_component(component_id: StringName, parameters: Dictionary = {}) -> ItemComponent:
 	if not GameID.is_valid(component_id):
@@ -39,14 +44,39 @@ func add_component(component_id: StringName, parameters: Dictionary = {}) -> Ite
 		if key in new_component:
 			new_component.set(key, parameters[key])
 
-	components.append(new_component)
+	if not _register_component(new_component):
+		return null
 
 	return new_component
 
-func remove_component(id: StringName) -> ItemComponent:
-	var component := get_component(id)
+func remove_component(component_id: StringName) -> ItemComponent:
+	var component := get_component(component_id)
+
 	if not component:
 		return null
-	
-	components.erase(component)
+
+	_components.erase(component_id)
 	return component
+
+func _register_component(component: ItemComponent) -> bool:
+	if not component:
+		return false
+
+	var component_id := component.component_id
+
+	if not GameID.is_valid(component_id):
+		push_error("Invalid ItemComponent ID: %s" % component_id)
+		return false
+
+	if _components.has(component_id):
+		if _components[component_id] == component:
+			return true
+
+		push_error(
+			"Item already has an ItemComponent with ID: %s"
+			% component_id
+		)
+		return false
+
+	_components[component_id] = component
+	return true

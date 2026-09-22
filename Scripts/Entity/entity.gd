@@ -33,7 +33,7 @@ func _register_component(component: EntityComponent) -> bool:
 	var component_id := component.component_id
 	
 	if not GameID.is_valid(component_id):
-		push_error("Invalid EntityComponent ID: %s" % component)
+		push_error("Invalid EntityComponent ID: %s" % component_id)
 		return false
 	
 	if _components.has(component_id):
