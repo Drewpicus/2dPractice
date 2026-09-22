@@ -89,3 +89,10 @@ func _register_component(component: ItemComponent) -> bool:
 	component_added.emit(component_id, component)
 
 	return true
+
+func dispatch_event(event: GameEvent) -> void:
+	if not event:
+		return
+
+	for component in get_components():
+		component.on_event(event)

@@ -98,3 +98,7 @@ func has_component(target_id: StringName) -> bool:
 
 func get_interaction_suggestions() -> Array[StringName]:
 	return []
+
+## Called when this Entity receives a GameEvent.
+func on_event(_event: GameEvent) -> void:
+	pass

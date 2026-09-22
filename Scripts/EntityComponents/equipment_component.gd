@@ -74,7 +74,3 @@ func _on_item_removed(item: Item) -> void:
 	for slot in equipment.keys():
 		if item == equipment.get(slot) as Item:
 			unequip(slot)
-
-## Called when this Entity receives a GameEvent.
-func on_event(_event: GameEvent) -> void:
-	pass

@@ -160,3 +160,10 @@ func _get_components_folder() -> Node:
 		components_folder = get_node_or_null("Components")
 
 	return components_folder
+
+func dispatch_event(event: GameEvent) -> void:
+	if not event:
+		return
+
+	for component in get_components():
+		component.on_event(event)
