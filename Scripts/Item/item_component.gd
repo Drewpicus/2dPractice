@@ -95,3 +95,7 @@ func has_component(target_id: StringName) -> bool:
 		return false
 
 	return root_item.has_component(target_id)
+
+## Called when this Item receives a GameEvent.
+func on_event(_event: GameEvent) -> void:
+	pass
