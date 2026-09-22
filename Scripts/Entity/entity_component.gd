@@ -5,6 +5,7 @@ class_name EntityComponent
 
 var root_entity: Entity
 
+
 func _set_owner(owner: Entity) -> void:
 	root_entity = owner
 
@@ -13,7 +14,6 @@ func _set_owner(owner: Entity) -> void:
 
 	if not root_entity.component_removing.is_connected(_handle_component_removing):
 		root_entity.component_removing.connect(_handle_component_removing)
-
 
 func _clear_owner() -> void:
 	if root_entity:
@@ -34,25 +34,24 @@ func on_removing() -> void:
 	pass
 
 ## Called when another component is added to the same Entity.
-func on_this_component_added(_component_id: StringName,_component: EntityComponent) -> void:
+func on_sibling_added(_component_id: StringName,_component: EntityComponent) -> void:
 	pass
 
 ## Called just before another component is removed from the same Entity.
-func on_this_component_removing(_component_id: StringName,_component: EntityComponent) -> void:
+func on_sibling_removing(_component_id: StringName,_component: EntityComponent) -> void:
 	pass
 
 func _handle_component_added(component_id: StringName,component: EntityComponent) -> void:
 	if component == self:
 		return
 
-	on_other_component_added(component_id, component)
+	on_sibling_added(component_id, component)
 
 func _handle_component_removing(component_id: StringName,component: EntityComponent) -> void:
 	if component == self:
 		return
 
-	on_other_component_removing(component_id, component)
-
+	on_sibling_removing(component_id, component)
 
 func get_component(component_id: StringName) -> EntityComponent:
 	if root_entity == null:
@@ -60,13 +59,11 @@ func get_component(component_id: StringName) -> EntityComponent:
 
 	return root_entity.get_component(component_id)
 
-
 func has_component(component_id: StringName) -> bool:
 	if root_entity == null:
 		return false
 
 	return root_entity.has_component(component_id)
-
 
 func get_interaction_suggestions() -> Array[StringName]:
 	return []

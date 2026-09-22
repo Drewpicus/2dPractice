@@ -85,8 +85,6 @@ base_strength = 1.0
 [node name="CapabilityComponent" parent="GameWorld/Entities/Player/Components" unique_id=2138748879 instance=ExtResource("13_neg2b")]
 
 [node name="EquipmentComponent" parent="GameWorld/Entities/Player/Components" unique_id=1165157158 instance=ExtResource("14_r33sp")]
-slots = null
-use_default_slots = null
 
 [node name="Tree" type="CharacterBody2D" parent="GameWorld/Entities" unique_id=834797728]
 position = Vector2(216, -131)
