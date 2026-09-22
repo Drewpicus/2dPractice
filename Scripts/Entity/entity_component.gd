@@ -102,3 +102,7 @@ func get_interaction_suggestions() -> Array[StringName]:
 ## Called when this Entity receives a GameEvent.
 func on_event(_event: GameEvent) -> void:
 	pass
+
+## Called when this owner is resolving a GameResolution.
+func on_resolution(_resolution: GameResolution) -> void:
+	pass

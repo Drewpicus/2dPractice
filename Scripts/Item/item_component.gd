@@ -99,3 +99,7 @@ func has_component(target_id: StringName) -> bool:
 ## Called when this Item receives a GameEvent.
 func on_event(_event: GameEvent) -> void:
 	pass
+
+## Called when this owner is resolving a GameResolution.
+func on_resolution(_resolution: GameResolution) -> void:
+	pass

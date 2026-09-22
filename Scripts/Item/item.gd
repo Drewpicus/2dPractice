@@ -96,3 +96,12 @@ func dispatch_event(event: GameEvent) -> void:
 
 	for component in get_components():
 		component.on_event(event)
+
+func resolve_event(resolution: GameResolution) -> GameResolution:
+	if not resolution:
+		return null
+
+	for component in get_components():
+		component.on_resolution(resolution)
+
+	return resolution
