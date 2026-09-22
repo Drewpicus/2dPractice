@@ -53,6 +53,15 @@ func watch_sibling(sibling_id: StringName, callback: Callable) -> void:
 
 	callback.call(get_component(sibling_id))
 
+func unwatch_sibling(sibling_id: StringName, callback: Callable) -> void:
+	if not _sibling_watchers.has(sibling_id):
+		return
+
+	_sibling_watchers[sibling_id].erase(callback)
+
+	if _sibling_watchers[sibling_id].is_empty():
+		_sibling_watchers.erase(sibling_id)
+
 func _handle_component_added(target_id: StringName,component: ItemComponent) -> void:
 	if component == self:
 		return
@@ -65,7 +74,7 @@ func _handle_component_removing(target_id: StringName,component: ItemComponent) 
 	if component == self:
 		return
 
-	_notify_sibling_watchers(target_id, component)
+	_notify_sibling_watchers(target_id, null)
 	on_sibling_removing(target_id, component)
 
 func _notify_sibling_watchers(target_id: StringName,component: ItemComponent) -> void:
