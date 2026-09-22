@@ -8,6 +8,9 @@ var components_folder: Node
 var solid: bool = true
 var _components: Dictionary[StringName, EntityComponent] = {}
 
+signal component_added(component_id: StringName, component: EntityComponent)
+signal component_removing(component_id: StringName, component: EntityComponent)
+
 func _ready() -> void:
 	var health_component := get_component(&"base:health") as HealthComponent
 	if health_component:
@@ -46,6 +49,7 @@ func _register_component(component: EntityComponent) -> bool:
 	_components[component_id] = component
 	component._set_owner(self)
 	component.on_added()
+	component_added.emit(component_id, component)
 	return true
 
 func die() -> void:
@@ -104,6 +108,7 @@ func remove_component(component_id: StringName) -> void:
 		return
 		
 	component.on_removing()
+	component_removing.emit(component_id, component)
 	_components.erase(component_id)
 	component._clear_owner()
 	component.queue_free()

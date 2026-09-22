@@ -15,10 +15,30 @@ func on_added() -> void:
 			if slot not in slots:
 				slots.append(slot)
 
+	if not root_entity.component_added.is_connected(_on_component_added):
+		root_entity.component_added.connect(_on_component_added)
+
+	if not root_entity.component_removing.is_connected(_on_component_removing):
+		root_entity.component_removing.connect(_on_component_removing)
+
 	_set_inventory(get_component(&"base:inventory") as InventoryComponent)
 
 func on_removing() -> void:
+	if root_entity.component_added.is_connected(_on_component_added):
+		root_entity.component_added.disconnect(_on_component_added)
+
+	if root_entity.component_removing.is_connected(_on_component_removing):
+		root_entity.component_removing.disconnect(_on_component_removing)
+
 	_set_inventory(null)
+
+func _on_component_added(component_id: StringName,component: EntityComponent) -> void:
+	if component_id == &"base:inventory":
+		_set_inventory(component as InventoryComponent)
+
+func _on_component_removing(component_id: StringName,component: EntityComponent) -> void:
+	if component_id == &"base:inventory" and component == _inventory:
+		_set_inventory(null)
 
 func _set_inventory(inventory: InventoryComponent) -> void:
 	if _inventory == inventory:
