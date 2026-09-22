@@ -6,8 +6,8 @@ class_name EntityComponent
 var root_entity: Entity
 var _sibling_watchers: Dictionary[StringName, Array] = {}
 
-func _set_owner(owner: Entity) -> void:
-	root_entity = owner
+func _set_owner(entity: Entity) -> void:
+	root_entity = entity
 
 	if not root_entity.component_added.is_connected(_handle_component_added):
 		root_entity.component_added.connect(_handle_component_added)
@@ -42,50 +42,50 @@ func on_sibling_added(_component_id: StringName,_component: EntityComponent) -> 
 func on_sibling_removing(_component_id: StringName,_component: EntityComponent) -> void:
 	pass
 
-func watch_sibling(_component_id: StringName, callback: Callable) -> void:
+func watch_sibling(sibling_id: StringName, callback: Callable) -> void:
 	if not callback.is_valid():
 		return
 
-	if not _sibling_watchers.has(_component_id):
-		_sibling_watchers[_component_id] = []
+	if not _sibling_watchers.has(sibling_id):
+		_sibling_watchers[sibling_id] = []
 
-	if callback not in _sibling_watchers[_component_id]:
-		_sibling_watchers[_component_id].append(callback)
+	if callback not in _sibling_watchers[sibling_id]:
+		_sibling_watchers[sibling_id].append(callback)
 
-	callback.call(get_component(_component_id))
+	callback.call(get_component(sibling_id))
 
-func _handle_component_added(_component_id: StringName,component: EntityComponent) -> void:
+func _handle_component_added(target_id: StringName,component: EntityComponent) -> void:
 	if component == self:
 		return
 	
-	_notify_sibling_watchers(_component_id, component)
-	on_sibling_added(_component_id, component)
+	_notify_sibling_watchers(target_id, component)
+	on_sibling_added(target_id, component)
 
-func _handle_component_removing(_component_id: StringName,component: EntityComponent) -> void:
+func _handle_component_removing(target_id: StringName,component: EntityComponent) -> void:
 	if component == self:
 		return
 	
-	_notify_sibling_watchers(_component_id, null)
-	on_sibling_removing(_component_id, component)
+	_notify_sibling_watchers(target_id, null)
+	on_sibling_removing(target_id, component)
 
-func _notify_sibling_watchers(_component_id: StringName,component: EntityComponent) -> void:
-	if not _sibling_watchers.has(_component_id):
+func _notify_sibling_watchers(target_id: StringName,component: EntityComponent) -> void:
+	if not _sibling_watchers.has(target_id):
 		return
 
-	for callback in _sibling_watchers[_component_id]:
+	for callback in _sibling_watchers[target_id]:
 		callback.call(component)
 
-func get_component(_component_id: StringName) -> EntityComponent:
+func get_component(target_id: StringName) -> EntityComponent:
 	if root_entity == null:
 		return null
 
-	return root_entity.get_component(_component_id)
+	return root_entity.get_component(target_id)
 
-func has_component(_component_id: StringName) -> bool:
+func has_component(target_id: StringName) -> bool:
 	if root_entity == null:
 		return false
 
-	return root_entity.has_component(_component_id)
+	return root_entity.has_component(target_id)
 
 func get_interaction_suggestions() -> Array[StringName]:
 	return []
