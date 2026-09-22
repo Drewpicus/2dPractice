@@ -34,24 +34,24 @@ func on_removing() -> void:
 	pass
 
 ## Called when another component is added to the same Entity.
-func on_component_added(_component_id: StringName,_component: EntityComponent) -> void:
+func on_this_component_added(_component_id: StringName,_component: EntityComponent) -> void:
 	pass
 
 ## Called just before another component is removed from the same Entity.
-func on_component_removing(_component_id: StringName,_component: EntityComponent) -> void:
+func on_this_component_removing(_component_id: StringName,_component: EntityComponent) -> void:
 	pass
 
 func _handle_component_added(component_id: StringName,component: EntityComponent) -> void:
 	if component == self:
 		return
 
-	on_component_added(component_id, component)
+	on_other_component_added(component_id, component)
 
 func _handle_component_removing(component_id: StringName,component: EntityComponent) -> void:
 	if component == self:
 		return
 
-	on_component_removing(component_id, component)
+	on_other_component_removing(component_id, component)
 
 
 func get_component(component_id: StringName) -> EntityComponent:

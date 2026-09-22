@@ -9,7 +9,7 @@ var _inventory: InventoryComponent
 
 signal equipment_updated
 
-func on_added() -> void:
+func on_this_component_added() -> void:
 	if use_default_slots:
 		for slot in default_slots:
 			if slot not in slots:
@@ -17,14 +17,14 @@ func on_added() -> void:
 
 	_set_inventory(get_component(&"base:inventory") as InventoryComponent)
 
-func on_removing() -> void:
+func on_this_component_removing() -> void:
 	_set_inventory(null)
 
-func _on_component_added(component_id: StringName,component: EntityComponent) -> void:
+func _on_other_component_added(component_id: StringName,component: EntityComponent) -> void:
 	if component_id == &"base:inventory":
 		_set_inventory(component as InventoryComponent)
 
-func _on_component_removing(component_id: StringName,component: EntityComponent) -> void:
+func _on_other_component_removing(component_id: StringName,component: EntityComponent) -> void:
 	if component_id == &"base:inventory" and component == _inventory:
 		_set_inventory(null)
 
