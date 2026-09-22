@@ -7,6 +7,10 @@ var sprite: Texture2D
 var definition: ItemDefinition
 var _components: Dictionary[StringName, ItemComponent] = {}
 
+signal component_added(component_id: StringName,component: ItemComponent)
+
+signal component_removing(component_id: StringName,component: ItemComponent)
+
 func get_component(component_id: StringName) -> ItemComponent:
 	return _components.get(component_id)
 
@@ -55,7 +59,12 @@ func remove_component(component_id: StringName) -> ItemComponent:
 	if not component:
 		return null
 
+	component_removing.emit(component_id, component)
+	component.on_removing()
+
 	_components.erase(component_id)
+	component._clear_owner()
+
 	return component
 
 func _register_component(component: ItemComponent) -> bool:
@@ -72,11 +81,12 @@ func _register_component(component: ItemComponent) -> bool:
 		if _components[component_id] == component:
 			return true
 
-		push_error(
-			"Item already has an ItemComponent with ID: %s"
-			% component_id
-		)
+		push_error("Item already has an ItemComponent with ID: %s"% component_id)
 		return false
 
 	_components[component_id] = component
+	component._set_owner(self)
+	component.on_added()
+	component_added.emit(component_id, component)
+
 	return true
