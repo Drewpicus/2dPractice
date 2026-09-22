@@ -5,13 +5,15 @@ var movement_component : MovementComponent
 var direction_timer : float = 1.0
 var dir : Vector2 = Vector2.ZERO
 
-func _ready() -> void:
-	movement_component = get_component(&"base:movement")
-	
+func on_added() -> void:
 	dir = new_direction()
-	if not movement_component:
-		return
-	movement_component.speed = 20
+	watch_sibling(&"base:movement", _set_movement_component)
+
+func _set_movement_component(component: MovementComponent) -> void:
+	movement_component = component
+
+	if movement_component:
+		movement_component.speed = 20
 
 func _process(delta: float) -> void:
 	if not movement_component:

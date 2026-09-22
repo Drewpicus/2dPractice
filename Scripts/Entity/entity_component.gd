@@ -4,7 +4,7 @@ class_name EntityComponent
 @export var component_id: StringName
 
 var root_entity: Entity
-
+var _sibling_watchers: Dictionary[StringName, Array] = {}
 
 func _set_owner(owner: Entity) -> void:
 	root_entity = owner
@@ -41,29 +41,50 @@ func on_sibling_added(_component_id: StringName,_component: EntityComponent) -> 
 func on_sibling_removing(_component_id: StringName,_component: EntityComponent) -> void:
 	pass
 
-func _handle_component_added(component_id: StringName,component: EntityComponent) -> void:
-	if component == self:
+func watch_sibling(component_id: StringName, callback: Callable) -> void:
+	if not callback.is_valid():
 		return
 
-	on_sibling_added(component_id, component)
+	if not _sibling_watchers.has(component_id):
+		_sibling_watchers[component_id] = []
 
-func _handle_component_removing(component_id: StringName,component: EntityComponent) -> void:
+	if callback not in _sibling_watchers[component_id]:
+		_sibling_watchers[component_id].append(callback)
+
+	callback.call(get_component(component_id))
+
+func _handle_component_added(_component_id: StringName,component: EntityComponent) -> void:
 	if component == self:
 		return
+	
+	_notify_sibling_watchers(component_id, component)
+	on_sibling_added(_component_id, component)
 
-	on_sibling_removing(component_id, component)
+func _handle_component_removing(_component_id: StringName,component: EntityComponent) -> void:
+	if component == self:
+		return
+	
+	_notify_sibling_watchers(component_id, null)
+	on_sibling_removing(_component_id, component)
 
-func get_component(component_id: StringName) -> EntityComponent:
+func _notify_sibling_watchers(component_id: StringName,component: EntityComponent) -> void:
+	if not _sibling_watchers.has(component_id):
+		return
+
+	for callback in _sibling_watchers[component_id]:
+		callback.call(component)
+
+func get_component(_component_id: StringName) -> EntityComponent:
 	if root_entity == null:
 		return null
 
-	return root_entity.get_component(component_id)
+	return root_entity.get_component(_component_id)
 
-func has_component(component_id: StringName) -> bool:
+func has_component(_component_id: StringName) -> bool:
 	if root_entity == null:
 		return false
 
-	return root_entity.has_component(component_id)
+	return root_entity.has_component(_component_id)
 
 func get_interaction_suggestions() -> Array[StringName]:
 	return []

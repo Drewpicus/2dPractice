@@ -59,9 +59,8 @@ func remove_component(component_id: StringName) -> ItemComponent:
 	if not component:
 		return null
 
-	component_removing.emit(component_id, component)
 	component.on_removing()
-
+	component_removing.emit(component_id, component)
 	_components.erase(component_id)
 	component._clear_owner()
 

@@ -39,26 +39,27 @@ func on_sibling_added(_component_id: StringName,_component: ItemComponent) -> vo
 func on_sibling_removing(_component_id: StringName,_component: ItemComponent) -> void:
 	pass
 
-func _handle_component_added(component_id: StringName,component: ItemComponent) -> void:
+func _handle_component_added(_component_id: StringName,component: ItemComponent) -> void:
 	if component == self:
 		return
 
-	on_sibling_added(component_id, component)
+	on_sibling_added(_component_id, component)
 
-func _handle_component_removing(component_id: StringName,component: ItemComponent) -> void:
+
+func _handle_component_removing(_component_id: StringName,component: ItemComponent) -> void:
 	if component == self:
 		return
 
-	on_sibling_removing(component_id, component)
+	on_sibling_removing(_component_id, component)
 
-func get_component(component_id: StringName) -> ItemComponent:
+func get_component(_component_id: StringName) -> ItemComponent:
 	if root_item == null:
 		return null
 
-	return root_item.get_component(component_id)
+	return root_item.get_component(_component_id)
 
-func has_component(component_id: StringName) -> bool:
+func has_component(_component_id: StringName) -> bool:
 	if root_item == null:
 		return false
 
-	return root_item.has_component(component_id)
+	return root_item.has_component(_component_id)

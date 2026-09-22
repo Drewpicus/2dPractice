@@ -15,18 +15,7 @@ func on_added() -> void:
 			if slot not in slots:
 				slots.append(slot)
 
-	_set_inventory(get_component(&"base:inventory") as InventoryComponent)
-
-func on_removing() -> void:
-	_set_inventory(null)
-
-func on_sibling_added(component_id: StringName,component: EntityComponent) -> void:
-	if component_id == &"base:inventory":
-		_set_inventory(component as InventoryComponent)
-
-func on_sibling_removing(component_id: StringName,component: EntityComponent) -> void:
-	if component_id == &"base:inventory" and component == _inventory:
-		_set_inventory(null)
+	watch_sibling(&"base:inventory", _set_inventory)
 
 func _set_inventory(inventory: InventoryComponent) -> void:
 	if _inventory == inventory:
