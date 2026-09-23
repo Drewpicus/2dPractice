@@ -1,7 +1,7 @@
 extends Resource
 class_name Item
 
-var instance_id: String = RuntimeID.generate()
+var instance_id: String
 var item_id: StringName
 var item_name: String
 var sprite: Texture2D
@@ -11,6 +11,10 @@ var _components: Dictionary[StringName, ItemComponent] = {}
 signal component_added(component_id: StringName,component: ItemComponent)
 
 signal component_removing(component_id: StringName,component: ItemComponent)
+
+func _init() -> void:
+	instance_id = RuntimeObjectRegistry.generate_unique_id()
+	RuntimeObjectRegistry.register(self, instance_id)
 
 func get_component(component_id: StringName) -> ItemComponent:
 	return _components.get(component_id)
@@ -168,6 +172,16 @@ func deserialize_state(state: Dictionary) -> bool:
 		component.deserialize_state(component_states[component_key])
 
 	if state.has("instance_id"):
-		instance_id = String(state["instance_id"])
+		var saved_instance_id := String(state["instance_id"])
+
+		if saved_instance_id != instance_id:
+			if not RuntimeObjectRegistry.reassign(
+				self,
+				instance_id,
+				saved_instance_id
+			):
+				return false
+
+			instance_id = saved_instance_id
 
 	return true

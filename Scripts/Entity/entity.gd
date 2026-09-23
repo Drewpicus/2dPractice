@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name Entity
 
-var instance_id: String = RuntimeID.generate()
+var instance_id: String
 var entity_id: StringName
 @onready var collision: CollisionShape2D = $CollisionShape2D
 var components_folder: Node
@@ -10,6 +10,10 @@ var _components: Dictionary[StringName, EntityComponent] = {}
 
 signal component_added(component_id: StringName, component: EntityComponent)
 signal component_removing(component_id: StringName, component: EntityComponent)
+
+func _init() -> void:
+	instance_id = RuntimeObjectRegistry.generate_unique_id()
+	RuntimeObjectRegistry.register(self, instance_id)
 
 func _ready() -> void:
 	var health_component := get_component(&"base:health") as HealthComponent
@@ -235,7 +239,17 @@ func deserialize_state(state: Dictionary) -> bool:
 		component.deserialize_state(component_states[component_key])
 
 	if state.has("instance_id"):
-		instance_id = String(state["instance_id"])
+		var saved_instance_id := String(state["instance_id"])
+
+		if saved_instance_id != instance_id:
+			if not RuntimeObjectRegistry.reassign(
+				self,
+				instance_id,
+				saved_instance_id
+			):
+				return false
+
+			instance_id = saved_instance_id
 
 	if state.has("position"):
 		var position_data = state["position"]
