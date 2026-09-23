@@ -22,8 +22,7 @@
 		{
 			"component_id": "base:health",
 			"parameters": {
-				"max_health": 5,
-				"health": -1
+				"max_health": 5
 			}
 		},
 		{

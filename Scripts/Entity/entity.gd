@@ -22,17 +22,6 @@ func _ready() -> void:
 	if not solid:
 		collision.disabled = true
 
-##@deprecated will eventually be removed when all registering is procedural
-func _enter_tree() -> void:
-	var folder := get_node_or_null("Components")
-
-	if not folder:
-		return
-
-	for child in folder.get_children():
-		if child is EntityComponent:
-			_register_component(child)
-
 func _register_component(component: EntityComponent) -> bool:
 	if not component:
 		return false
