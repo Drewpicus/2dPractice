@@ -1,0 +1,30 @@
+{
+	"entity_id": "base:tree",
+	"entity_name": "Tree",
+	"sprite": "res://tree.png",
+	"solid": true,
+
+	"collision": {
+		"type": "circle",
+		"radius": 16.0
+	},
+
+	"components": [
+		{
+			"component_id": "base:info",
+			"parameters": {
+				"description": "A tall, beautiful cedar..."
+			}
+		},
+		{
+			"component_id": "base:interactable"
+		},
+		{
+			"component_id": "base:health",
+			"parameters": {
+				"max_health": 3,
+				"health": -1
+			}
+		}
+	]
+}

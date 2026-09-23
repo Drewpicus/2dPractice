@@ -3,6 +3,15 @@ class_name GameWorld
 
 @onready var entities: Node2D = $Entities
 
+static func find_world(node: Node) -> GameWorld:
+	while node != null:
+		if node is GameWorld:
+			return node
+
+		node = node.get_parent()
+
+	return null
+
 func spawn_entity(entity_id: StringName, position: Vector2) -> Entity:
 	var definition := DefinitionRegistry.get_entity(entity_id)
 

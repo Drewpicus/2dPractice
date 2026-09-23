@@ -1,0 +1,62 @@
+{
+	"entity_id": "base:player",
+	"entity_name": "Player",
+	"sprite": "res://reall man.png",
+	"solid": true,
+
+	"collision": {
+		"type": "circle",
+		"radius": 16.0
+	},
+
+	"components": [
+		{
+			"component_id": "base:info",
+			"parameters": {
+				"description": "Your you!"
+			}
+		},
+		{
+			"component_id": "base:interactor",
+			"parameters": {
+				"reach": 64
+			}
+		},
+		{
+			"component_id": "base:interactable"
+		},
+		{
+			"component_id": "base:health",
+			"parameters": {
+				"max_health": 10,
+				"health": -1
+			}
+		},
+		{
+			"component_id": "base:inventory"
+		},
+		{
+			"component_id": "base:equipment",
+			"parameters": {
+				"use_default_slots": true
+			}
+		},
+		{
+			"component_id": "base:player_controller"
+		},
+		{
+			"component_id": "base:movement",
+			"parameters":{
+				"speed": 200
+			}
+		},
+		{
+			"component_id": "base:stat_block",
+			"parameters": {
+				"base_strength": 1,
+				"base_dexterity": 0,
+				"base_wisdom": 0
+			}
+		}
+	]
+}

@@ -11,13 +11,13 @@ func spawn_remains() -> Entity:
 		push_error("Invalid remains ID: %s" % remains_id)
 		return null
 
-	var remains_definition := DefinitionRegistry.get_entity(remains_id)
+	var world := GameWorld.find_world(root_entity)
 
-	if not remains_definition:
-		push_error("No EntityDefinition registered for remains ID: %s" % remains_id)
+	if not world:
+		push_error("Could not find GameWorld for remains spawn.")
 		return null
 
-	var remains_entity := EntityFactory.spawn(remains_definition, root_entity.global_position, root_entity.get_parent())
+	var remains_entity := world.spawn_entity(remains_id, root_entity.global_position)
 
 	if not remains_entity:
 		return null
