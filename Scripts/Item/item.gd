@@ -46,7 +46,8 @@ func add_component(component_id: StringName, parameters: Dictionary = {}) -> Ite
 
 	for key in parameters:
 		if key in new_component:
-			new_component.set(key, parameters[key])
+			var value = ParameterCoercion.coerce_for_property(new_component, key, parameters[key])
+			new_component.set(key, value)
 
 	if not _register_component(new_component):
 		return null

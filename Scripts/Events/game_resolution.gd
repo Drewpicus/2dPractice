@@ -16,7 +16,7 @@ func add_modifier(modifier: ResolutionModifier,source: Object = null) -> bool:
 	if not modifier:
 		return false
 
-	if _applying_modifiers:
+	if resolved or _applying_modifiers:
 		push_error("Cannot add a ResolutionModifier while modifiers are being applied.")
 		return false
 
@@ -28,6 +28,9 @@ func add_modifier(modifier: ResolutionModifier,source: Object = null) -> bool:
 	return true
 
 func apply_modifiers() -> void:
+	if resolved:
+		push_error("GameResolution has already been resolved.")
+		return
 	_modifiers.sort_custom(_sort_modifiers)
 
 	_applying_modifiers = true
