@@ -10,13 +10,19 @@ class_name HealthComponent
 ##Defaults to max health unless a starting health is chosen
 @export var starting_health : int = -1
 
-var health : int:
+var _restoring_state: bool = false
+
+var health: int:
 	set(new_health):
 		var old_health := health
-		health = new_health
-		health = max(health,0)
-		health_changed.emit(new_health)
-		if new_health <= 0 and old_health > 0:
+		health = max(new_health, 0)
+
+		if _restoring_state:
+			return
+
+		health_changed.emit(health)
+
+		if health <= 0 and old_health > 0:
 			health_depleted.emit()
 
 signal health_changed(new_health : int)
@@ -97,3 +103,22 @@ func is_full_health() -> bool:
 ##This component allows the Entity to be able to be attacked
 func get_interaction_suggestions() -> Array[StringName]:
 	return [&"base:attack"]
+
+##This component saves this component's state
+func serialize_state() -> Dictionary:
+	return {
+		"health": health,
+		"max_health": max_health
+	}
+
+##This component loads this component's state quietly
+func deserialize_state(state: Dictionary) -> void:
+	_restoring_state = true
+
+	if state.has("max_health"):
+		max_health = int(state["max_health"])
+
+	if state.has("health"):
+		health = int(state["health"])
+
+	_restoring_state = false
