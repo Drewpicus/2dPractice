@@ -12,7 +12,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			print("Goblin has no inventory")
 			return
 		
-		var stick_definition := preload("res://Items/stick.tres") as ItemDefinition
+		var stick_definition := DefinitionLoader.load_item_definition("res://Items/stick.json")
 		var stick := ItemFactory.build(stick_definition)
 		
 		var goblin_coin_definition := preload("res://Items/goblin_coin.tres") as ItemDefinition

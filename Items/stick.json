@@ -1,0 +1,17 @@
+{
+	"item_id": "base:stick",
+	"item_name": "Stick",
+	"sprite": "res://stick.png",
+	"components": [
+		{
+			"component_id": "base:equippable",
+			"parameters": {
+				"slots": [
+					"mainhand",
+					"offhand",
+					"asshole"
+				]
+			}
+		}
+	]
+}
