@@ -183,3 +183,11 @@ func resolve(resolution: GameResolution) -> GameResolution:
 	resolution.apply_modifiers()
 
 	return resolution
+
+func serialize_state() -> Dictionary:
+	var component_states := {}
+
+	for component in get_components():
+		component_states[String(component.component_id)] = component.serialize_state()
+
+	return {"instance_id": instance_id, "entity_id": String(entity_id), "position": [global_position.x, global_position.y], "components": component_states}
