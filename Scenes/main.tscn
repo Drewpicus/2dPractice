@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://38tado1b7n85" path="res://main.gd" id="1_ee4r6"]
 [ext_resource type="Script" uid="uid://y87ikykg53o3" path="res://Scripts/Entity/entity.gd" id="2_3pmx8"]
 [ext_resource type="Texture2D" uid="uid://b57wr2y5wmhwr" path="res://real man.png" id="2_gt3je"]
+[ext_resource type="Script" uid="uid://8557yngorrft" path="res://Scripts/game_world.gd" id="2_u50mg"]
 [ext_resource type="Script" uid="uid://drf25g4krf434" path="res://Scripts/EntityComponents/player_controller_component.gd" id="3_3pmx8"]
 [ext_resource type="Script" uid="uid://b3utf12ccv8b6" path="res://Scripts/player_camera.gd" id="4_u50mg"]
 [ext_resource type="PackedScene" uid="uid://c8n5ywuq4wexl" path="res://Scenes/Components/info_component.tscn" id="5_cbgmd"]
@@ -39,6 +40,7 @@ default_font_size = 25
 script = ExtResource("1_ee4r6")
 
 [node name="GameWorld" type="Node2D" parent="." unique_id=1632414103]
+script = ExtResource("2_u50mg")
 
 [node name="Entities" type="Node2D" parent="GameWorld" unique_id=120306238]
 

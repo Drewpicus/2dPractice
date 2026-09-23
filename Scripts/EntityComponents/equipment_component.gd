@@ -118,10 +118,7 @@ func deserialize_state(state: Dictionary) -> void:
 		var item := RuntimeObjectRegistry.get_item(item_instance_id)
 
 		if not item:
-			push_error(
-				"Could not restore equipped Item instance: %s"
-				% item_instance_id
-			)
+			push_error("Could not restore equipped Item instance: %s" % item_instance_id)
 			continue
 
 		equipment[slot] = item
