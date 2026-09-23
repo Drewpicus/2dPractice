@@ -2,6 +2,7 @@ extends RefCounted
 class_name GameResolution
 
 var resolution_id: StringName
+var resolved: bool = false
 var cancelled: bool = false
 
 var _modifiers: Array[ResolutionModifier] = []
@@ -35,6 +36,7 @@ func apply_modifiers() -> void:
 		modifier.apply(self)
 
 	_applying_modifiers = false
+	resolved = true
 
 
 func _sort_modifiers(a: ResolutionModifier,b: ResolutionModifier) -> bool:

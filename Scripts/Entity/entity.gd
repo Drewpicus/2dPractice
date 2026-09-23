@@ -172,6 +172,10 @@ func resolve(resolution: GameResolution) -> GameResolution:
 	if not resolution:
 		return null
 
+	if resolution.resolved:
+			push_error("Cannot resolve an already-resolved GameResolution.")
+			return resolution
+
 	for component in get_components():
 		component.on_resolution(resolution)
 
