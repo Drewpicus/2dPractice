@@ -1,7 +1,7 @@
 {
 	"entity_id": "base:player",
 	"entity_name": "Player",
-	"sprite": "res://reall man.png",
+	"sprite": "res://real man.png",
 	"solid": true,
 
 	"collision": {

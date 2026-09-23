@@ -1,7 +1,15 @@
 extends Node2D
 
+@onready var game_world: GameWorld = $GameWorld
+
 func _ready() -> void:
 	DefinitionLoader.load_all_definitions()
+	
+	game_world.spawn_entity(&"base:player",Vector2(0, 0))
+	game_world.spawn_entity(&"base:goblin",Vector2(198, 95))
+	game_world.spawn_entity(&"base:rock",Vector2(-250, 152))
+	game_world.spawn_entity(&"base:tree",Vector2(216, -130))
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("test"):

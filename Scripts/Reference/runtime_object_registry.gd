@@ -75,13 +75,13 @@ static func get_object(instance_id: String) -> Object:
 	if not _objects.has(instance_id):
 		return null
 
-	var reference = _objects[instance_id]
+	var obj_reference = _objects[instance_id]
 
-	if not reference:
+	if not obj_reference:
 		_objects.erase(instance_id)
 		return null
 
-	var object = reference.get_ref()
+	var object = obj_reference.get_ref()
 
 	if not object:
 		_objects.erase(instance_id)
