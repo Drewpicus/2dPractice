@@ -1,0 +1,6 @@
+{
+	"item_id": "base:goblin_coin",
+	"item_name": "Goblin Coin",
+	"sprite": "res://goblin coin.png",
+	"components": []
+}

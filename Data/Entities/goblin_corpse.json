@@ -1,0 +1,26 @@
+{
+	"entity_id": "base:goblin_corpse",
+	"entity_name": "Goblin Corpse",
+	"sprite": "res://dead_goblin.png",
+	"solid": true,
+
+	"collision": {
+		"type": "circle",
+		"radius": 16.0
+	},
+
+	"components": [
+		{
+			"component_id": "base:info",
+			"parameters": {
+				"description": "A dead, dead gobby..."
+			}
+		},
+		{
+			"component_id": "base:interactable"
+		},
+		{
+			"component_id": "base:inventory"
+		}
+	]
+}
