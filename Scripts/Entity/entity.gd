@@ -1,10 +1,10 @@
 extends CharacterBody2D
 class_name Entity
 
+var instance_id: String = RuntimeID.generate()
 var entity_id: StringName
 @onready var collision: CollisionShape2D = $CollisionShape2D
 var components_folder: Node
-
 var solid: bool = true
 var _components: Dictionary[StringName, EntityComponent] = {}
 

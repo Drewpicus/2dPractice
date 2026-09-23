@@ -112,3 +112,11 @@ func contribute_modifier(resolution: GameResolution,modifier: ResolutionModifier
 		return false
 
 	return resolution.add_modifier(modifier, self)
+
+## Returns this component's mutable runtime state.
+func serialize_state() -> Dictionary:
+	return {}
+
+## Restores this component's mutable runtime state.
+func deserialize_state(_state: Dictionary) -> void:
+	pass
