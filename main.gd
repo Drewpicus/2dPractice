@@ -1,5 +1,8 @@
 extends Node2D
 
+func _ready() -> void:
+	DefinitionLoader.load_all_definitions()
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("test"):
 		var goblin := get_node_or_null("GameWorld/Entities/Goblin") as Entity
@@ -12,10 +15,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			print("Goblin has no inventory")
 			return
 		
-		var stick_definition := DefinitionLoader.load_item_definition("res://Data/Items/stick.json")
+		var stick_definition := DefinitionRegistry.get_item(&"base:stick")
 		var stick := ItemFactory.build(stick_definition)
 		
-		var goblin_coin_definition := DefinitionLoader.load_item_definition("res://Data/Items/goblin_coin.json")
+		var goblin_coin_definition := DefinitionRegistry.get_item(&"base:goblin_coin")
 		var goblin_coin := ItemFactory.build(goblin_coin_definition)
 		var goblin_coin2 := ItemFactory.build(goblin_coin_definition)
 		

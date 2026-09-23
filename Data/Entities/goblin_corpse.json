@@ -2,7 +2,7 @@
 	"entity_id": "base:goblin_corpse",
 	"entity_name": "Goblin Corpse",
 	"sprite": "res://dead_goblin.png",
-	"solid": true,
+	"solid": false,
 
 	"collision": {
 		"type": "circle",
