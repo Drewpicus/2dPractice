@@ -74,3 +74,54 @@ func _on_item_removed(item: Item) -> void:
 	for slot in equipment.keys():
 		if item == equipment.get(slot) as Item:
 			unequip(slot)
+
+func serialize_state() -> Dictionary:
+	var serialized_slots: Array[String] = []
+
+	for slot in slots:
+		serialized_slots.append(String(slot))
+
+	var serialized_equipment := {}
+
+	for slot in equipment:
+		var item := equipment[slot] as Item
+
+		if item:
+			serialized_equipment[String(slot)] = item.instance_id
+
+	return {
+		"slots": serialized_slots,
+		"equipment": serialized_equipment
+	}
+
+func deserialize_state(state: Dictionary) -> void:
+	if state.has("slots"):
+		var saved_slots = state["slots"]
+
+		if saved_slots is Array:
+			slots.clear()
+
+			for slot_value in saved_slots:
+				slots.append(StringName(slot_value))
+
+	equipment.clear()
+
+	var saved_equipment = state.get("equipment", {})
+
+	if not saved_equipment is Dictionary:
+		push_error("Serialized equipment must be a Dictionary.")
+		return
+
+	for slot_key in saved_equipment:
+		var slot := StringName(slot_key)
+		var item_instance_id := String(saved_equipment[slot_key])
+		var item := RuntimeObjectRegistry.get_item(item_instance_id)
+
+		if not item:
+			push_error(
+				"Could not restore equipped Item instance: %s"
+				% item_instance_id
+			)
+			continue
+
+		equipment[slot] = item
