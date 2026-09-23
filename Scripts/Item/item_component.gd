@@ -103,3 +103,9 @@ func on_event(_event: GameEvent) -> void:
 ## Called when this owner is resolving a GameResolution.
 func on_resolution(_resolution: GameResolution) -> void:
 	pass
+
+func contribute_modifier(resolution: GameResolution,modifier: ResolutionModifier) -> bool:
+	if not resolution or not modifier:
+		return false
+
+	return resolution.add_modifier(modifier, self)
