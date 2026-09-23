@@ -75,3 +75,36 @@ func get_interaction_suggestions() -> Array[StringName]:
 		if capabilities.has_capability(&"base:possessive"):
 			return [&"base:pickpocket"]
 	return [&"base:open_inventory"]
+
+func serialize_state() -> Dictionary:
+	var item_ids: Array[String] = []
+
+	for item in items:
+		if item:
+			item_ids.append(item.instance_id)
+
+	return {
+		"items": item_ids
+	}
+
+func deserialize_state(state: Dictionary) -> void:
+	items.clear()
+
+	var saved_items = state.get("items", [])
+
+	if not saved_items is Array:
+		push_error("Serialized inventory items must be an Array.")
+		return
+
+	for item_id_value in saved_items:
+		var item_id := String(item_id_value)
+		var item := RuntimeObjectRegistry.get_item(item_id)
+
+		if not item:
+			push_error(
+				"Could not restore Inventory item instance: %s"
+				% item_id
+			)
+			continue
+
+		items.append(item)

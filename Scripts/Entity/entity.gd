@@ -239,17 +239,8 @@ func deserialize_state(state: Dictionary) -> bool:
 		component.deserialize_state(component_states[component_key])
 
 	if state.has("instance_id"):
-		var saved_instance_id := String(state["instance_id"])
-
-		if saved_instance_id != instance_id:
-			if not RuntimeObjectRegistry.reassign(
-				self,
-				instance_id,
-				saved_instance_id
-			):
-				return false
-
-			instance_id = saved_instance_id
+		if not restore_instance_id(String(state["instance_id"])):
+			return false
 
 	if state.has("position"):
 		var position_data = state["position"]
@@ -257,4 +248,22 @@ func deserialize_state(state: Dictionary) -> bool:
 		if position_data is Array and position_data.size() == 2:
 			global_position = Vector2(float(position_data[0]),float(position_data[1]))
 
+	return true
+
+func restore_instance_id(saved_instance_id: String) -> bool:
+	if saved_instance_id.is_empty():
+		push_error("Cannot restore an empty runtime instance ID.")
+		return false
+
+	if saved_instance_id == instance_id:
+		return true
+
+	if not RuntimeObjectRegistry.reassign(
+		self,
+		instance_id,
+		saved_instance_id
+	):
+		return false
+
+	instance_id = saved_instance_id
 	return true
