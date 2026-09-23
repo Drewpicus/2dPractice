@@ -191,3 +191,56 @@ func serialize_state() -> Dictionary:
 		component_states[String(component.component_id)] = component.serialize_state()
 
 	return {"instance_id": instance_id, "entity_id": String(entity_id), "position": [global_position.x, global_position.y], "components": component_states}
+
+func deserialize_state(state: Dictionary) -> bool:
+	if state.has("entity_id"):
+		var saved_entity_id := StringName(state["entity_id"])
+
+		if saved_entity_id != entity_id:
+			push_error("Entity state ID mismatch. Expected %s, received %s." % [entity_id, saved_entity_id])
+			return false
+
+	var component_states = state.get("components", {})
+
+	if not component_states is Dictionary:
+		push_error("Serialized Entity components must be a Dictionary.")
+		return false
+
+	for component_key in component_states:
+		var component_id := StringName(component_key)
+
+		if not GameID.is_valid(component_id):
+			push_error("Invalid saved EntityComponent ID: %s" % component_id)
+			return false
+
+		if not component_states[component_key] is Dictionary:
+			push_error("Saved state for EntityComponent %s must be a Dictionary." % component_id)
+			return false
+
+	for component in get_components():
+		if not component_states.has(String(component.component_id)):
+			remove_component(component.component_id)
+
+	for component_key in component_states:
+		var component_id := StringName(component_key)
+
+		if not has_component(component_id):
+			var added_component := add_component(component_id)
+
+			if not added_component:
+				push_error("Could not restore EntityComponent: %s" % component_id)
+				return false
+
+		var component := get_component(component_id)
+		component.deserialize_state(component_states[component_key])
+
+	if state.has("instance_id"):
+		instance_id = String(state["instance_id"])
+
+	if state.has("position"):
+		var position_data = state["position"]
+
+		if position_data is Array and position_data.size() == 2:
+			global_position = Vector2(float(position_data[0]),float(position_data[1]))
+
+	return true

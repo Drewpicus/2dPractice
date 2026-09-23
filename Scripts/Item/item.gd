@@ -121,3 +121,53 @@ func serialize_state() -> Dictionary:
 		component_states[String(component.component_id)] = component.serialize_state()
 
 	return {"instance_id": instance_id, "item_id": String(item_id), "components": component_states}
+
+func deserialize_state(state: Dictionary) -> bool:
+	if state.has("item_id"):
+		var saved_item_id := StringName(state["item_id"])
+
+		if saved_item_id != item_id:
+			push_error("Item state ID mismatch. Expected %s, received %s." % [item_id, saved_item_id])
+			return false
+
+	var component_states = state.get("components", {})
+
+	if not component_states is Dictionary:
+		push_error("Serialized Item components must be a Dictionary.")
+		return false
+
+	# Validate the saved component data before changing anything.
+	for component_key in component_states:
+		var component_id := StringName(component_key)
+
+		if not GameID.is_valid(component_id):
+			push_error("Invalid saved ItemComponent ID: %s" % component_id)
+			return false
+
+		if not component_states[component_key] is Dictionary:
+			push_error("Saved state for ItemComponent %s must be a Dictionary." % component_id)
+			return false
+
+	# Remove components that no longer existed when the game was saved.
+	for component in get_components():
+		if not component_states.has(String(component.component_id)):
+			remove_component(component.component_id)
+
+	# Add missing components and restore every component's state.
+	for component_key in component_states:
+		var component_id := StringName(component_key)
+
+		if not has_component(component_id):
+			var added_component := add_component(component_id)
+
+			if not added_component:
+				push_error("Could not restore ItemComponent: %s" % component_id)
+				return false
+
+		var component := get_component(component_id)
+		component.deserialize_state(component_states[component_key])
+
+	if state.has("instance_id"):
+		instance_id = String(state["instance_id"])
+
+	return true
