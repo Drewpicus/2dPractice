@@ -12,6 +12,10 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("save_world"):
+		SaveManager.save_world(game_world)
+	if event.is_action_pressed("load_world"):
+		SaveManager.load_world(game_world)
 	if event.is_action_pressed("test"):
 		var goblin := get_node_or_null("GameWorld/Entities/Goblin") as Entity
 		if not goblin:

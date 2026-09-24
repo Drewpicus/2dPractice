@@ -25,6 +25,8 @@ func remove_entity(entity: Entity) -> void:
 	if not entity:
 		return
 
+	RuntimeObjectRegistry.unregister(entity.instance_id,entity)
+
 	entity.queue_free()
 
 func get_entities() -> Array[Entity]:
@@ -74,3 +76,61 @@ func serialize_items() -> Array:
 		states.append(item.serialize_state())
 
 	return states
+
+## Save game
+func serialize_state() -> Dictionary:
+	return {
+		"items": serialize_items(),
+		"entities": serialize_entities()
+	}
+
+## Load game from save
+func deserialize_state(state: Dictionary) -> bool:
+	var item_states = state.get("items", [])
+	var entity_states = state.get("entities", [])
+
+	if not item_states is Array:
+		push_error("GameWorld item states must be an Array.")
+		return false
+
+	if not entity_states is Array:
+		push_error("GameWorld entity states must be an Array.")
+		return false
+
+	clear_runtime_state()
+
+	var result := RuntimeStateLoader.reconstruct(
+		item_states,
+		entity_states,
+		entities
+	)
+
+	return result.has("items") and result.has("entities")
+
+func clear_runtime_state() -> void:
+	var current_items := get_items()
+	var current_entities := get_entities()
+
+	# Unregister Items first while inventories still exist.
+	for item in current_items:
+		if item:
+			RuntimeObjectRegistry.unregister(
+				item.instance_id,
+				item
+			)
+
+	for entity in current_entities:
+		if not entity:
+			continue
+
+		RuntimeObjectRegistry.unregister(
+			entity.instance_id,
+			entity
+		)
+
+		# Remove immediately from the container so reconstructed
+		# Entities can reuse readable names like "Player".
+		if entity.get_parent() == entities:
+			entities.remove_child(entity)
+
+		entity.queue_free()
