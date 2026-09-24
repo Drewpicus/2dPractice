@@ -7,10 +7,6 @@ var combatants: Array[Entity] = []
 ##List of entities disengaged from the combat, effectively a blacklist for being added back
 var disengaged: Array[Entity] = []
 
-var entity_folder: Node2D
-
-func _init() -> void:
-	print(combatants)
 
 func add_combatant(entity: Entity, respect_disengagement: bool = false) -> void:
 	if entity == null:
@@ -19,8 +15,7 @@ func add_combatant(entity: Entity, respect_disengagement: bool = false) -> void:
 	if entity in combatants:
 		return
 	
-	var combat_component: CombatComponent
-	combat_component = entity.get_node_or_null("Components/CombatComponent")
+	var combat_component := entity.get_component(&"base:combat") as CombatComponent
 	if combat_component == null:
 		return
 	
@@ -42,8 +37,7 @@ func remove_combatant(entity: Entity) -> void:
 	if entity not in combatants:
 		return
 
-	var combat_component: CombatComponent
-	combat_component = entity.get_node_or_null("Components/CombatComponent")
+	var combat_component := entity.get_component(&"base:combat") as CombatComponent
 	if combat_component != null:
 		combat_component.current_combat = null
 
