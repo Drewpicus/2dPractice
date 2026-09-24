@@ -26,3 +26,20 @@ func remove_entity(entity: Entity) -> void:
 		return
 
 	entity.queue_free()
+
+func get_entities() -> Array[Entity]:
+	var result: Array[Entity] = []
+
+	for child in entities.get_children():
+		if child is Entity:
+			result.append(child)
+
+	return result
+
+func serialize_entities() -> Array:
+	var states: Array = []
+
+	for entity in get_entities():
+		states.append(entity.serialize_state())
+
+	return states

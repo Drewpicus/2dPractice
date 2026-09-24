@@ -46,10 +46,17 @@ func _register_component(component: EntityComponent) -> bool:
 	return true
 
 func die() -> void:
-	var remains_component = get_component(&"base:remains")
+	var remains_component := get_component(&"base:remains") as RemainsComponent
+
 	if remains_component:
 		remains_component.spawn_remains()
-	queue_free()
+
+	var world := GameWorld.find_world(self)
+
+	if world:
+		world.remove_entity(self)
+	else:
+		queue_free()
 
 ##Add a component to the component folder, based on name, e.g. &"health"
 ##Parameters are a dict with the keys being variable names and the values being values
