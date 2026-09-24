@@ -11,12 +11,24 @@ func _ready() -> void:
 	hide()
 
 func show_interactions(interactions: Array, interactor: Entity, target: Entity) -> void:
-	_interactions = interactions
+	_interactions = _filter_showable_interactions(interactions,interactor,target)
 	_interactor = interactor
 	_target = target
 	_rebuild_buttons()
 	_follow_target()
 	show()
+
+func _filter_showable_interactions(interactions: Array, interactor: Entity, target: Entity) -> Array:
+	
+	var filtered_interactions: Array[Interaction] = []
+	
+	for interaction in interactions:
+		if interaction is not Interaction:
+			continue
+		
+		if interaction.should_show(interactor,target):
+			filtered_interactions.append(interaction)
+	return filtered_interactions
 
 func _rebuild_buttons() -> void:
 	var needed := _interactions.size()
