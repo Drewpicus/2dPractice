@@ -43,3 +43,34 @@ func serialize_entities() -> Array:
 		states.append(entity.serialize_state())
 
 	return states
+
+## NOTE: Only gets items inside an inventory
+func get_items() -> Array[Item]:
+	var result: Array[Item] = []
+	var seen_ids: Dictionary[String, bool] = {}
+
+	for entity in get_entities():
+		var inventory := entity.get_component(&"base:inventory") as InventoryComponent
+
+		if not inventory:
+			continue
+
+		for item in inventory.items:
+			if not item:
+				continue
+
+			if seen_ids.has(item.instance_id):
+				continue
+
+			seen_ids[item.instance_id] = true
+			result.append(item)
+
+	return result
+
+func serialize_items() -> Array:
+	var states: Array = []
+
+	for item in get_items():
+		states.append(item.serialize_state())
+
+	return states
