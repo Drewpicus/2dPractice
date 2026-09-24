@@ -12,6 +12,9 @@ func _ready() -> void:
 
 func show_interactions(interactions: Array, interactor: Entity, target: Entity) -> void:
 	_interactions = _filter_showable_interactions(interactions,interactor,target)
+	if _interactions.is_empty():
+		hide()
+		return
 	_interactor = interactor
 	_target = target
 	_rebuild_buttons()
