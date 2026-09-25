@@ -5,6 +5,8 @@ class_name PlayerControllerComponent
 @export var interaction_menu: InteractionMenu
 @export var inventory_menu: InventoryMenu
 
+@onready var player_camera: Camera2D = $Camera2D
+
 func _ready() -> void:
 	var component_folder = get_parent()
 	if not component_folder:
@@ -89,3 +91,17 @@ func _get_entity_under_mouse(exclude_self: bool = true, is_interactable: bool = 
 
 		return entity
 	return null
+
+## Returns this component's mutable runtime state.
+func serialize_state() -> Dictionary:
+	var zoom_x := player_camera.zoom.x
+	var zoom_y := player_camera.zoom.y
+	return {
+		"camera_zoom": [zoom_x,zoom_y]
+	}
+
+## Restores this component's mutable runtime state.
+func deserialize_state(_state: Dictionary) -> void:
+	var zoom_array = _state.get("camera_zoom")
+	player_camera.zoom.x = zoom_array[0]
+	player_camera.zoom.y = zoom_array[1]

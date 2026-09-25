@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://cfrtp2mg56k2y"]
+
+[ext_resource type="Script" uid="uid://bj2h4pr4tyinu" path="res://Scripts/EntityComponents/status_component.gd" id="1_ko26w"]
+
+[node name="StatusComponent" type="Node" unique_id=1184733207]
+script = ExtResource("1_ko26w")
+component_id = &"base:status"
