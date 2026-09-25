@@ -56,10 +56,7 @@ static func load_world(world: GameWorld, path: String = DEFAULT_SAVE_PATH) -> bo
 	var version := int(save_data.get("version", -1))
 
 	if version != SAVE_VERSION:
-		push_error(
-			"Unsupported save version: %s"
-			% version
-		)
+		push_error("Unsupported save version: %s" % version)
 		return false
 
 	var world_state = save_data.get("world", {})

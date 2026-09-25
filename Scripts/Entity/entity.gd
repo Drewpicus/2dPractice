@@ -174,15 +174,24 @@ func resolve(resolution: GameResolution) -> GameResolution:
 		return null
 
 	if resolution.resolved:
-			push_error("Cannot resolve an already-resolved GameResolution.")
-			return resolution
+		push_error("Cannot resolve an already-resolved GameResolution.")
+		return resolution
 
-	for component in get_components():
-		component.on_resolution(resolution)
-
+	contribute_to_resolution(resolution)
 	resolution.apply_modifiers()
 
 	return resolution
+
+func contribute_to_resolution(resolution: GameResolution) -> void:
+	if not resolution:
+		return
+
+	if resolution.resolved:
+		push_error("Cannot contribute to an already-resolved GameResolution.")
+		return
+
+	for component in get_components():
+		component.on_resolution(resolution)
 
 func serialize_state() -> Dictionary:
 	var component_states := {}
