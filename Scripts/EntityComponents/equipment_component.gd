@@ -70,10 +70,36 @@ func get_equipment(slot: StringName) -> Item:
 func has_equipment(slot: StringName) -> bool:
 	return equipment.get(slot) != null
 
+func get_all_equipment() -> Array[Item]:
+	var result: Array[Item] = []
+	var seen_ids: Dictionary[String, bool] = {}
+
+	for slot in equipment:
+		var item := equipment[slot] as Item
+
+		if not item:
+			continue
+
+		if seen_ids.has(item.instance_id):
+			continue
+
+		seen_ids[item.instance_id] = true
+		result.append(item)
+
+	return result
+
 func _on_item_removed(item: Item) -> void:
 	for slot in equipment.keys():
 		if item == equipment.get(slot) as Item:
 			unequip(slot)
+
+func on_event(event: GameEvent) -> void:
+	for item in get_all_equipment():
+		item.dispatch_event(event)
+
+func on_resolution(resolution: GameResolution) -> void:
+	for item in get_all_equipment():
+		item.contribute_to_resolution(resolution)
 
 func serialize_state() -> Dictionary:
 	var serialized_slots: Array[String] = []
