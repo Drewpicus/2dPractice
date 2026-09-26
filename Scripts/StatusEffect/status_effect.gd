@@ -20,3 +20,10 @@ func on_event(_event: GameEvent) -> void:
 
 func on_resolution(_resolution: GameResolution) -> void:
 	pass
+
+func serialize_state() -> Dictionary:
+	return {}
+
+
+func deserialize_state(_state: Dictionary) -> void:
+	pass
