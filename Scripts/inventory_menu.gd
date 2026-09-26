@@ -44,7 +44,7 @@ func show_inventory(viewer: Entity, inv_owner: Entity) -> void:
 		if not _viewer_equipment.equipment_updated.is_connected(_rebuild_actions):
 			_viewer_equipment.equipment_updated.connect(_rebuild_actions)
 
-	_title.text = "%s Inventory" % inv_owner.name
+	_title.text = "%s Inventory" % inv_owner.entity_name
 
 	_selected_item = null
 

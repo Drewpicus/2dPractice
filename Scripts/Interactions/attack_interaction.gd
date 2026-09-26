@@ -26,4 +26,4 @@ func perform(_interactor: Entity, _target: Entity) -> void:
 	var target_health: HealthComponent = _target.get_component(&"base:health")
 	target_health.damage(int(attack_damage))
 	
-	print("%s attacks %s for %d damage!" % [_interactor.name,_target.name,attack_damage])
+	print("%s attacks %s for %d damage!" % [_interactor.entity_name,_target.entity_name,attack_damage])

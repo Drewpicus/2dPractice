@@ -14,7 +14,7 @@ static func build(definition: EntityDefinition) -> Entity:
 	var entity := ENTITY_SCENE.instantiate() as Entity
 	
 	entity.entity_id = definition.entity_id
-	entity.name = definition.entity_name
+	entity.entity_name = definition.entity_name
 	entity.get_node("Sprite2D").texture = definition.sprite
 	if definition.collision_shape:
 		entity.get_node("CollisionShape2D").shape = definition.collision_shape.duplicate()

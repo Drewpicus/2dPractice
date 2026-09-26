@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://bp8t2k8qgewip"]
+
+[node name="Main2" type="Node2D" unique_id=1894903623]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1477416650]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer" unique_id=780706534]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -357.0
+offset_top = -90.0
+offset_right = 357.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 18
+
+[node name="Port" type="LineEdit" parent="CanvasLayer/VBoxContainer" unique_id=916257246]
+layout_mode = 2
+placeholder_text = "Port"
+
+[node name="IP Address" type="LineEdit" parent="CanvasLayer/VBoxContainer" unique_id=796250554]
+layout_mode = 2
+placeholder_text = "IP Address"
+
+[node name="HostButton" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=1956508985]
+layout_mode = 2
+text = "Host Game"
+
+[node name="JoinButton" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=1004948990]
+layout_mode = 2
+text = "Join Game"
