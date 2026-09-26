@@ -1,27 +1,23 @@
 extends Sprite3D
 
-## Prevents extreme stretching as the camera approaches straight-down.
 @export_range(0.05, 1.0) var minimum_vertical_factor: float = 0.25
 
-var _base_scale: Vector3
+var _base_scale_y: float
 
 
 func _ready() -> void:
-	_base_scale = scale
+	_base_scale_y = scale.y
 
 
 func _process(_delta: float) -> void:
 	var camera := get_viewport().get_camera_3d()
 
 	if not camera:
-		scale = _base_scale
+		scale.y = _base_scale_y
 		return
 
 	var camera_forward := -camera.global_basis.z.normalized()
 
-	# Horizontal length of the camera's forward vector.
-	# 1.0 = camera is horizontal.
-	# 0.0 = camera is looking straight down/up.
 	var vertical_projection_factor := Vector2(
 		camera_forward.x,
 		camera_forward.z
@@ -32,8 +28,4 @@ func _process(_delta: float) -> void:
 		minimum_vertical_factor
 	)
 
-	scale = Vector3(
-		_base_scale.x,
-		_base_scale.y / vertical_projection_factor,
-		_base_scale.z
-	)
+	scale.y = _base_scale_y / vertical_projection_factor
