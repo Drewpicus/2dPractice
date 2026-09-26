@@ -23,6 +23,9 @@ size = Vector3(3, 3, 3)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kry3j"]
 albedo_color = Color(0.46, 0.46, 0.46, 1)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_jjvhh"]
+size = Vector3(3, 3, 3)
+
 [sub_resource type="Theme" id="Theme_getpj"]
 default_font_size = 25
 
@@ -45,10 +48,15 @@ surface_material_override/0 = SubResource("StandardMaterial3D_ground")
 
 [node name="Entities" type="Node3D" parent="GameWorld" unique_id=120306238]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="GameWorld" unique_id=211190400]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.130435, 1.5, -7.1800776)
+[node name="StaticBody3D" type="StaticBody3D" parent="GameWorld" unique_id=82404394]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.357751, 1.5, -8.029905)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GameWorld/StaticBody3D" unique_id=211190400]
 mesh = SubResource("BoxMesh_jjvhh")
 surface_material_override/0 = SubResource("StandardMaterial3D_kry3j")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GameWorld/StaticBody3D" unique_id=1750538265]
+shape = SubResource("BoxShape3D_jjvhh")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1044784727]
 
