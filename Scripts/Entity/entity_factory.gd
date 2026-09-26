@@ -19,7 +19,8 @@ static func build(definition: EntityDefinition) -> Entity:
 	var sprite := entity.get_node("Sprite3D") as Sprite3D
 	sprite.texture = definition.sprite
 	if definition.sprite:
-		sprite.position.y = definition.sprite.get_height() * sprite.pixel_size * 0.5
+		sprite.position = Vector3.ZERO
+		sprite.offset.y = definition.sprite.get_height() * 0.5
 
 	if definition.collision_shape:
 		var collision := entity.get_node("CollisionShape3D") as CollisionShape3D

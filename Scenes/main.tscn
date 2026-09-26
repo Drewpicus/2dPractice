@@ -5,8 +5,11 @@
 [ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/interaction_menu.gd" id="21_o1aky"]
 [ext_resource type="Script" uid="uid://cpefuibv0hxx" path="res://Scripts/inventory_menu.gd" id="22_kwxat"]
 
-[sub_resource type="Theme" id="Theme_getpj"]
-default_font_size = 25
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.45, 0.55, 0.65, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.85, 0.85, 0.85, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
 size = Vector2(40, 40)
@@ -14,11 +17,14 @@ size = Vector2(40, 40)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
 albedo_color = Color(0.35, 0.42, 0.32, 1)
 
-[sub_resource type="Environment" id="Environment_main"]
-background_mode = 1
-background_color = Color(0.45, 0.55, 0.65, 1)
-ambient_light_source = 2
-ambient_light_color = Color(0.85, 0.85, 0.85, 1)
+[sub_resource type="BoxMesh" id="BoxMesh_jjvhh"]
+size = Vector3(3, 3, 3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kry3j"]
+albedo_color = Color(0.46, 0.46, 0.46, 1)
+
+[sub_resource type="Theme" id="Theme_getpj"]
+default_font_size = 25
 
 [node name="Main" type="Node3D" unique_id=1528092559]
 script = ExtResource("1_ee4r6")
@@ -38,6 +44,11 @@ mesh = SubResource("PlaneMesh_ground")
 surface_material_override/0 = SubResource("StandardMaterial3D_ground")
 
 [node name="Entities" type="Node3D" parent="GameWorld" unique_id=120306238]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GameWorld" unique_id=211190400]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.130435, 1.5, -7.1800776)
+mesh = SubResource("BoxMesh_jjvhh")
+surface_material_override/0 = SubResource("StandardMaterial3D_kry3j")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1044784727]
 
