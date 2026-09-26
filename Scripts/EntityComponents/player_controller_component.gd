@@ -4,8 +4,10 @@ class_name PlayerControllerComponent
 @export var movement_component : MovementComponent
 @export var interaction_menu: InteractionMenu
 @export var inventory_menu: InventoryMenu
+@export var rotate_speed: float = 1.6
 
-@onready var player_camera: Camera2D = $Camera2D
+@onready var camera_pivot: Node3D = $CameraPivot
+@onready var player_camera: Camera3D = $CameraPivot/Camera3D
 
 func _ready() -> void:
 	var component_folder = get_parent()
@@ -18,11 +20,44 @@ func _ready() -> void:
 	if not interaction_menu:
 		interaction_menu = get_tree().root.get_node_or_null("Main/UI/InteractionMenu")
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	if camera_pivot:
+		var rotate_input := Input.get_axis("rotate_left", "rotate_right")
+		if rotate_input != 0.0:
+			camera_pivot.rotation.y -= rotate_input * rotate_speed * delta
+
 	if not movement_component:
 		return
-	var dir = Input.get_vector("move_left","move_right","move_up","move_down")
-	movement_component.input_direction = dir
+
+	var input := Input.get_vector(
+		"move_left",
+		"move_right",
+		"move_up",
+		"move_down"
+	)
+
+	if not player_camera:
+		movement_component.input_direction = input
+		return
+
+	var forward := -player_camera.global_basis.z
+	var right := player_camera.global_basis.x
+
+	forward.y = 0.0
+	right.y = 0.0
+
+	forward = forward.normalized()
+	right = right.normalized()
+
+	var world_direction := (
+		right * input.x
+		+ forward * -input.y
+	)
+
+	movement_component.input_direction = Vector2(
+		world_direction.x,
+		world_direction.z
+	)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("inventory"):
@@ -64,44 +99,64 @@ func _quick_action(event: InputEvent, input: StringName, component: StringName, 
 				selected_interaction.perform(root_entity,target)
 
 
-##Returns the first Entity at your mouse position. 
-##[param exclude_self] can be toggled off if you want to also include the root entity. 
-##[param is_interactable] can be toggled off to include non-interactable entities. 
-##[param include_areas] and [param include_bodies] set the PhysicsPointQueryParameters. 
+##Returns the first Entity under the mouse via a 3D camera ray.
+##[param exclude_self] can be toggled off if you want to also include the root entity.
+##[param is_interactable] can be toggled off to include non-interactable entities.
+##[param include_areas] and [param include_bodies] set the PhysicsRayQueryParameters3D.
 func _get_entity_under_mouse(exclude_self: bool = true, is_interactable: bool = true, include_areas: bool = true, include_bodies: bool = true) -> Entity:
-	var mouse_position := root_entity.get_global_mouse_position()
-	var world := root_entity.get_world_2d().direct_space_state
-	var params := PhysicsPointQueryParameters2D.new()
-	params.position = mouse_position
-	params.collide_with_areas = include_areas
-	params.collide_with_bodies = include_bodies
-	var intersections := world.intersect_point(params)
-	for intersection in intersections:
-		var collider := intersection["collider"] as Node
-		var entity := Entity.find_entity(collider)
+	if not player_camera:
+		return null
 
-		if not entity:
-			continue
+	var mouse_position := get_viewport().get_mouse_position()
+	var origin := player_camera.project_ray_origin(mouse_position)
+	var direction := player_camera.project_ray_normal(mouse_position)
+	var endpoint := origin + direction * 1000.0
 
-		if exclude_self and entity == root_entity:
-			continue
+	var query := PhysicsRayQueryParameters3D.create(origin, endpoint)
+	query.collide_with_areas = include_areas
+	query.collide_with_bodies = include_bodies
 
-		if is_interactable and not entity.has_component(&"base:interactable"):
-			continue
+	if exclude_self:
+		var exclude: Array[RID] = [root_entity.get_rid()]
+		var interactable_node: Node = root_entity.get_component(&"base:interactable")
+		if interactable_node is CollisionObject3D:
+			exclude.append((interactable_node as CollisionObject3D).get_rid())
+		query.exclude = exclude
 
-		return entity
-	return null
+	var result := root_entity.get_world_3d().direct_space_state.intersect_ray(query)
+	if result.is_empty():
+		return null
+
+	var collider := result["collider"] as Node
+	var entity := Entity.find_entity(collider)
+
+	if not entity:
+		return null
+
+	if exclude_self and entity == root_entity:
+		return null
+
+	if is_interactable and not entity.has_component(&"base:interactable"):
+		return null
+
+	return entity
 
 ## Returns this component's mutable runtime state.
 func serialize_state() -> Dictionary:
-	var zoom_x := player_camera.zoom.x
-	var zoom_y := player_camera.zoom.y
+	if not player_camera or not camera_pivot:
+		return {}
+
 	return {
-		"camera_zoom": [zoom_x,zoom_y]
+		"camera_size": player_camera.size,
+		"camera_yaw": camera_pivot.rotation.y
 	}
 
 ## Restores this component's mutable runtime state.
 func deserialize_state(_state: Dictionary) -> void:
-	var zoom_array = _state.get("camera_zoom")
-	player_camera.zoom.x = zoom_array[0]
-	player_camera.zoom.y = zoom_array[1]
+	if not player_camera or not camera_pivot:
+		return
+
+	if _state.has("camera_size"):
+		player_camera.size = float(_state["camera_size"])
+	if _state.has("camera_yaw"):
+		camera_pivot.rotation.y = float(_state["camera_yaw"])

@@ -5,8 +5,8 @@
 	"solid": true,
 
 	"collision": {
-		"type": "circle",
-		"radius": 16.0
+		"type": "sphere",
+		"radius": 0.4
 	},
 
 	"components": [

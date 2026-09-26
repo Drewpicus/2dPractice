@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" uid="uid://codsgm2eojjyd" path="res://Scripts/EntityComponents/interactable_component.gd" id="1_m5r35"]
 
-[node name="InteractableComponent" type="Node2D" unique_id=679915086]
+[node name="InteractableComponent" type="Area3D" unique_id=679915086]
+monitoring = false
+monitorable = true
 script = ExtResource("1_m5r35")
 component_id = &"base:interactable"
 
-[node name="Area2D" type="Area2D" parent="." unique_id=640174719]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1930984313]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1930984313]

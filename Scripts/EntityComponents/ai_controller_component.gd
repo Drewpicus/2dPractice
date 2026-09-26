@@ -12,9 +12,6 @@ func on_added() -> void:
 func _set_movement_component(component: MovementComponent) -> void:
 	movement_component = component
 
-	if movement_component:
-		movement_component.speed = 20
-
 func _process(delta: float) -> void:
 	if not movement_component:
 		return

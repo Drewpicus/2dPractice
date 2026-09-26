@@ -5,8 +5,9 @@
 	"solid": true,
 
 	"collision": {
-		"type": "circle",
-		"radius": 16.0
+		"type": "capsule",
+		"radius": 0.35,
+		"height": 1.0
 	},
 
 	"components": [
@@ -19,7 +20,7 @@
 		{
 			"component_id": "base:interactor",
 			"parameters": {
-				"reach": 64
+				"reach": 4.0
 			}
 		},
 		{
@@ -46,7 +47,7 @@
 		{
 			"component_id": "base:movement",
 			"parameters":{
-				"speed": 200
+				"speed": 6.0
 			}
 		},
 		{

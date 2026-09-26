@@ -193,7 +193,7 @@ static func _load_json(path: String) -> Dictionary:
 
 	return json.data as Dictionary
 
-static func _load_collision_shape(data: Variant, definition_path: String) -> Shape2D:
+static func _load_collision_shape(data: Variant, definition_path: String) -> Shape3D:
 	if not data is Dictionary:
 		push_error("Collision definition must be an object in: %s" % definition_path)
 		return null
@@ -202,26 +202,26 @@ static func _load_collision_shape(data: Variant, definition_path: String) -> Sha
 	var shape_type := String(collision.get("type", ""))
 
 	match shape_type:
-		"circle":
+		"sphere":
 			var radius := float(collision.get("radius", 0.0))
 
 			if radius <= 0.0:
-				push_error("Circle collision radius must be greater than 0 in: %s" % definition_path)
+				push_error("Sphere collision radius must be greater than 0 in: %s" % definition_path)
 				return null
 
-			var shape := CircleShape2D.new()
+			var shape := SphereShape3D.new()
 			shape.radius = radius
 			return shape
 
-		"rectangle":
+		"box":
 			var size_data = collision.get("size", [])
 
-			if not size_data is Array or size_data.size() != 2:
-				push_error("Rectangle collision size must be [width, height] in: %s" % definition_path)
+			if not size_data is Array or size_data.size() != 3:
+				push_error("Box collision size must be [width, height, depth] in: %s" % definition_path)
 				return null
 
-			var shape := RectangleShape2D.new()
-			shape.size = Vector2(float(size_data[0]),float(size_data[1]))
+			var shape := BoxShape3D.new()
+			shape.size = Vector3(float(size_data[0]), float(size_data[1]), float(size_data[2]))
 			return shape
 
 		"capsule":
@@ -232,7 +232,20 @@ static func _load_collision_shape(data: Variant, definition_path: String) -> Sha
 				push_error("Capsule collision dimensions must be greater than 0 in: %s" % definition_path)
 				return null
 
-			var shape := CapsuleShape2D.new()
+			var shape := CapsuleShape3D.new()
+			shape.radius = radius
+			shape.height = height
+			return shape
+
+		"cylinder":
+			var radius := float(collision.get("radius", 0.0))
+			var height := float(collision.get("height", 0.0))
+
+			if radius <= 0.0 or height <= 0.0:
+				push_error("Cylinder collision dimensions must be greater than 0 in: %s" % definition_path)
+				return null
+
+			var shape := CylinderShape3D.new()
 			shape.radius = radius
 			shape.height = height
 			return shape

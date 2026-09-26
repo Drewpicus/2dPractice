@@ -60,12 +60,12 @@ func drop_all_items() -> void:
 	items_updated.emit()
 
 ## @deprecated dropped items may be old
-func _spawn_loot_pickup(_item_resource: Item, _drop_position: Vector2) -> void:
+func _spawn_loot_pickup(_item_resource: Item, _drop_position: Vector3) -> void:
 	var new_item: DroppedItem = DROPPED_ITEM_SCENE.instantiate()
 	
 	new_item.item = _item_resource
 	new_item.global_position = _drop_position
-	new_item.position += Vector2(randf_range(-16,16),randf_range(-16,16))
+	new_item.position += Vector3(randf_range(-0.5, 0.5), 0.0, randf_range(-0.5, 0.5))
 	root_entity.get_parent().add_child(new_item)
 	print("Dropped %s" % [new_item])
 

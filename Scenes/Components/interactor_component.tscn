@@ -2,6 +2,6 @@
 
 [ext_resource type="Script" uid="uid://bwgrmvp0kpmv8" path="res://Scripts/EntityComponents/interactor_component.gd" id="1_h4tj3"]
 
-[node name="InteractorComponent" type="Node2D" unique_id=184089856]
+[node name="InteractorComponent" type="Node" unique_id=184089856]
 script = ExtResource("1_h4tj3")
 component_id = &"base:interactor"

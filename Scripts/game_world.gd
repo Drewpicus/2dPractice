@@ -1,7 +1,7 @@
-extends Node2D
+extends Node3D
 class_name GameWorld
 
-@onready var entities: Node2D = $Entities
+@onready var entities: Node3D = $Entities
 
 static func find_world(node: Node) -> GameWorld:
 	while node != null:
@@ -12,7 +12,7 @@ static func find_world(node: Node) -> GameWorld:
 
 	return null
 
-func spawn_entity(entity_id: StringName, entity_position: Vector2) -> Entity:
+func spawn_entity(entity_id: StringName, entity_position: Vector3) -> Entity:
 	var definition := DefinitionRegistry.get_entity(entity_id)
 
 	if not definition:

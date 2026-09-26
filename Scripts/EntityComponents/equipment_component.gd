@@ -72,7 +72,7 @@ func unequip(slot: StringName) -> Item:
 		return null
 	
 	equipment.erase(slot)
-	item.on_equipped(root_entity,slot)
+	item.on_unequipped(root_entity,slot)
 	equipment_updated.emit()
 	return item
 
