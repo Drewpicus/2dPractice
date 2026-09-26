@@ -21,6 +21,27 @@ static func build(definition: EntityDefinition) -> Entity:
 	if definition.sprite:
 		sprite.position = Vector3.ZERO
 		sprite.offset.y = definition.sprite.get_height() * 0.5
+	
+	match definition.sprite_orientation:
+		&"upright":
+			sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+			sprite.rotation = Vector3.ZERO
+
+			if definition.sprite:
+				sprite.offset.y = definition.sprite.get_height() * 0.5
+
+		&"ground":
+			sprite.billboard = BaseMaterial3D.BILLBOARD_DISABLED
+
+			# Sprite3D normally occupies the XY plane.
+			# Rotate it onto the XZ ground plane.
+			sprite.rotation_degrees.x = -90.0
+
+			# Center the corpse around the Entity position.
+			sprite.offset = Vector2.ZERO
+
+			# Keep it barely above the ground to prevent z-fighting.
+			sprite.position.y = sprite.pixel_size
 
 	if definition.collision_shape:
 		var collision := entity.get_node("CollisionShape3D") as CollisionShape3D
