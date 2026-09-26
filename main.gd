@@ -7,6 +7,7 @@ func _ready() -> void:
 	
 	game_world.spawn_entity(&"base:player", Vector3(0, 0, 0))
 	game_world.spawn_entity(&"base:goblin", Vector3(6, 0, 3))
+	game_world.spawn_entity(&"base:goblin", Vector3(2, 0, -3))
 	game_world.spawn_entity(&"base:rock", Vector3(-7, 0, 5))
 	game_world.spawn_entity(&"base:tree", Vector3(7, 0, -4))
 

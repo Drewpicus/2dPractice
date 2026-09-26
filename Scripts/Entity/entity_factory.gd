@@ -36,12 +36,14 @@ static func build(definition: EntityDefinition) -> Entity:
 			# Sprite3D normally occupies the XY plane.
 			# Rotate it onto the XZ ground plane.
 			sprite.rotation_degrees.x = -90.0
+			
+			sprite.rotation_degrees.y = randf_range(0.0,360.0)
 
 			# Center the corpse around the Entity position.
 			sprite.offset = Vector2.ZERO
 
 			# Keep it barely above the ground to prevent z-fighting.
-			sprite.position.y = sprite.pixel_size
+			sprite.position.y = sprite.pixel_size * 2
 
 	if definition.collision_shape:
 		var collision := entity.get_node("CollisionShape3D") as CollisionShape3D

@@ -74,6 +74,8 @@ static func load_entity_definition(path: String) -> EntityDefinition:
 			return null
 
 		definition.sprite = sprite_resource as Texture2D
+		
+		definition.sprite_orientation = StringName(data.get("sprite_orientation", ""))
 
 	if data.has("collision"):
 		definition.collision_shape = _load_collision_shape(data["collision"], path)
