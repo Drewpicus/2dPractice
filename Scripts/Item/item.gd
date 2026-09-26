@@ -96,6 +96,15 @@ func _register_component(component: ItemComponent) -> bool:
 
 	return true
 
+func on_equipped(wearer: Entity, slot: StringName) -> void:
+	for component in get_components():
+		component.on_equipped(wearer, slot)
+
+
+func on_unequipped(wearer: Entity, slot: StringName) -> void:
+	for component in get_components():
+		component.on_unequipped(wearer, slot)
+
 func dispatch_event(event: GameEvent) -> void:
 	if not event:
 		return

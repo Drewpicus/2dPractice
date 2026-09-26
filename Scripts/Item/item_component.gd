@@ -96,6 +96,12 @@ func has_component(target_id: StringName) -> bool:
 
 	return root_item.has_component(target_id)
 
+func on_equipped(_wearer: Entity, _slot: StringName) -> void:
+	pass
+
+func on_unequipped(_wearer: Entity, _slot: StringName) -> void:
+	pass
+
 ## Called when this Item receives a GameEvent.
 func on_event(_event: GameEvent) -> void:
 	pass
@@ -104,7 +110,7 @@ func on_event(_event: GameEvent) -> void:
 func on_resolution(_resolution: GameResolution) -> void:
 	pass
 
-func contribute_modifier(resolution: GameResolution,modifier: ResolutionModifier) -> bool:
+func contribute_modifier(resolution: GameResolution, modifier: ResolutionModifier) -> bool:
 	if not resolution or not modifier:
 		return false
 
