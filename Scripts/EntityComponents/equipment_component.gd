@@ -51,16 +51,28 @@ func equip(slot: StringName, item: Item) -> bool:
 	if item not in _inventory.items:
 		return false
 	
-	for existing_slot in slots:
+	if get_equipment(slot) == item:
+		return false
+	
+	if has_equipment(slot):
+		unequip(slot)
+	
+	for existing_slot in equipment.keys():
 		if get_equipment(existing_slot) == item:
 			unequip(existing_slot)
 	equipment[slot] = item
+	item.on_equipped(root_entity,slot)
 	equipment_updated.emit()
 	return true
 
 func unequip(slot: StringName) -> Item:
 	var item = equipment.get(slot) as Item
+	
+	if not item:
+		return null
+	
 	equipment.erase(slot)
+	item.on_equipped(root_entity,slot)
 	equipment_updated.emit()
 	return item
 
