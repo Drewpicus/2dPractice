@@ -7,6 +7,7 @@ motion_mode = 1
 script = ExtResource("1_l7g7l")
 
 [node name="Sprite3D" type="Sprite3D" parent="." unique_id=66657874]
+pixel_size = 0.0625
 billboard = 2
 texture_filter = 0
 
