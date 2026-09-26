@@ -8,13 +8,36 @@
 [sub_resource type="Theme" id="Theme_getpj"]
 default_font_size = 25
 
-[node name="Main" type="Node2D" unique_id=1528092559]
+[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
+size = Vector2(40, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.35, 0.42, 0.32, 1)
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.45, 0.55, 0.65, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.85, 0.85, 0.85, 1)
+
+[node name="Main" type="Node3D" unique_id=1528092559]
 script = ExtResource("1_ee4r6")
 
-[node name="GameWorld" type="Node2D" parent="." unique_id=1632414103]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1841000001]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1841000002]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 8, 0)
+shadow_enabled = true
+
+[node name="GameWorld" type="Node3D" parent="." unique_id=1632414103]
 script = ExtResource("2_u50mg")
 
-[node name="Entities" type="Node2D" parent="GameWorld" unique_id=120306238]
+[node name="Ground" type="MeshInstance3D" parent="GameWorld" unique_id=1841000003]
+mesh = SubResource("PlaneMesh_ground")
+surface_material_override/0 = SubResource("StandardMaterial3D_ground")
+
+[node name="Entities" type="Node3D" parent="GameWorld" unique_id=120306238]
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1044784727]
 

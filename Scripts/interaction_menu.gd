@@ -82,4 +82,18 @@ func _process(_delta: float) -> void:
 			button.disabled = not _interactions[i].can_perform(_interactor, _target)
 
 func _follow_target() -> void:
-	global_position = _target.get_global_transform_with_canvas().origin
+	var camera := get_viewport().get_camera_3d()
+
+	if not camera:
+		return
+
+	var target_position := (
+		_target.global_position
+		+ Vector3(0, 1.0, 0)
+	)
+
+	if camera.is_position_behind(target_position):
+		hide()
+		return
+
+	global_position = camera.unproject_position(target_position)

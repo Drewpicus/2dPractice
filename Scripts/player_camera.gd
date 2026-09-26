@@ -1,14 +1,11 @@
-extends Camera2D
+extends Camera3D
 
-@export var max_zoom: float = 3.0
-@export var min_zoom: float = 0.6
-
-@export var step_amount: float = 0.2
+@export var max_size: float = 24.0
+@export var min_size: float = 4.0
+@export var step_amount: float = 1.0
 
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("zoom_in"):
-		zoom += Vector2(step_amount,step_amount)
-		zoom = Vector2(clampf(zoom.x,min_zoom,max_zoom),clampf(zoom.y,min_zoom,max_zoom))
+		size = clampf(size - step_amount, min_size, max_size)
 	if Input.is_action_just_pressed("zoom_out"):
-		zoom -= Vector2(step_amount,step_amount)
-		zoom = Vector2(clampf(zoom.x,min_zoom,max_zoom),clampf(zoom.y,min_zoom,max_zoom))
+		size = clampf(size + step_amount, min_size, max_size)

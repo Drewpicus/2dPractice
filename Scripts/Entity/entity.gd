@@ -1,9 +1,9 @@
-extends CharacterBody2D
+extends CharacterBody3D
 class_name Entity
 
 var instance_id: String
 var entity_id: StringName
-@onready var collision: CollisionShape2D = $CollisionShape2D
+@onready var collision: CollisionShape3D = $CollisionShape3D
 var components_folder: Node
 var solid: bool = true
 var _components: Dictionary[StringName, EntityComponent] = {}
@@ -132,12 +132,12 @@ func get_components() -> Array[EntityComponent]:
 	return result
 
 ##Sets a collision shape to match with the Entity's
-func apply_entity_collision_to(target: CollisionShape2D) -> void:
+func apply_entity_collision_to(target: CollisionShape3D) -> void:
 	if target.shape != null:
 		return
 
 	if collision == null:
-		collision = $CollisionShape2D
+		collision = $CollisionShape3D
 
 	if collision.shape == null:
 		return
@@ -199,7 +199,7 @@ func serialize_state() -> Dictionary:
 	for component in get_components():
 		component_states[String(component.component_id)] = component.serialize_state()
 
-	return {"instance_id": instance_id, "entity_id": String(entity_id), "position": [global_position.x, global_position.y], "components": component_states}
+	return {"instance_id": instance_id, "entity_id": String(entity_id), "position": [global_position.x, global_position.y, global_position.z], "components": component_states}
 
 func deserialize_state(state: Dictionary) -> bool:
 	if state.has("entity_id"):
@@ -250,8 +250,8 @@ func deserialize_state(state: Dictionary) -> bool:
 	if state.has("position"):
 		var position_data = state["position"]
 
-		if position_data is Array and position_data.size() == 2:
-			global_position = Vector2(float(position_data[0]),float(position_data[1]))
+		if position_data is Array and position_data.size() == 3:
+			global_position = Vector3(float(position_data[0]),float(position_data[1]),float(position_data[2]))
 
 	return true
 

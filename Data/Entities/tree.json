@@ -5,8 +5,9 @@
 	"solid": true,
 
 	"collision": {
-		"type": "circle",
-		"radius": 16.0
+		"type": "cylinder",
+		"radius": 0.4,
+		"height": 2.0
 	},
 
 	"components": [
