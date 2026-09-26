@@ -1,7 +1,8 @@
 [gd_scene format=3 uid="uid://irmwa6b2bwko"]
 
 [ext_resource type="Script" uid="uid://y87ikykg53o3" path="res://Scripts/Entity/entity.gd" id="1_l7g7l"]
-[ext_resource type="Script" uid="uid://d1qejhcqxdm74" path="res://Scripts/sprite_3d.gd" id="2_l7g7l"]
+
+[sub_resource type="GDScript" id="GDScript_hsfu5"]
 
 [node name="Entity" type="CharacterBody3D" unique_id=842891499]
 motion_mode = 1
@@ -10,8 +11,10 @@ script = ExtResource("1_l7g7l")
 [node name="Sprite3D" type="Sprite3D" parent="." unique_id=66657874]
 pixel_size = 0.0625
 billboard = 2
+shaded = true
+alpha_cut = 1
 texture_filter = 0
-script = ExtResource("2_l7g7l")
+script = SubResource("GDScript_hsfu5")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1118641129]
 

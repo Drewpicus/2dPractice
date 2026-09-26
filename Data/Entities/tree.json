@@ -6,7 +6,7 @@
 
 	"collision": {
 		"type": "cylinder",
-		"radius": 0.4,
+		"radius": 0.5,
 		"height": 2.0
 	},
 

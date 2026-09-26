@@ -8,10 +8,10 @@ script = ExtResource("1_sikvh")
 component_id = &"base:player_controller"
 
 [node name="CameraPivot" type="Node3D" parent="." unique_id=1452244777]
-transform = Transform3D(1, 0, 0, 0, 0.7071069, 0.70710665, 0, -0.70710665, 0.7071069, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot" unique_id=1452244776]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 25)
 current = true
 size = 12.0
 script = ExtResource("2_ws87e")

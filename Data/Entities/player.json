@@ -6,7 +6,7 @@
 
 	"collision": {
 		"type": "capsule",
-		"radius": 0.35,
+		"radius": 0.5,
 		"height": 1.0
 	},
 
@@ -47,7 +47,7 @@
 		{
 			"component_id": "base:movement",
 			"parameters":{
-				"speed": 6.0
+				"speed": 8.0
 			}
 		},
 		{
