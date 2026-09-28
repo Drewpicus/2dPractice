@@ -20,7 +20,9 @@ func generate_world(
 	terrain.render(world_data)
 
 func cell_to_world(cell: Vector2i) -> Vector2:
-	return terrain.map_to_local(cell)
+	return terrain.to_global(
+		terrain.map_to_local(cell)
+	)
 
 
 func world_to_cell(world_position: Vector2) -> Vector2i:

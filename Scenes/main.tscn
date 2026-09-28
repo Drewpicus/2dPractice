@@ -44,6 +44,7 @@ tile_set = SubResource("TileSet_kry3j")
 script = ExtResource("3_kry3j")
 
 [node name="Entities" type="Node2D" parent="GameWorld" unique_id=120306238]
+y_sort_enabled = true
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1044784727]
 

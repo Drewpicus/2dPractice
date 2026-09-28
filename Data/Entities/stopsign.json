@@ -6,8 +6,8 @@
 
 	"collision": {
 		"type": "capsule",
-		"radius": 16.0,
-		"height": 64.0
+		"radius": 4.0,
+		"height": 8.0
 	},
 
 	"components": [
