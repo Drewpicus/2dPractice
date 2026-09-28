@@ -20,6 +20,12 @@
 			"component_id": "base:interactable"
 		},
 		{
+			"component_id": "base:interactor",
+			"parameters": {
+				"reach": 64
+			}
+		},
+		{
 			"component_id": "base:health",
 			"parameters": {
 				"max_health": 10

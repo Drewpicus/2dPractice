@@ -6,7 +6,7 @@ func _init() -> void:
 	interaction_name = "Attack"
 
 func should_show(_interactor: Entity, _target: Entity) -> bool:
-	return _target.has_component(&"base:movement")
+	return true
 
 func can_perform(_interactor: Entity, _target: Entity) -> bool:
 	if not _interactor.has_component(&"base:interactor"):

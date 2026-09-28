@@ -1,0 +1,15 @@
+{
+	"item_id": "base:lightsaber",
+	"item_name": "Red Lightsaber",
+	"sprite": "res://lightsaber.png",
+	"components": [
+		{
+			"component_id": "base:equippable",
+			"parameters": {
+				"slots": [
+					"mainhand"
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,48 @@
+{
+	"entity_id": "base:stopsign",
+	"entity_name": "Stop Sign",
+	"sprite": "res://stopsign.png",
+	"solid": true,
+
+	"collision": {
+		"type": "capsule",
+		"radius": 16.0,
+		"height": 64.0
+	},
+
+	"components": [
+		{
+			"component_id": "base:info",
+			"parameters": {
+				"description": "Don't throw a frisbee at it!"
+			}
+		},
+		{
+			"component_id": "base:interactable"
+		},
+		{
+			"component_id": "base:health",
+			"parameters": {
+				"max_health": 6
+			}
+		},
+		{
+			"component_id": "base:remains",
+			"parameters": {
+				"remains_id": "base:goblin"
+			}
+		},
+		{
+			"component_id": "base:interactor",
+			"parameters":{
+				"reach": 64
+			}
+		},
+		{
+			"component_id": "base:movement",
+			"parameters": {
+				"speed": 200
+			}
+		}
+	]
+}

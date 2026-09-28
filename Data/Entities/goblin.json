@@ -48,6 +48,12 @@
 			"parameters": {
 				"remains_id": "base:goblin_corpse"
 			}
+		},
+		{
+			"component_id": "base:interactor",
+			"parameters": {
+				"reach": 64
+			}
 		}
 	]
 }

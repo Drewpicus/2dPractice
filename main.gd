@@ -6,6 +6,7 @@ func _ready() -> void:
 	DefinitionLoader.load_all_definitions()
 	
 	game_world.spawn_entity(&"base:player",Vector2(0, 0))
+	game_world.spawn_entity(&"base:stopsign",Vector2(-200, -100))
 	game_world.spawn_entity(&"base:goblin",Vector2(198, 95))
 	game_world.spawn_entity(&"base:goblin",Vector2(-30, 125))
 	game_world.spawn_entity(&"base:rock",Vector2(-250, 152))
@@ -31,6 +32,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				print("Goblin has no inventory")
 				return
 			
+			var lightsaber_definition := DefinitionRegistry.get_item(&"base:lightsaber")
+			var lightsaber := ItemFactory.build(lightsaber_definition)
+			
 			var stick_definition := DefinitionRegistry.get_item(&"base:stick")
 			var stick := ItemFactory.build(stick_definition)
 			
@@ -39,6 +43,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			var goblin_coin2 := ItemFactory.build(goblin_coin_definition)
 			
 			inventory.add_item(stick)
+			inventory.add_item(lightsaber)
 			inventory.add_item(goblin_coin)
 			inventory.add_item(goblin_coin2)
 			

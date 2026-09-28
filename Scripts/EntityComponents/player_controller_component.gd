@@ -69,6 +69,8 @@ func _quick_action(event: InputEvent, input: StringName, component: StringName, 
 ##[param is_interactable] can be toggled off to include non-interactable entities. 
 ##[param include_areas] and [param include_bodies] set the PhysicsPointQueryParameters. 
 func _get_entity_under_mouse(exclude_self: bool = true, is_interactable: bool = true, include_areas: bool = true, include_bodies: bool = true) -> Entity:
+	if not root_entity:
+		return null
 	var mouse_position := root_entity.get_global_mouse_position()
 	var world := root_entity.get_world_2d().direct_space_state
 	var params := PhysicsPointQueryParameters2D.new()
