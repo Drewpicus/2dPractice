@@ -1,7 +1,7 @@
 extends RefCounted
 class_name WorldData
 
-var seed: int
+var _seed: int
 var size: Vector2i
 
 var _terrain: Array[StringName] = []
@@ -9,15 +9,12 @@ var _terrain: Array[StringName] = []
 
 func _init(world_size: Vector2i, world_seed: int) -> void:
 	size = world_size
-	seed = world_seed
+	_seed = world_seed
 	_terrain.resize(size.x * size.y)
 
 
 func get_min_cell() -> Vector2i:
-	return Vector2i(
-		-size.x / 2,
-		-size.y / 2
-	)
+	return Vector2i(int(float(-size.x) / 2), int(float(-size.y) / 2))
 
 
 func get_max_cell() -> Vector2i:

@@ -19,7 +19,7 @@ static func build(definition: EntityDefinition) -> Entity:
 	sprite.texture = definition.sprite
 	
 	if definition.sprite:
-		sprite.position.y = -definition.sprite.get_height() / 2
+		sprite.position.y = float(-definition.sprite.get_height()) / 2
 	
 	if definition.collision_shape:
 		entity.get_node("CollisionShape2D").shape = definition.collision_shape.duplicate()

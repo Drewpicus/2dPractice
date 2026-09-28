@@ -6,7 +6,13 @@ func _ready() -> void:
 	DefinitionLoader.load_all_definitions()
 	
 	game_world.generate_world(Vector2i(50, 50),12345)
+	
+	MultiplayerManager.game_ready.connect(_on_game_ready)
 
+func _on_game_ready() -> void:
+	if not multiplayer.is_server():
+		return
+	
 	game_world.spawn_entity(&"base:player",Vector2(0, 0))
 	game_world.spawn_entity(&"base:stopsign",Vector2(-200, -100))
 	game_world.spawn_entity(&"base:goblin",Vector2(198, 95))
