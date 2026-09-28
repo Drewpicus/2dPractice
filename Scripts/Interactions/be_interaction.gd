@@ -6,12 +6,14 @@ func _init() -> void:
 	interaction_name = "Be"
 
 func should_show(_interactor: Entity, _target: Entity) -> bool:
-	return true
+	return not _target.has_component(&"base:player_controller")
 
 func can_perform(_interactor: Entity, _target: Entity) -> bool:
 	if not _interactor.has_component(&"base:interactor"):
 		return false
 	if not _target.has_component(&"base:interactor"):
+		return false
+	if _target.has_component(&"base:player_controller"):
 		return false
 	return true
 
