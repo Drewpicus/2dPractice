@@ -5,6 +5,8 @@ class_name PlayerControllerComponent
 @export var interaction_menu: InteractionMenu
 @export var inventory_menu: InventoryMenu
 
+var controller_peer_id: int = 0
+
 @onready var player_camera: Camera2D = $Camera2D
 
 func _ready() -> void:
@@ -17,14 +19,21 @@ func _ready() -> void:
 	movement_component = get_component(&"base:movement")
 	if not interaction_menu:
 		interaction_menu = get_tree().root.get_node_or_null("Main/UI/InteractionMenu")
+	
+	_update_local_control()
 
 func _process(_delta: float) -> void:
+	if not is_locally_controlled():
+		return
+	
 	if not movement_component:
 		return
 	var dir = Input.get_vector("move_left","move_right","move_up","move_down")
 	movement_component.input_direction = dir
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not is_locally_controlled():
+		return
 	if event.is_action_pressed("inventory"):
 		if inventory_menu.visible:
 			inventory_menu.close_inventory()
@@ -107,3 +116,19 @@ func deserialize_state(_state: Dictionary) -> void:
 	var zoom_array = _state.get("camera_zoom")
 	player_camera.zoom.x = zoom_array[0]
 	player_camera.zoom.y = zoom_array[1]
+
+func set_controller_peer(peer_id: int) -> void:
+	controller_peer_id = peer_id
+
+	if is_node_ready():
+		_update_local_control()
+
+
+func is_locally_controlled() -> bool:
+	if not MultiplayerManager.session_active:
+		return true
+
+	return controller_peer_id == multiplayer.get_unique_id()
+
+func _update_local_control() -> void:
+	player_camera.enabled = is_locally_controlled()

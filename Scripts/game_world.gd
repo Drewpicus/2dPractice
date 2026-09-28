@@ -59,6 +59,40 @@ func spawn_entity(entity_id: StringName, entity_position: Vector2) -> Entity:
 	
 	return entity_spawner.spawn(spawn_data) as Entity
 
+func spawn_controlled_entity(entity_id: StringName, entity_position: Vector2, controller_peer_id: int) -> Entity:
+	if controller_peer_id <= 0:
+		push_error("Controller peer ID must be greater than 0.")
+		return null
+
+	var definition := DefinitionRegistry.get_entity(entity_id)
+
+	if not definition:
+		push_error("No EntityDefinition registered for: %s" % entity_id)
+		return null
+
+	if not MultiplayerManager.session_active:
+		var entity := EntityFactory.spawn(definition, entity_position, entities)
+
+		if entity:
+			_set_entity_controller(entity, controller_peer_id)
+
+		return entity
+
+	if not multiplayer.is_server():
+		push_error("Client attempted to spawn controlled Entity, like a dummy: %s" % entity_id)
+		return null
+
+	var instance_id := RuntimeObjectRegistry.generate_unique_id()
+
+	var spawn_data := {
+		"entity_id": String(entity_id),
+		"instance_id": instance_id,
+		"position": entity_position,
+		"controller_peer_id": controller_peer_id
+	}
+
+	return entity_spawner.spawn(spawn_data) as Entity
+
 func remove_entity(entity: Entity) -> void:
 	if not entity:
 		return
@@ -210,11 +244,16 @@ func _spawn_network_entity(data: Variant) -> Node:
 
 	if not entity:
 		return null
-
+	
 	if not entity.restore_instance_id(instance_id):
 		entity.free()
 		return null
+	
+	var controller_peer_id := int(spawn_data.get("controller_peer_id", 0))
 
+	if controller_peer_id > 0:
+		_set_entity_controller(entity, controller_peer_id)
+	
 	# Give the node the same canon name on every peer.
 	entity.name = instance_id
 
@@ -223,3 +262,12 @@ func _spawn_network_entity(data: Variant) -> Node:
 	print("Spawned ", entity_id, " | ", instance_id, " | peer ", multiplayer.get_unique_id())
 
 	return entity
+
+func _set_entity_controller(entity: Entity, peer_id: int) -> void:
+	var controller := entity.get_component(&"base:player_controller") as PlayerControllerComponent
+
+	if not controller:
+		push_error("Controlled Entity has no PlayerControllerComponent: %s" % entity.entity_id)
+		return
+
+	controller.set_controller_peer(peer_id)

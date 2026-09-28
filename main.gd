@@ -19,12 +19,30 @@ func _initialize_game_world() -> void:
 	if not MultiplayerManager.is_world_authority():
 		return
 	
-	game_world.spawn_entity(&"base:player",Vector2(0, 0))
+	_spawn_players()
 	game_world.spawn_entity(&"base:stopsign",Vector2(-200, -100))
 	game_world.spawn_entity(&"base:goblin",Vector2(198, 95))
 	game_world.spawn_entity(&"base:goblin",Vector2(-30, 125))
 	game_world.spawn_entity(&"base:rock",Vector2(-250, 152))
 	game_world.spawn_entity(&"base:tree",Vector2(216, -130))
+
+func _spawn_players() -> void:
+	if not MultiplayerManager.session_active:
+		game_world.spawn_controlled_entity(&"base:player",Vector2.ZERO, 1)
+
+	#vvv MULTIPLAYER BEHAVIOR vvv
+
+	var peer_ids: Array[int] = [1]
+
+	for peer_id in multiplayer.get_peers():
+		peer_ids.append(int(peer_id))
+
+	peer_ids.sort()
+
+	for i in range(peer_ids.size()):
+		var peer_id := peer_ids[i]
+
+		game_world.spawn_controlled_entity(&"base:player", Vector2(i * 32.0, 0.0), peer_id)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("save_world"):
