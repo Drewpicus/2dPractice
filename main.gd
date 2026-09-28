@@ -28,7 +28,8 @@ func _initialize_game_world() -> void:
 
 func _spawn_players() -> void:
 	if not MultiplayerManager.session_active:
-		game_world.spawn_controlled_entity(&"base:player",Vector2.ZERO, 1)
+		game_world.spawn_entity(&"base:player",Vector2.ZERO)
+		return
 
 	#vvv MULTIPLAYER BEHAVIOR vvv
 
@@ -42,7 +43,7 @@ func _spawn_players() -> void:
 	for i in range(peer_ids.size()):
 		var peer_id := peer_ids[i]
 
-		game_world.spawn_controlled_entity(&"base:player", Vector2(i * 32.0, 0.0), peer_id)
+		game_world.spawn_entity(&"base:player", Vector2(i * 32.0, 0.0))
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("save_world"):

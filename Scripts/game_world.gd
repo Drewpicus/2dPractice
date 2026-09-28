@@ -59,39 +59,30 @@ func spawn_entity(entity_id: StringName, entity_position: Vector2) -> Entity:
 	
 	return entity_spawner.spawn(spawn_data) as Entity
 
-func spawn_controlled_entity(entity_id: StringName, entity_position: Vector2, controller_peer_id: int) -> Entity:
-	if controller_peer_id <= 0:
-		push_error("Controller peer ID must be greater than 0.")
-		return null
+func transfer_player_controller(from_entity: Entity, to_entity: Entity) -> bool:
+	if not from_entity or not to_entity:
+		return false
 
-	var definition := DefinitionRegistry.get_entity(entity_id)
+	var controller := from_entity.get_component(&"base:player_controller") as PlayerControllerComponent
 
-	if not definition:
-		push_error("No EntityDefinition registered for: %s" % entity_id)
-		return null
+	if not controller:
+		return false
 
-	if not MultiplayerManager.session_active:
-		var entity := EntityFactory.spawn(definition, entity_position, entities)
+	if to_entity.has_component(&"base:player_controller"):
+		return false
 
-		if entity:
-			_set_entity_controller(entity, controller_peer_id)
+	var peer_id := controller.controller_peer_id
 
-		return entity
+	from_entity.remove_component(&"base:player_controller")
 
-	if not multiplayer.is_server():
-		push_error("Client attempted to spawn controlled Entity, like a dummy: %s" % entity_id)
-		return null
+	var new_controller := to_entity.add_component(&"base:player_controller") as PlayerControllerComponent
 
-	var instance_id := RuntimeObjectRegistry.generate_unique_id()
+	if not new_controller:
+		return false
 
-	var spawn_data := {
-		"entity_id": String(entity_id),
-		"instance_id": instance_id,
-		"position": entity_position,
-		"controller_peer_id": controller_peer_id
-	}
+	new_controller.set_controller_peer(peer_id)
 
-	return entity_spawner.spawn(spawn_data) as Entity
+	return true
 
 func remove_entity(entity: Entity) -> void:
 	if not entity:

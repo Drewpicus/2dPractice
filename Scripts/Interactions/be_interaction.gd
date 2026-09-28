@@ -18,5 +18,9 @@ func can_perform(_interactor: Entity, _target: Entity) -> bool:
 	return true
 
 func perform(_interactor: Entity, _target: Entity) -> void:
-	_interactor.remove_component("base:player_controller")
-	_target.add_component("base:player_controller")
+	var world = GameWorld.find_world(_interactor) as GameWorld
+	
+	if not world:
+		return
+	
+	world.transfer_player_controller(_interactor, _target)
