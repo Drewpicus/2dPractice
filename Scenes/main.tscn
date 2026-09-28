@@ -2,18 +2,33 @@
 
 [ext_resource type="Script" uid="uid://38tado1b7n85" path="res://main.gd" id="1_ee4r6"]
 [ext_resource type="Script" uid="uid://8557yngorrft" path="res://Scripts/game_world.gd" id="2_u50mg"]
+[ext_resource type="Texture2D" uid="uid://b4gd5k21ok4qu" path="res://grass.png" id="3_344ge"]
 [ext_resource type="Script" uid="uid://kkiu6rl0qgva" path="res://Scenes/terrain_renderer.gd" id="3_kry3j"]
+[ext_resource type="Texture2D" uid="uid://c3epolurdv6oy" path="res://dirt.png" id="4_ynf5e"]
+[ext_resource type="Texture2D" uid="uid://d00aiep580vns" path="res://water.png" id="5_hptm8"]
 [ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/interaction_menu.gd" id="21_o1aky"]
 [ext_resource type="Script" uid="uid://cpefuibv0hxx" path="res://Scripts/inventory_menu.gd" id="22_kwxat"]
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_d1ilt"]
+texture = ExtResource("3_344ge")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6iyac"]
+texture = ExtResource("4_ynf5e")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fdnlq"]
+texture = ExtResource("5_hptm8")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
 [sub_resource type="TileSet" id="TileSet_kry3j"]
-terrain_set_0/mode = 0
-terrain_set_0/terrain_0/name = "Terrain 0"
-terrain_set_0/terrain_0/color = Color(0.2191486, 0.4420635, 0.28425616, 1)
-terrain_set_0/terrain_1/name = "Terrain 1"
-terrain_set_0/terrain_1/color = Color(0.5022787, 0.35442314, 0.16560107, 1)
-terrain_set_0/terrain_2/name = "Terrain 2"
-terrain_set_0/terrain_2/color = Color(0.20661941, 0.41103783, 1, 1)
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_d1ilt")
+sources/1 = SubResource("TileSetAtlasSource_6iyac")
+sources/2 = SubResource("TileSetAtlasSource_fdnlq")
 
 [sub_resource type="Theme" id="Theme_getpj"]
 default_font_size = 25
@@ -24,11 +39,11 @@ script = ExtResource("1_ee4r6")
 [node name="GameWorld" type="Node2D" parent="." unique_id=1632414103]
 script = ExtResource("2_u50mg")
 
-[node name="Entities" type="Node2D" parent="GameWorld" unique_id=120306238]
-
-[node name="TileMapLayer" type="TileMapLayer" parent="GameWorld" unique_id=642555637]
+[node name="Terrain" type="TileMapLayer" parent="GameWorld" unique_id=642555637]
 tile_set = SubResource("TileSet_kry3j")
 script = ExtResource("3_kry3j")
+
+[node name="Entities" type="Node2D" parent="GameWorld" unique_id=120306238]
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1044784727]
 

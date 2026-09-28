@@ -2,6 +2,22 @@ extends Node2D
 class_name GameWorld
 
 @onready var entities: Node2D = $Entities
+@onready var terrain: TerrainRenderer = $Terrain
+
+var world_data: WorldData
+
+func generate_world(
+	world_size: Vector2i,
+	seed: int
+) -> void:
+	var generator := WorldGenerator.new()
+
+	world_data = generator.generate(
+		world_size,
+		seed
+	)
+
+	terrain.render(world_data)
 
 static func find_world(node: Node) -> GameWorld:
 	while node != null:

@@ -7,12 +7,12 @@ const TERRAIN_TILES := {
 		"atlas": Vector2i(0, 0)
 	},
 	&"base:dirt": {
-		"source_id": 0,
-		"atlas": Vector2i(1, 0)
+		"source_id": 1,
+		"atlas": Vector2i(0, 0)
 	},
 	&"base:water": {
-		"source_id": 0,
-		"atlas": Vector2i(2, 0)
+		"source_id": 2,
+		"atlas": Vector2i(0, 0)
 	}
 }
 

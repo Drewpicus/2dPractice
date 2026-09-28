@@ -5,13 +5,14 @@ extends Node2D
 func _ready() -> void:
 	DefinitionLoader.load_all_definitions()
 	
+	game_world.generate_world(Vector2i(50, 50),12345)
+
 	game_world.spawn_entity(&"base:player",Vector2(0, 0))
 	game_world.spawn_entity(&"base:stopsign",Vector2(-200, -100))
 	game_world.spawn_entity(&"base:goblin",Vector2(198, 95))
 	game_world.spawn_entity(&"base:goblin",Vector2(-30, 125))
 	game_world.spawn_entity(&"base:rock",Vector2(-250, 152))
 	game_world.spawn_entity(&"base:tree",Vector2(216, -130))
-
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("save_world"):
