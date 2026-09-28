@@ -19,8 +19,11 @@ const TERRAIN_TILES := {
 func render(world_data: WorldData) -> void:
 	clear()
 
-	for y in world_data.size.y:
-		for x in world_data.size.x:
+	var minimum := world_data.get_min_cell()
+	var maximum := world_data.get_max_cell()
+
+	for y in range(minimum.y, maximum.y + 1):
+		for x in range(minimum.x, maximum.x + 1):
 			var cell := Vector2i(x, y)
 			var terrain_id := world_data.get_terrain(cell)
 
