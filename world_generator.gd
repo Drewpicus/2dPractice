@@ -16,7 +16,7 @@ func generate(size: Vector2i, seed: int) -> WorldData:
 					cell,
 					&"base:water"
 				)
-			elif y > -6 and y < -2:
+			elif y > -7 and y < -3:
 				data.set_terrain(
 					cell,
 					&"base:dirt"

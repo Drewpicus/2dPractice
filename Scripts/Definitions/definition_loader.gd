@@ -60,6 +60,7 @@ static func load_entity_definition(path: String) -> EntityDefinition:
 
 	definition.entity_name = String(data.get("entity_name", ""))
 	definition.solid = bool(data.get("solid", true))
+	definition.draw_layer = int(data.get("draw_layer", 0))
 
 	var sprite_path := String(data.get("sprite", ""))
 

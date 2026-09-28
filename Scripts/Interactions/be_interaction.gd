@@ -18,4 +18,3 @@ func can_perform(_interactor: Entity, _target: Entity) -> bool:
 func perform(_interactor: Entity, _target: Entity) -> void:
 	_interactor.remove_component("base:player_controller")
 	_target.add_component("base:player_controller")
-	_target.remove_component("base:ai_controller")

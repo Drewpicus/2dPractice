@@ -40,6 +40,8 @@ script = ExtResource("1_ee4r6")
 script = ExtResource("2_u50mg")
 
 [node name="Terrain" type="TileMapLayer" parent="GameWorld" unique_id=642555637]
+z_index = -5
+z_as_relative = false
 tile_set = SubResource("TileSet_kry3j")
 script = ExtResource("3_kry3j")
 

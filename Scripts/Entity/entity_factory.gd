@@ -18,19 +18,16 @@ static func build(definition: EntityDefinition) -> Entity:
 	var sprite := entity.get_node("Sprite2D") as Sprite2D
 	sprite.texture = definition.sprite
 	
-	var y_offset := 0.0
-	
 	if definition.sprite:
-		y_offset = -definition.sprite.get_height() / 2
-		sprite.position.y = y_offset
-	
-	var collision := entity.get_node("CollisionShape2D") as CollisionShape2D
+		sprite.position.y = -definition.sprite.get_height() / 2
 	
 	if definition.collision_shape:
-		collision.shape = definition.collision_shape.duplicate()
-		collision.position.y = y_offset
-		
+		entity.get_node("CollisionShape2D").shape = definition.collision_shape.duplicate()
+	
 	entity.solid = definition.solid
+	
+	entity.z_index = definition.draw_layer
+	print(entity.z_index)
 	
 	for component in definition.components:
 		entity.add_component(component.component_id,component.parameters)

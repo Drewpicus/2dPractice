@@ -3,6 +3,7 @@
 	"entity_name": "Rock",
 	"sprite": "res://rock.png",
 	"solid": true,
+	"draw_layer": 0,
 
 	"collision": {
 		"type": "circle",

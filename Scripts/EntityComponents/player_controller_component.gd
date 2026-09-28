@@ -68,7 +68,7 @@ func _quick_action(event: InputEvent, input: StringName, component: StringName, 
 ##[param exclude_self] can be toggled off if you want to also include the root entity. 
 ##[param is_interactable] can be toggled off to include non-interactable entities. 
 ##[param include_areas] and [param include_bodies] set the PhysicsPointQueryParameters. 
-func _get_entity_under_mouse(exclude_self: bool = true, is_interactable: bool = true, include_areas: bool = true, include_bodies: bool = true) -> Entity:
+func _get_entity_under_mouse(exclude_self: bool = true, is_interactable: bool = true, include_areas: bool = true, include_bodies: bool = false) -> Entity:
 	if not root_entity:
 		return null
 	var mouse_position := root_entity.get_global_mouse_position()

@@ -6,5 +6,6 @@ class_name EntityDefinition
 @export var sprite: Texture2D
 @export var collision_shape: Shape2D
 @export var solid: bool = true
+@export var draw_layer: int = 0
 
 @export var components: Array[EntityComponentDefinition]

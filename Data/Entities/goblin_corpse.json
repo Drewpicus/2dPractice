@@ -3,11 +3,7 @@
 	"entity_name": "Goblin Corpse",
 	"sprite": "res://dead_goblin.png",
 	"solid": false,
-
-	"collision": {
-		"type": "circle",
-		"radius": 16.0
-	},
+	"draw_layer": -1,
 
 	"components": [
 		{

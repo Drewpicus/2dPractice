@@ -3,10 +3,11 @@
 	"entity_name": "Goblin",
 	"sprite": "res://goblin.png",
 	"solid": true,
+	"draw_layer": 0,
 
 	"collision": {
 		"type": "circle",
-		"radius": 16.0
+		"radius": 8.0
 	},
 
 	"components": [
@@ -40,7 +41,7 @@
 		{
 			"component_id": "base:movement",
 			"parameters":{
-				"speed": 20
+				"base_speed": 30
 			}
 		},
 		{

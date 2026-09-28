@@ -3,6 +3,7 @@
 	"entity_name": "Stop Sign",
 	"sprite": "res://stopsign.png",
 	"solid": true,
+	"draw_layer": 0,
 
 	"collision": {
 		"type": "capsule",
@@ -41,7 +42,7 @@
 		{
 			"component_id": "base:movement",
 			"parameters": {
-				"speed": 200
+				"base_speed": 200
 			}
 		}
 	]

@@ -3,6 +3,7 @@
 	"entity_name": "Tree",
 	"sprite": "res://tree.png",
 	"solid": true,
+	"draw_layer": 0,
 
 	"collision": {
 		"type": "circle",
