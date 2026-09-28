@@ -7,10 +7,16 @@ func _ready() -> void:
 	
 	game_world.generate_world(Vector2i(50, 50),12345)
 	
-	MultiplayerManager.game_ready.connect(_on_game_ready)
+	if MultiplayerManager.session_active:
+		MultiplayerManager.game_ready.connect(_on_game_ready)
+	else:
+		_initialize_game_world()
 
 func _on_game_ready() -> void:
-	if not multiplayer.is_server():
+	_initialize_game_world()
+
+func _initialize_game_world() -> void:
+	if not MultiplayerManager.is_world_authority():
 		return
 	
 	game_world.spawn_entity(&"base:player",Vector2(0, 0))

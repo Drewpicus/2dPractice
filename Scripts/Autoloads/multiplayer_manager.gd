@@ -197,3 +197,9 @@ func _on_server_disconnected() -> void:
 	status_changed.emit("Server disconnected.")
 
 	_reset_session()
+
+func is_world_authority() -> bool:
+	if not session_active:
+		return true
+
+	return multiplayer.is_server()
