@@ -6,10 +6,7 @@ class_name GameWorld
 
 var world_data: WorldData
 
-func generate_world(
-	world_size: Vector2i,
-	seed: int
-) -> void:
+func generate_world(world_size: Vector2i, seed: int) -> void:
 	var generator := WorldGenerator.new()
 
 	world_data = generator.generate(

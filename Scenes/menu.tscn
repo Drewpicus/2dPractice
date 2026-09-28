@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://bp8t2k8qgewip"]
 
-[node name="Main2" type="Node2D" unique_id=1894903623]
+[ext_resource type="Script" uid="uid://brrvvy8qx7nln" path="res://Scenes/menu.gd" id="1_1rerr"]
+
+[node name="Menu" type="Node2D" unique_id=1894903623]
+script = ExtResource("1_1rerr")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1477416650]
 
@@ -20,10 +23,12 @@ theme_override_constants/separation = 18
 
 [node name="Port" type="LineEdit" parent="CanvasLayer/VBoxContainer" unique_id=916257246]
 layout_mode = 2
+text = "7777"
 placeholder_text = "Port"
 
-[node name="IP Address" type="LineEdit" parent="CanvasLayer/VBoxContainer" unique_id=796250554]
+[node name="IPAddress" type="LineEdit" parent="CanvasLayer/VBoxContainer" unique_id=796250554]
 layout_mode = 2
+text = "127.0.0.1"
 placeholder_text = "IP Address"
 
 [node name="HostButton" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=1956508985]
@@ -33,3 +38,12 @@ text = "Host Game"
 [node name="JoinButton" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=1004948990]
 layout_mode = 2
 text = "Join Game"
+
+[node name="StartButton" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=1640407458]
+visible = false
+layout_mode = 2
+text = "Start Game"
+
+[node name="StatusLabel" type="Label" parent="CanvasLayer/VBoxContainer" unique_id=1047979574]
+layout_mode = 2
+text = "Not Connected"

@@ -27,7 +27,6 @@ static func build(definition: EntityDefinition) -> Entity:
 	entity.solid = definition.solid
 	
 	entity.z_index = definition.draw_layer
-	print(entity.z_index)
 	
 	for component in definition.components:
 		entity.add_component(component.component_id,component.parameters)

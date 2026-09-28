@@ -2,8 +2,8 @@ extends RefCounted
 class_name WorldGenerator
 
 
-func generate(size: Vector2i, seed: int) -> WorldData:
-	var data := WorldData.new(size, seed)
+func generate(size: Vector2i, _seed: int) -> WorldData:
+	var data := WorldData.new(size, _seed)
 
 	var minimum := data.get_min_cell()
 	var maximum := data.get_max_cell()
