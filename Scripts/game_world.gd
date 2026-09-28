@@ -33,7 +33,7 @@ static func find_world(node: Node) -> GameWorld:
 
 	return null
 
-func spawn_entity(entity_id: StringName, entity_position: Vector2) -> Entity:
+func spawn_entity(entity_id: StringName, entity_position: Vector2, runtime_components: Dictionary = {}) -> Entity:
 	var definition := DefinitionRegistry.get_entity(entity_id)
 
 	if not definition:
@@ -41,7 +41,16 @@ func spawn_entity(entity_id: StringName, entity_position: Vector2) -> Entity:
 		return null
 
 	if not MultiplayerManager.session_active:
-		return EntityFactory.spawn(definition, entity_position, entities)
+		var entity := EntityFactory.spawn(definition, entity_position, entities)
+
+		if not entity:
+			return null
+
+		if not _apply_runtime_components(entity, runtime_components):
+			entity.queue_free()
+			return null
+
+		return entity
 	
 	#vvv MULTIPLAYER BEHAVIOR vvv
 	
@@ -54,7 +63,8 @@ func spawn_entity(entity_id: StringName, entity_position: Vector2) -> Entity:
 	var spawn_data := {
 		"entity_id": String(entity_id),
 		"instance_id": canon_instance_id,
-		"position": entity_position
+		"position": entity_position,
+		"runtime_components": runtime_components
 	}
 	
 	return entity_spawner.spawn(spawn_data) as Entity
@@ -240,10 +250,15 @@ func _spawn_network_entity(data: Variant) -> Node:
 		entity.free()
 		return null
 	
-	var controller_peer_id := int(spawn_data.get("controller_peer_id", 0))
+	var runtime_components = spawn_data.get("runtime_components",{})
 
-	if controller_peer_id > 0:
-		_set_entity_controller(entity, controller_peer_id)
+	if not runtime_components is Dictionary:
+		entity.free()
+		return null
+
+	if not _apply_runtime_components(entity, runtime_components):
+		entity.free()
+		return null
 	
 	# Give the node the same canon name on every peer.
 	entity.name = instance_id
@@ -254,11 +269,39 @@ func _spawn_network_entity(data: Variant) -> Node:
 
 	return entity
 
-func _set_entity_controller(entity: Entity, peer_id: int) -> void:
-	var controller := entity.get_component(&"base:player_controller") as PlayerControllerComponent
+func _apply_runtime_components(
+	entity: Entity,
+	runtime_components: Dictionary
+) -> bool:
+	for component_key in runtime_components:
+		var component_id := StringName(component_key)
 
-	if not controller:
-		push_error("Controlled Entity has no PlayerControllerComponent: %s" % entity.entity_id)
-		return
+		if not GameID.is_valid(component_id):
+			push_error(
+				"Invalid runtime component ID: %s"
+				% component_id
+			)
+			return false
 
-	controller.set_controller_peer(peer_id)
+		var parameters = runtime_components[component_key]
+
+		if not parameters is Dictionary:
+			push_error(
+				"Runtime component parameters must be a Dictionary: %s"
+				% component_id
+			)
+			return false
+
+		var component := entity.add_component(
+			component_id,
+			parameters
+		)
+
+		if not component:
+			push_error(
+				"Could not add runtime component: %s"
+				% component_id
+			)
+			return false
+
+	return true

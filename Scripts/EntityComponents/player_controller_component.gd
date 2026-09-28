@@ -5,7 +5,7 @@ class_name PlayerControllerComponent
 @export var interaction_menu: InteractionMenu
 @export var inventory_menu: InventoryMenu
 
-var controller_peer_id: int = 0
+@export var controller_peer_id: int = 0
 
 @onready var player_camera: Camera2D = $Camera2D
 
