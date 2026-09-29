@@ -8,7 +8,7 @@ class_name GameWorld
 const MOVEMENT_SNAPSHOT_RATE: float = 20.0
 const LOCAL_CORRECTION_SPEED: float = 20.0
 const REMOTE_INTERPOLATION_SPEED: float = 50.0
-const HARD_CORRECTION_DISTANCE: float = 96.0
+const HARD_CORRECTION_DISTANCE: float = 32.0
 
 var _snapshot_timer: float = 0.0
 var _last_movement_sequence: Dictionary[String, int] = {}
@@ -48,7 +48,7 @@ func _process(delta: float) -> void:
 			continue
 
 		if locally_controlled:
-			_correct_local_prediction(entity,target_position,delta)
+			_correct_local_prediction(entity,target_position)
 		else:
 			_interpolate_remote_entity(entity,target_position,delta)
 
@@ -492,16 +492,13 @@ func _receive_movement_snapshot(
 
 		_network_velocities[instance_id] = velocity
 
-func _correct_local_prediction(entity: Entity, target_position: Vector2, delta: float) -> void:
-	var error := (target_position - entity.global_position)
+func _correct_local_prediction(entity: Entity, target_position: Vector2) -> void:
+	var distance := entity.global_position.distance_to(target_position)
 
-	# Tiny differences aren't worth visibly correcting.
-	if error.length_squared() < 2.0:
+	if distance < HARD_CORRECTION_DISTANCE:
 		return
 
-	var correction_amount = min(LOCAL_CORRECTION_SPEED * delta, 1.0) as float
-
-	entity.global_position += (error * correction_amount)
+	entity.global_position = target_position
 
 func _interpolate_remote_entity(entity: Entity,target_position: Vector2,delta: float) -> void:
 	var interpolation_amount := (1.0 - exp(-REMOTE_INTERPOLATION_SPEED * delta))
