@@ -6,6 +6,8 @@ class_name EntityComponent
 var root_entity: Entity
 var _sibling_watchers: Dictionary[StringName, Array] = {}
 
+signal state_changed
+
 func _set_owner(entity: Entity) -> void:
 	root_entity = entity
 
@@ -120,3 +122,6 @@ func serialize_state() -> Dictionary:
 ## Restores this component's mutable runtime state.
 func deserialize_state(_state: Dictionary) -> void:
 	pass
+
+func notify_state_changed() -> void:
+	state_changed.emit()

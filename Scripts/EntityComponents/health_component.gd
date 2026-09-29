@@ -21,6 +21,7 @@ var health: int:
 			return
 
 		health_changed.emit(health)
+		notify_state_changed()
 
 		if health <= 0 and old_health > 0:
 			health_depleted.emit()
@@ -62,6 +63,7 @@ func change_max_health(amount : int, clamp_health : bool = true) -> int:
 		health = clamp(health,0,max_health)
 	if max_health != old_max_health:
 		max_health_changed.emit(max_health)
+		notify_state_changed()
 	return max_health
 
 ##Sets health to amount. If respect_max is true, it automatically trims any health excess of max.
@@ -82,6 +84,7 @@ func set_max_health(amount : int, clamp_health : bool = true) -> int:
 		health = clamp(health,0,max_health)
 	if max_health != old_max_health:
 		max_health_changed.emit(max_health)
+		notify_state_changed()
 	return max_health
 
 ##Returns health

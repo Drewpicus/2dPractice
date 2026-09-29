@@ -104,16 +104,16 @@ func spawn_entity(entity_id: StringName, entity_position: Vector2, runtime_compo
 		return null
 
 	if not MultiplayerManager.session_active:
-		var entity := EntityFactory.spawn(definition, entity_position, entities)
+		var singleplayer_entity := EntityFactory.spawn(definition, entity_position, entities)
 
-		if not entity:
+		if not singleplayer_entity:
 			return null
 
-		if not _apply_runtime_components(entity, runtime_components):
-			entity.queue_free()
+		if not _apply_runtime_components(singleplayer_entity, runtime_components):
+			singleplayer_entity.queue_free()
 			return null
 
-		return entity
+		return singleplayer_entity
 	
 	#vvv MULTIPLAYER BEHAVIOR vvv
 	
@@ -130,7 +130,12 @@ func spawn_entity(entity_id: StringName, entity_position: Vector2, runtime_compo
 		"runtime_components": runtime_components
 	}
 	
-	return entity_spawner.spawn(spawn_data) as Entity
+	var entity := entity_spawner.spawn(spawn_data) as Entity
+
+	if entity:
+		_track_authoritative_entity(entity)
+
+	return entity
 
 func transfer_player_controller(
 	from_entity: Entity,
@@ -569,14 +574,14 @@ func _receive_movement_snapshot(
 
 		var instance_id := String(state.get("instance_id", ""))
 
-		var position = state.get("position",Vector2.ZERO)
+		var _position = state.get("position",Vector2.ZERO)
 
 		var velocity = state.get("velocity",Vector2.ZERO)
 
 		if instance_id.is_empty():
 			continue
 
-		if not position is Vector2:
+		if not _position is Vector2:
 			continue
 
 		if not velocity is Vector2:
@@ -587,7 +592,7 @@ func _receive_movement_snapshot(
 		if not entity:
 			continue
 
-		_network_positions[instance_id] = position
+		_network_positions[instance_id] = _position
 
 		_network_velocities[instance_id] = velocity
 
@@ -727,3 +732,122 @@ func _apply_interaction_request(
 		interactor,
 		target
 	)
+
+func _track_authoritative_entity(entity: Entity) -> void:
+	if not entity:
+		return
+
+	if not entity.component_added.is_connected(
+		_on_tracked_component_added
+	):
+		entity.component_added.connect(
+			_on_tracked_component_added.bind(entity)
+		)
+
+	if not entity.component_removing.is_connected(
+		_on_tracked_component_removing
+	):
+		entity.component_removing.connect(
+			_on_tracked_component_removing.bind(entity)
+		)
+
+	for component in entity.get_components():
+		_track_component(entity, component)
+
+func _on_tracked_component_added(
+	_component_id: StringName,
+	component: EntityComponent,
+	entity: Entity
+) -> void:
+	_track_component(entity, component)
+
+
+func _on_tracked_component_removing(
+	_component_id: StringName,
+	component: EntityComponent,
+	entity: Entity
+) -> void:
+	_untrack_component(entity, component)
+
+func _track_component(
+	entity: Entity,
+	component: EntityComponent
+) -> void:
+	if not component:
+		return
+
+	var callback := _on_component_state_changed.bind(
+		entity,
+		component.component_id
+	)
+
+	if not component.state_changed.is_connected(callback):
+		component.state_changed.connect(callback)
+
+
+func _untrack_component(
+	entity: Entity,
+	component: EntityComponent
+) -> void:
+	if not component:
+		return
+
+	var callback := _on_component_state_changed.bind(
+		entity,
+		component.component_id
+	)
+
+	if component.state_changed.is_connected(callback):
+		component.state_changed.disconnect(callback)
+
+func _on_component_state_changed(
+	entity: Entity,
+	component_id: StringName
+) -> void:
+	if not MultiplayerManager.session_active:
+		return
+
+	if not MultiplayerManager.is_world_authority():
+		return
+
+	if not is_instance_valid(entity):
+		return
+
+	var component := entity.get_component(component_id)
+
+	if not component:
+		return
+
+	_receive_component_state.rpc(
+		entity.instance_id,
+		String(component_id),
+		component.serialize_state()
+	)
+
+@rpc("authority", "call_remote", "reliable", 5)
+func _receive_component_state(
+	entity_instance_id: String,
+	component_id_string: String,
+	state: Dictionary
+) -> void:
+	if multiplayer.is_server():
+		return
+
+	var entity := RuntimeObjectRegistry.get_entity(
+		entity_instance_id
+	)
+
+	if not entity:
+		return
+
+	var component_id := StringName(component_id_string)
+
+	if not GameID.is_valid(component_id):
+		return
+
+	var component := entity.get_component(component_id)
+
+	if not component:
+		return
+
+	component.deserialize_state(state)
