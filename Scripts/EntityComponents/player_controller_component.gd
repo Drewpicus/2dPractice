@@ -84,9 +84,11 @@ func _quick_action(event: InputEvent, input: StringName, component: StringName, 
 			for created_interaction in interactions:
 				if created_interaction.interaction_id == interaction:
 					selected_interaction = created_interaction
-		if selected_interaction:
-			if selected_interaction.can_perform(root_entity,target):
-				selected_interaction.perform(root_entity,target)
+					if selected_interaction:
+						var world := GameWorld.find_world(root_entity)
+						if not world:
+							return
+						world.submit_interaction(selected_interaction,root_entity,target)
 
 
 ##Returns the first Entity at your mouse position. 

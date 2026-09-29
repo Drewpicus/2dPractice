@@ -132,14 +132,77 @@ func spawn_entity(entity_id: StringName, entity_position: Vector2, runtime_compo
 	
 	return entity_spawner.spawn(spawn_data) as Entity
 
-func transfer_player_controller(from_entity: Entity, to_entity: Entity) -> bool:
+func transfer_player_controller(
+	from_entity: Entity,
+	to_entity: Entity
+) -> bool:
+	if (
+		MultiplayerManager.session_active
+		and not MultiplayerManager.is_world_authority()
+	):
+		return false
+
+	var controller := from_entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return false
+
+	var peer_id := controller.controller_peer_id
+
+	if not _apply_player_controller_transfer(
+		from_entity,
+		to_entity
+	):
+		return false
+
+	if MultiplayerManager.session_active:
+		_receive_player_controller_transfer.rpc(
+			from_entity.instance_id,
+			to_entity.instance_id,
+			peer_id
+		)
+
+	return true
+
+func _apply_player_controller_transfer(
+	from_entity: Entity,
+	to_entity: Entity
+) -> bool:
 	if not from_entity or not to_entity:
 		return false
 
-	if to_entity.has_component(&"base:player_controller"):
+	if to_entity.has_component(
+		&"base:player_controller"
+	):
 		return false
 
-	var controller := from_entity.detach_component(&"base:player_controller") as PlayerControllerComponent
+	var controller := from_entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return false
+
+	# Don't leave either body moving from an old input source.
+	var old_movement := from_entity.get_component(
+		&"base:movement"
+	) as MovementComponent
+
+	if old_movement:
+		old_movement.input_direction = Vector2.ZERO
+
+	var target_movement := to_entity.get_component(
+		&"base:movement"
+	) as MovementComponent
+
+	if target_movement:
+		target_movement.input_direction = Vector2.ZERO
+
+	controller = from_entity.detach_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
 
 	if not controller:
 		return false
@@ -149,6 +212,42 @@ func transfer_player_controller(from_entity: Entity, to_entity: Entity) -> bool:
 		return false
 
 	return true
+
+@rpc("authority", "call_remote", "reliable", 4)
+func _receive_player_controller_transfer(
+	from_instance_id: String,
+	to_instance_id: String,
+	controller_peer_id: int
+) -> void:
+	if multiplayer.is_server():
+		return
+
+	var from_entity := RuntimeObjectRegistry.get_entity(
+		from_instance_id
+	)
+
+	var to_entity := RuntimeObjectRegistry.get_entity(
+		to_instance_id
+	)
+
+	if not from_entity or not to_entity:
+		return
+
+	var controller := from_entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	# Sanity check: we're moving the same player's controller.
+	if controller.controller_peer_id != controller_peer_id:
+		return
+
+	_apply_player_controller_transfer(
+		from_entity,
+		to_entity
+	)
 
 func remove_entity(entity: Entity) -> void:
 	if not entity:
@@ -504,3 +603,127 @@ func _interpolate_remote_entity(entity: Entity,target_position: Vector2,delta: f
 	var interpolation_amount := (1.0 - exp(-REMOTE_INTERPOLATION_SPEED * delta))
 
 	entity.global_position = (entity.global_position.lerp(target_position,interpolation_amount))
+
+func submit_interaction(
+	interaction: Interaction,
+	interactor: Entity,
+	target: Entity
+) -> void:
+	if not interaction or not interactor or not target:
+		return
+
+	if not interaction.can_perform(interactor, target):
+		return
+
+	# Presentation-only/local interactions.
+	if not interaction.requires_authority():
+		interaction.perform(interactor, target)
+		return
+
+	# Singleplayer.
+	if not MultiplayerManager.session_active:
+		interaction.perform(interactor, target)
+		return
+
+	var controller := interactor.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if not controller.is_locally_controlled():
+		return
+
+	# Host player can execute directly through the authoritative path.
+	if multiplayer.is_server():
+		_apply_interaction_request(
+			multiplayer.get_unique_id(),
+			interaction.interaction_id,
+			interactor.instance_id,
+			target.instance_id
+		)
+		return
+
+	_receive_interaction_request.rpc_id(
+		1,
+		String(interaction.interaction_id),
+		interactor.instance_id,
+		target.instance_id
+	)
+
+@rpc("any_peer", "call_remote", "reliable", 3)
+func _receive_interaction_request(
+	interaction_id_string: String,
+	interactor_instance_id: String,
+	target_instance_id: String
+) -> void:
+	if not multiplayer.is_server():
+		return
+
+	_apply_interaction_request(
+		multiplayer.get_remote_sender_id(),
+		StringName(interaction_id_string),
+		interactor_instance_id,
+		target_instance_id
+	)
+
+func _apply_interaction_request(
+	sender_peer_id: int,
+	interaction_id: StringName,
+	interactor_instance_id: String,
+	target_instance_id: String
+) -> void:
+	var interactor := RuntimeObjectRegistry.get_entity(
+		interactor_instance_id
+	)
+
+	var target := RuntimeObjectRegistry.get_entity(
+		target_instance_id
+	)
+
+	if not interactor or not target:
+		return
+
+	var controller := interactor.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	# Client may only act through the Entity it currently controls.
+	if controller.controller_peer_id != sender_peer_id:
+		return
+
+	var interactable := target.get_component(
+		&"base:interactable"
+	) as InteractableComponent
+
+	if not interactable:
+		return
+
+	# Reconstruct the interaction from the HOST'S world state.
+	var selected_interaction: Interaction
+
+	for interaction in interactable.get_interactions(interactor):
+		if interaction.interaction_id == interaction_id:
+			selected_interaction = interaction
+			break
+
+	if not selected_interaction:
+		return
+
+	if not selected_interaction.requires_authority():
+		return
+
+	if not selected_interaction.can_perform(
+		interactor,
+		target
+	):
+		return
+
+	selected_interaction.perform(
+		interactor,
+		target
+	)

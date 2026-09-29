@@ -27,3 +27,6 @@ func perform(_interactor: Entity, _target: Entity) -> void:
 	target_health.damage(int(attack_damage))
 	
 	print("%s attacks %s for %d damage!" % [_interactor.entity_name,_target.entity_name,attack_damage])
+
+func requires_authority() -> bool:
+	return true

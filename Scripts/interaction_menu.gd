@@ -58,7 +58,20 @@ func _rebuild_buttons() -> void:
 
 func _on_button_pressed(button: Button) -> void:
 	var id := button.get_index()
-	_interactions[id].perform(_interactor, _target)
+	var interaction = _interactions[id]
+
+	var world := GameWorld.find_world(
+		_interactor
+	)
+
+	if world:
+		world.submit_interaction(
+			interaction,
+			_interactor,
+			_target
+		)
+
+	hide()
 	hide()
 
 func _on_empty_pressed() -> void:

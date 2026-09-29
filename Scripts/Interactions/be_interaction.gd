@@ -24,3 +24,6 @@ func perform(_interactor: Entity, _target: Entity) -> void:
 		return
 	
 	world.transfer_player_controller(_interactor, _target)
+
+func requires_authority() -> bool:
+	return true
