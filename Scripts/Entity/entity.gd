@@ -115,6 +115,45 @@ func remove_component(component_id: StringName) -> void:
 	component._clear_owner()
 	component.queue_free()
 
+##Attach an already-built component to the entity
+func attach_component(component: EntityComponent) -> bool:
+	if not component:
+		return false
+
+	if has_component(component.component_id):
+		return false
+
+	var folder := _get_components_folder()
+
+	if not folder:
+		return false
+
+	if not _register_component(component):
+		return false
+
+	folder.add_child(component)
+
+	return true
+
+##Pluck a component out of an entity's components, properties intact and able to be re-parented
+func detach_component(component_id: StringName) -> EntityComponent:
+	var component := get_component(component_id)
+
+	if not component:
+		return null
+
+	component.on_removing()
+	component_removing.emit(component_id, component)
+
+	_components.erase(component_id)
+
+	component._clear_owner()
+
+	if component.get_parent():
+		component.get_parent().remove_child(component)
+
+	return component
+
 ##Returns true if the Entity has the given component
 func has_component(component_id: StringName) -> bool:
 	return _components.has(component_id)

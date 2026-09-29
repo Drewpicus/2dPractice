@@ -1,8 +1,6 @@
 extends EntityComponent
 class_name MovementComponent
 
-var ai_component : AIControllerComponent
-
 @export var base_speed : float = 200
 
 var input_direction : Vector2 = Vector2.ZERO

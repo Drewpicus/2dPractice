@@ -9,6 +9,12 @@ class_name PlayerControllerComponent
 
 @onready var player_camera: Camera2D = $Camera2D
 
+func on_added() -> void:
+	watch_sibling(&"base:movement",_set_movement_component)
+
+func _set_movement_component(component: MovementComponent) -> void:
+	movement_component = component
+
 func _ready() -> void:
 	var component_folder = get_parent()
 	if not component_folder:
@@ -16,7 +22,6 @@ func _ready() -> void:
 		return
 	if not inventory_menu:
 		inventory_menu = get_tree().root.get_node_or_null("Main/UI/InventoryMenu")
-	movement_component = get_component(&"base:movement")
 	if not interaction_menu:
 		interaction_menu = get_tree().root.get_node_or_null("Main/UI/InteractionMenu")
 	

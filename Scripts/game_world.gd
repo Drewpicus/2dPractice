@@ -73,24 +73,17 @@ func transfer_player_controller(from_entity: Entity, to_entity: Entity) -> bool:
 	if not from_entity or not to_entity:
 		return false
 
-	var controller := from_entity.get_component(&"base:player_controller") as PlayerControllerComponent
+	if to_entity.has_component(&"base:player_controller"):
+		return false
+
+	var controller := from_entity.detach_component(&"base:player_controller") as PlayerControllerComponent
 
 	if not controller:
 		return false
 
-	if to_entity.has_component(&"base:player_controller"):
+	if not to_entity.attach_component(controller):
+		from_entity.attach_component(controller)
 		return false
-
-	var peer_id := controller.controller_peer_id
-
-	from_entity.remove_component(&"base:player_controller")
-
-	var new_controller := to_entity.add_component(&"base:player_controller") as PlayerControllerComponent
-
-	if not new_controller:
-		return false
-
-	new_controller.set_controller_peer(peer_id)
 
 	return true
 
