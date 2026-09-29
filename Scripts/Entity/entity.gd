@@ -316,19 +316,3 @@ func restore_instance_id(saved_instance_id: String) -> bool:
 
 	instance_id = saved_instance_id
 	return true
-
-func set_physical_collision_enabled(enabled: bool) -> void:
-	if not collision:
-		collision = get_node_or_null("CollisionShape2D")
-
-	if not collision:
-		return
-
-	# A non-solid Entity should never gain physical collision
-	# just because networking asks for it.
-	var should_enable := enabled and solid
-
-	collision.set_deferred(
-		"disabled",
-		not should_enable
-	)
