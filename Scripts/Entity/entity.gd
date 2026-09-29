@@ -17,11 +17,14 @@ func _init() -> void:
 	RuntimeObjectRegistry.register(self, instance_id)
 
 func _ready() -> void:
-	var health_component := get_component(&"base:health") as HealthComponent
+	var health_component := get_component(
+		&"base:health"
+	) as HealthComponent
+
 	if health_component:
 		health_component.health_depleted.connect(die)
-	if not solid:
-		collision.disabled = true
+
+	set_physical_collision_enabled(true)
 
 func _register_component(component: EntityComponent) -> bool:
 	if not component:
@@ -312,3 +315,19 @@ func restore_instance_id(saved_instance_id: String) -> bool:
 
 	instance_id = saved_instance_id
 	return true
+
+func set_physical_collision_enabled(enabled: bool) -> void:
+	if not collision:
+		collision = get_node_or_null("CollisionShape2D")
+
+	if not collision:
+		return
+
+	# A non-solid Entity should never gain physical collision
+	# just because networking asks for it.
+	var should_enable := enabled and solid
+
+	collision.set_deferred(
+		"disabled",
+		not should_enable
+	)
