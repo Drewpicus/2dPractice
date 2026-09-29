@@ -7,6 +7,8 @@ class_name PlayerControllerComponent
 
 @export var controller_peer_id: int = 0
 
+var movement_sequence: int = 0
+
 @onready var player_camera: Camera2D = $Camera2D
 
 func on_added() -> void:
@@ -27,14 +29,23 @@ func _ready() -> void:
 	
 	_update_local_control()
 
-func _process(_delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if not is_locally_controlled():
 		return
-	
+
 	if not movement_component:
 		return
-	var dir = Input.get_vector("move_left","move_right","move_up","move_down")
-	movement_component.input_direction = dir
+
+	var direction := Input.get_vector("move_left","move_right","move_up","move_down")
+
+	movement_sequence += 1
+
+	var world := GameWorld.find_world(root_entity)
+
+	if not world:
+		return
+
+	world.submit_movement_input(root_entity, movement_sequence, direction)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_locally_controlled():

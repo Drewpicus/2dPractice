@@ -21,6 +21,9 @@ func _set_pc_component(component: PlayerControllerComponent) -> void:
 	enabled = pc_component == null
 
 func _process(delta: float) -> void:
+	if not MultiplayerManager.is_world_authority():
+		return
+	
 	if enabled:
 		if not movement_component:
 			return
