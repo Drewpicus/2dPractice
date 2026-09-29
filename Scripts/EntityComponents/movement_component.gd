@@ -10,7 +10,7 @@ func on_added() -> void:
 	watch_sibling(&"base:player_controller",_set_player_controller)
 
 func _ready() -> void:
-	_update_network_collision()
+	call_deferred("_update_network_collision")
 
 func _physics_process(_delta: float) -> void:
 	if not root_entity:

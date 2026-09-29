@@ -24,7 +24,8 @@ func _ready() -> void:
 	if health_component:
 		health_component.health_depleted.connect(die)
 
-	set_physical_collision_enabled(true)
+	if not solid:
+		collision.disabled = true
 
 func _register_component(component: EntityComponent) -> bool:
 	if not component:
