@@ -4,7 +4,7 @@ class_name EquipmentComponent
 @export var slots: Array
 @export var use_default_slots: bool = true
 var default_slots: Array[StringName] = [&"mainhand",&"offhand",&"head",&"chest",&"legs",&"feet"]
-var equipment: Dictionary[StringName,Item] = {}
+var equipment: Dictionary = {}
 var _inventory: InventoryComponent
 
 signal equipment_updated

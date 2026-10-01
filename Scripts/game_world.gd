@@ -11,6 +11,11 @@ const MOVEMENT_SNAPSHOT_RATE: float = 20.0
 const REMOTE_VISUAL_INTERPOLATION_SPEED: float = 50.0
 const REMOTE_VISUAL_TELEPORT_DISTANCE: float = 160.0
 
+const COMMAND_INTERACTION := &"base:interaction"
+const COMMAND_TAKE_ITEM := &"base:take_item"
+const COMMAND_EQUIP_ITEM := &"base:equip_item"
+const COMMAND_UNEQUIP_ITEM := &"base:unequip_item"
+
 var _snapshot_timer: float = 0.0
 var _last_movement_sequence: Dictionary[int, int] = {}
 var _last_simulated_movement_sequence: Dictionary[int, int] = {}
@@ -866,29 +871,15 @@ func _interpolate_remote_visual(
 		interpolation_amount
 	)
 
-
-func submit_interaction(
-	interaction: Interaction,
-	interactor: Entity,
-	target: Entity
+func submit_command(
+	command_id: StringName,
+	actor: Entity,
+	arguments: Dictionary = {}
 ) -> void:
-	if not interaction or not interactor or not target:
+	if not actor:
 		return
 
-	if not interaction.can_perform(interactor, target):
-		return
-
-	# Presentation-only/local interactions.
-	if not interaction.requires_authority():
-		interaction.perform(interactor, target)
-		return
-
-	# Singleplayer.
-	if not MultiplayerManager.session_active:
-		interaction.perform(interactor, target)
-		return
-
-	var controller := interactor.get_component(
+	var controller := actor.get_component(
 		&"base:player_controller"
 	) as PlayerControllerComponent
 
@@ -898,37 +889,130 @@ func submit_interaction(
 	if not controller.is_locally_controlled():
 		return
 
-	# Host player can execute directly through the authoritative path.
-	if multiplayer.is_server():
-		_apply_interaction_request(
+	if MultiplayerManager.is_world_authority():
+		_apply_command(
 			multiplayer.get_unique_id(),
-			interaction.interaction_id,
-			interactor.instance_id,
-			target.instance_id
+			command_id,
+			arguments
 		)
 		return
 
-	_receive_interaction_request.rpc_id(
+	_receive_command.rpc_id(
 		1,
-		String(interaction.interaction_id),
-		interactor.instance_id,
-		target.instance_id
+		String(command_id),
+		arguments
 	)
 
 @rpc("any_peer", "call_remote", "reliable", 3)
-func _receive_interaction_request(
-	interaction_id_string: String,
-	interactor_instance_id: String,
-	target_instance_id: String
+func _receive_command(
+	command_id_string: String,
+	arguments: Dictionary
 ) -> void:
-	if not multiplayer.is_server():
+	if not MultiplayerManager.is_world_authority():
 		return
 
-	_apply_interaction_request(
+	_apply_command(
 		multiplayer.get_remote_sender_id(),
-		StringName(interaction_id_string),
-		interactor_instance_id,
-		target_instance_id
+		StringName(command_id_string),
+		arguments
+	)
+
+func _apply_command(
+	sender_peer_id: int,
+	command_id: StringName,
+	arguments: Dictionary
+) -> void:
+	match command_id:
+		COMMAND_INTERACTION:
+			_apply_interaction_request(
+				sender_peer_id,
+				StringName(
+					arguments.get("interaction_id", "")
+				),
+				String(
+					arguments.get("interactor_id", "")
+				),
+				String(
+					arguments.get("target_id", "")
+				)
+			)
+
+		COMMAND_TAKE_ITEM:
+			_apply_take_item_request(
+				sender_peer_id,
+				String(
+					arguments.get("viewer_id", "")
+				),
+				String(
+					arguments.get("source_id", "")
+				),
+				String(
+					arguments.get("item_id", "")
+				)
+			)
+
+		COMMAND_EQUIP_ITEM:
+			_apply_equip_item_request(
+				sender_peer_id,
+				String(
+					arguments.get("entity_id", "")
+				),
+				String(
+					arguments.get("item_id", "")
+				),
+				StringName(
+					arguments.get("slot", "")
+				)
+			)
+
+		COMMAND_UNEQUIP_ITEM:
+			_apply_unequip_item_request(
+				sender_peer_id,
+				String(
+					arguments.get("entity_id", "")
+				),
+				StringName(
+					arguments.get("slot", "")
+				)
+			)
+
+		_:
+			push_warning(
+				"Unknown command ID: %s"
+				% command_id
+			)
+
+func submit_interaction(
+	interaction: Interaction,
+	interactor: Entity,
+	target: Entity
+) -> void:
+	if not interaction or not interactor or not target:
+		return
+
+	if not interaction.can_perform(
+		interactor,
+		target
+	):
+		return
+
+	if not interaction.requires_authority():
+		interaction.perform(
+			interactor,
+			target
+		)
+		return
+
+	submit_command(
+		COMMAND_INTERACTION,
+		interactor,
+		{
+			"interaction_id": String(
+				interaction.interaction_id
+			),
+			"interactor_id": interactor.instance_id,
+			"target_id": target.instance_id
+		}
 	)
 
 func _apply_interaction_request(
@@ -1433,54 +1517,14 @@ func submit_take_item(
 	if not viewer or not source or not item:
 		return
 
-	if not MultiplayerManager.session_active:
-		_perform_take_item(
-			viewer,
-			source,
-			item
-		)
-		return
-
-	var controller := viewer.get_component(
-		&"base:player_controller"
-	) as PlayerControllerComponent
-
-	if not controller:
-		return
-
-	if not controller.is_locally_controlled():
-		return
-
-	if multiplayer.is_server():
-		_apply_take_item_request(
-			multiplayer.get_unique_id(),
-			viewer.instance_id,
-			source.instance_id,
-			item.instance_id
-		)
-		return
-
-	_receive_take_item_request.rpc_id(
-		1,
-		viewer.instance_id,
-		source.instance_id,
-		item.instance_id
-	)
-
-@rpc("any_peer", "call_remote", "reliable", 3)
-func _receive_take_item_request(
-	viewer_instance_id: String,
-	source_instance_id: String,
-	item_instance_id: String
-) -> void:
-	if not multiplayer.is_server():
-		return
-
-	_apply_take_item_request(
-		multiplayer.get_remote_sender_id(),
-		viewer_instance_id,
-		source_instance_id,
-		item_instance_id
+	submit_command(
+		COMMAND_TAKE_ITEM,
+		viewer,
+		{
+			"viewer_id": viewer.instance_id,
+			"source_id": source.instance_id,
+			"item_id": item.instance_id
+		}
 	)
 
 func _apply_take_item_request(
@@ -1573,50 +1617,14 @@ func submit_equip_item(
 	if not entity or not item:
 		return
 
-	if not MultiplayerManager.session_active:
-		_perform_equip_item(entity, item, slot)
-		return
-
-	var controller := entity.get_component(
-		&"base:player_controller"
-	) as PlayerControllerComponent
-
-	if not controller:
-		return
-
-	if not controller.is_locally_controlled():
-		return
-
-	if multiplayer.is_server():
-		_apply_equip_item_request(
-			multiplayer.get_unique_id(),
-			entity.instance_id,
-			item.instance_id,
-			slot
-		)
-		return
-
-	_receive_equip_item_request.rpc_id(
-		1,
-		entity.instance_id,
-		item.instance_id,
-		String(slot)
-	)
-
-@rpc("any_peer", "call_remote", "reliable", 3)
-func _receive_equip_item_request(
-	entity_instance_id: String,
-	item_instance_id: String,
-	slot_string: String
-) -> void:
-	if not multiplayer.is_server():
-		return
-
-	_apply_equip_item_request(
-		multiplayer.get_remote_sender_id(),
-		entity_instance_id,
-		item_instance_id,
-		StringName(slot_string)
+	submit_command(
+		COMMAND_EQUIP_ITEM,
+		entity,
+		{
+			"entity_id": entity.instance_id,
+			"item_id": item.instance_id,
+			"slot": String(slot)
+		}
 	)
 
 func _apply_equip_item_request(
@@ -1676,46 +1684,13 @@ func submit_unequip_item(
 	if not entity:
 		return
 
-	if not MultiplayerManager.session_active:
-		_perform_unequip_item(entity, slot)
-		return
-
-	var controller := entity.get_component(
-		&"base:player_controller"
-	) as PlayerControllerComponent
-
-	if not controller:
-		return
-
-	if not controller.is_locally_controlled():
-		return
-
-	if multiplayer.is_server():
-		_apply_unequip_item_request(
-			multiplayer.get_unique_id(),
-			entity.instance_id,
-			slot
-		)
-		return
-
-	_receive_unequip_item_request.rpc_id(
-		1,
-		entity.instance_id,
-		String(slot)
-	)
-
-@rpc("any_peer", "call_remote", "reliable", 3)
-func _receive_unequip_item_request(
-	entity_instance_id: String,
-	slot_string: String
-) -> void:
-	if not multiplayer.is_server():
-		return
-
-	_apply_unequip_item_request(
-		multiplayer.get_remote_sender_id(),
-		entity_instance_id,
-		StringName(slot_string)
+	submit_command(
+		COMMAND_UNEQUIP_ITEM,
+		entity,
+		{
+			"entity_id": entity.instance_id,
+			"slot": String(slot)
+		}
 	)
 
 func _apply_unequip_item_request(

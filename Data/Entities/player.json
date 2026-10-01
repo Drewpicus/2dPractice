@@ -44,7 +44,7 @@
 		{
 			"component_id": "base:movement",
 			"parameters":{
-				"base_speed": 200
+				"base_speed": 100
 			}
 		},
 		{
