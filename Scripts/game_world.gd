@@ -21,6 +21,13 @@ var world_data: WorldData
 func _ready() -> void:
 	entity_spawner.spawn_function = _spawn_network_entity
 
+	if not MultiplayerManager.peer_left.is_connected(
+		_on_peer_left
+	):
+		MultiplayerManager.peer_left.connect(
+			_on_peer_left
+		)
+
 func _process(delta: float) -> void:
 	if not MultiplayerManager.session_active:
 		return
@@ -1392,3 +1399,102 @@ func _perform_unequip_item(
 		return false
 
 	return equipment.unequip(slot) != null
+
+func _on_peer_left(peer_id: int) -> void:
+	if not MultiplayerManager.session_active:
+		return
+
+	if not MultiplayerManager.is_world_authority():
+		return
+
+	_last_movement_sequence.erase(peer_id)
+
+	for entity in get_entities():
+		var controller := entity.get_component(
+			&"base:player_controller"
+		) as PlayerControllerComponent
+
+		if not controller:
+			continue
+
+		if controller.controller_peer_id != peer_id:
+			continue
+
+		_remove_disconnected_player_controller(
+			entity,
+			peer_id
+		)
+
+func _remove_disconnected_player_controller(
+	entity: Entity,
+	peer_id: int
+) -> void:
+	if not entity:
+		return
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if controller.controller_peer_id != peer_id:
+		return
+
+	var movement := entity.get_component(
+		&"base:movement"
+	) as MovementComponent
+
+	if movement:
+		movement.input_direction = Vector2.ZERO
+
+	entity.velocity = Vector2.ZERO
+
+	entity.remove_component(
+		&"base:player_controller"
+	)
+
+	if MultiplayerManager.session_active:
+		_receive_player_controller_removed.rpc(
+			entity.instance_id,
+			peer_id
+		)
+
+@rpc("authority", "call_remote", "reliable", 4)
+func _receive_player_controller_removed(
+	entity_instance_id: String,
+	peer_id: int
+) -> void:
+	if multiplayer.is_server():
+		return
+
+	var entity := RuntimeObjectRegistry.get_entity(
+		entity_instance_id
+	)
+
+	if not entity:
+		return
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if controller.controller_peer_id != peer_id:
+		return
+
+	var movement := entity.get_component(
+		&"base:movement"
+	) as MovementComponent
+
+	if movement:
+		movement.input_direction = Vector2.ZERO
+
+	entity.velocity = Vector2.ZERO
+
+	entity.remove_component(
+		&"base:player_controller"
+	)
