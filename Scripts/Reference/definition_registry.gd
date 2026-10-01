@@ -3,6 +3,7 @@ class_name DefinitionRegistry
 
 static var _entity_definitions: Dictionary[StringName, EntityDefinition] = {}
 static var _item_definitions: Dictionary[StringName, ItemDefinition] = {}
+static var _element_definitions: Dictionary[StringName, ElementDefinition] = {}
 
 
 static func register_entity(definition: EntityDefinition) -> bool:
@@ -36,23 +37,41 @@ static func register_item(definition: ItemDefinition) -> bool:
 	_item_definitions[definition.item_id] = definition
 	return true
 
+static func register_element(definition: ElementDefinition) -> bool:
+	if not definition:
+		return false
+
+	if not GameID.is_valid(definition.element_id):
+		push_error("Cannot register ElementDefinition with invalid ID: %s" % definition.element_id)
+		return false
+
+	if _entity_definitions.has(definition.element_id):
+		push_error("ElementDefinition ID already registered: %s" % definition.element_id)
+		return false
+
+	_element_definitions[definition.element_id] = definition
+	return true
 
 static func get_entity(entity_id: StringName) -> EntityDefinition:
 	return _entity_definitions.get(entity_id)
 
-
 static func get_item(item_id: StringName) -> ItemDefinition:
 	return _item_definitions.get(item_id)
+
+static func get_element(item_id: StringName) -> ElementDefinition:
+	return _element_definitions.get(item_id)
 
 
 static func has_entity(entity_id: StringName) -> bool:
 	return _entity_definitions.has(entity_id)
 
-
 static func has_item(item_id: StringName) -> bool:
 	return _item_definitions.has(item_id)
 
+static func has_element(item_id: StringName) -> bool:
+	return _element_definitions.has(item_id)
 
 static func clear() -> void:
 	_entity_definitions.clear()
 	_item_definitions.clear()
+	_element_definitions.clear()

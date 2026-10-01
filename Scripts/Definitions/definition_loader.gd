@@ -3,13 +3,14 @@ class_name DefinitionLoader
 
 const ITEM_DIRECTORY := "res://Data/Items"
 const ENTITY_DIRECTORY := "res://Data/Entities"
-
+const ELEMENT_DIRECTORY := "res://Data/Elements"
 
 static func load_all_definitions() -> void:
 	DefinitionRegistry.clear()
 
 	_load_item_directory(ITEM_DIRECTORY)
 	_load_entity_directory(ENTITY_DIRECTORY)
+	_load_element_directory(ELEMENT_DIRECTORY)
 
 
 static func _load_item_directory(directory_path: String) -> void:
@@ -40,6 +41,20 @@ static func _load_entity_directory(directory_path: String) -> void:
 
 		if definition:
 			DefinitionRegistry.register_entity(definition)
+
+static func _load_element_directory(directory_path: String) -> void:
+	var files := DirAccess.get_files_at(directory_path)
+	files.sort()
+
+	for file_name in files:
+		if not file_name.ends_with(".json"):
+			continue
+
+		var path := directory_path.path_join(file_name)
+		var definition := load_element_definition(path)
+
+		if definition:
+			DefinitionRegistry.register_element(definition)
 
 static func load_entity_definition(path: String) -> EntityDefinition:
 	var data := _load_json(path)
@@ -170,6 +185,24 @@ static func load_item_definition(path: String) -> ItemDefinition:
 
 		component_definition.parameters = parameters
 		definition.components.append(component_definition)
+
+	return definition
+
+static func load_element_definition(path: String) -> ElementDefinition:
+	var data := _load_json(path)
+
+	if data.is_empty():
+		return null
+
+	var definition := ElementDefinition.new()
+
+	definition.element_id = StringName(data.get("element_id", ""))
+
+	if not GameID.is_valid(definition.element_id):
+		push_error("Invalid element ID in definition %s: %s" % [path, definition.element_id])
+		return null
+
+	definition.element_name = String(data.get("element_name", ""))
 
 	return definition
 
