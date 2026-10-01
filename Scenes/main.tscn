@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://kkiu6rl0qgva" path="res://Scenes/terrain_renderer.gd" id="3_kry3j"]
 [ext_resource type="Texture2D" uid="uid://c3epolurdv6oy" path="res://dirt.png" id="4_ynf5e"]
 [ext_resource type="Texture2D" uid="uid://d00aiep580vns" path="res://water.png" id="5_hptm8"]
+[ext_resource type="Script" uid="uid://7q0bjdssm656" path="res://Scripts/World/world_command_system.gd" id="7_ynf5e"]
 [ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/interaction_menu.gd" id="21_o1aky"]
 [ext_resource type="Script" uid="uid://cpefuibv0hxx" path="res://Scripts/inventory_menu.gd" id="22_kwxat"]
 
@@ -52,6 +53,7 @@ y_sort_enabled = true
 spawn_path = NodePath("../Entities")
 
 [node name="CommandSystem" type="Node" parent="GameWorld" unique_id=94422178]
+script = ExtResource("7_ynf5e")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1044784727]
 
