@@ -425,11 +425,6 @@ func clear_runtime_state() -> void:
 			entity
 		)
 
-		if entity.get_parent() == entities:
-			entities.remove_child(entity)
-
-		entity.queue_free()
-
 		# Remove immediately from the container so reconstructed
 		# Entities can reuse readable names like "Player".
 		if entity.get_parent() == entities:

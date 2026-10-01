@@ -316,3 +316,16 @@ func restore_instance_id(saved_instance_id: String) -> bool:
 
 	instance_id = saved_instance_id
 	return true
+
+func is_simulated_locally() -> bool:
+	if MultiplayerManager.is_world_authority():
+		return true
+
+	var controller := get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return false
+
+	return controller.is_locally_controlled()
