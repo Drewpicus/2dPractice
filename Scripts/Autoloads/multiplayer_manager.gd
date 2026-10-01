@@ -1,19 +1,19 @@
 extends Node
 
-signal status_changed(message: String)
-signal session_role_changed(is_host: bool)
-signal peer_joined(peer_id: int)
-signal peer_left(peer_id: int)
-signal game_ready
-
 const MAX_PLAYERS: int = 4
 const GAME_SCENE: String = "res://Scenes/main.tscn"
 
 var is_host: bool = false
 var session_active: bool = false
-
+var game_started: bool = false
 var _waiting_for_load: bool = false
 var _loaded_peers: Dictionary[int, bool] = {}
+
+signal status_changed(message: String)
+signal session_role_changed(is_host: bool)
+signal peer_joined(peer_id: int)
+signal peer_left(peer_id: int)
+signal game_ready
 
 func _ready() -> void:
 	multiplayer.peer_connected.connect(_on_peer_connected)
@@ -132,6 +132,7 @@ func _check_all_peers_loaded() -> void:
 			return
 
 	_waiting_for_load = false
+	game_started = true
 
 	print("Every peer has loaded the game.")
 
@@ -155,19 +156,34 @@ func _reset_session() -> void:
 
 	is_host = false
 	session_active = false
+	game_started = false
 	_waiting_for_load = false
 	_loaded_peers.clear()
 
 	session_role_changed.emit(false)
 
-
+##NOTE: This just blocks late joins, that will need to be changed in the future somehow
 func _on_peer_connected(peer_id: int) -> void:
 	print("Peer connected: ", peer_id)
+
+	if is_host and game_started:
+		print(
+			"Rejecting peer %s: game already started."
+			% peer_id
+		)
+
+		multiplayer.multiplayer_peer.disconnect_peer(
+			peer_id
+		)
+		return
 
 	peer_joined.emit(peer_id)
 
 	if is_host:
-		status_changed.emit("Peer %s joined." % peer_id)
+		status_changed.emit(
+			"Peer %s joined."
+			% peer_id
+		)
 
 
 func _on_peer_disconnected(peer_id: int) -> void:
