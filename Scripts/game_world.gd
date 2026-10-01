@@ -48,7 +48,8 @@ static func find_world(node: Node) -> GameWorld:
 func spawn_entity(
 	entity_id: StringName,
 	entity_position: Vector2,
-	runtime_components: Dictionary = {}
+	runtime_components: Dictionary = {},
+	initial_component_states: Dictionary = {}
 ) -> Entity:
 	if not MultiplayerManager.is_world_authority():
 		push_error(
@@ -72,7 +73,8 @@ func spawn_entity(
 		"entity_id": String(entity_id),
 		"instance_id": instance_id,
 		"position": entity_position,
-		"runtime_components": runtime_components
+		"runtime_components": runtime_components,
+		"initial_component_states": initial_component_states
 	}
 
 	var entity := entity_spawner.spawn(
@@ -479,6 +481,37 @@ func _spawn_network_entity(data: Variant) -> Node:
 	if not _apply_runtime_components(entity, runtime_components):
 		entity.free()
 		return null
+	
+	var initial_component_states = spawn_data.get("initial_component_states",{})
+
+	if not initial_component_states is Dictionary:
+		entity.free()
+		return null
+
+	for component_key in initial_component_states:
+		var component_id := StringName(component_key)
+
+		if not GameID.is_valid(component_id):
+			entity.free()
+			return null
+
+		var state = initial_component_states[
+			component_key
+		]
+
+		if not state is Dictionary:
+			entity.free()
+			return null
+
+		var component := entity.get_component(
+			component_id
+		)
+
+		if not component:
+			entity.free()
+			return null
+
+		component.deserialize_state(state)
 	
 	# Give the node the same canon name on every peer.
 	entity.name = instance_id

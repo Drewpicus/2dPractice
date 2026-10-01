@@ -8,25 +8,44 @@ class_name RemainsComponent
 
 func spawn_remains() -> Entity:
 	if not GameID.is_valid(remains_id):
-		push_error("Invalid remains ID: %s" % remains_id)
+		push_error(
+			"Invalid remains ID: %s"
+			% remains_id
+		)
 		return null
 
-	var world := GameWorld.find_world(root_entity)
+	var world := GameWorld.find_world(
+		root_entity
+	)
 
 	if not world:
-		push_error("Could not find GameWorld for remains spawn.")
+		push_error(
+			"Could not find GameWorld for remains spawn."
+		)
 		return null
 
-	var remains_entity := world.spawn_entity(remains_id, root_entity.global_position)
+	var inventory := get_component(
+		&"base:inventory"
+	) as InventoryComponent
+
+	var initial_states := {}
+
+	if inventory:
+		initial_states[
+			"base:inventory"
+		] = inventory.serialize_state()
+
+	var remains_entity := world.spawn_entity(
+		remains_id,
+		root_entity.global_position,
+		{},
+		initial_states
+	)
 
 	if not remains_entity:
 		return null
 
-	var inventory = get_component(&"base:inventory") as InventoryComponent
 	if inventory:
-		var remains_inventory = remains_entity.get_component(&"base:inventory") as InventoryComponent
-		if remains_inventory:
-			var all_items = inventory.take_all_items()
-			remains_inventory.add_items(all_items)
-		
+		inventory.take_all_items()
+
 	return remains_entity
