@@ -8,13 +8,15 @@ var _items: Dictionary[String, Item] = {}
 @onready var entity_spawner: MultiplayerSpawner = $EntitySpawner
 
 const MOVEMENT_SNAPSHOT_RATE: float = 20.0
-const REMOTE_INTERPOLATION_SPEED: float = 50.0
-const HARD_CORRECTION_DISTANCE: float = 96.0
+const REMOTE_VISUAL_INTERPOLATION_SPEED: float = 50.0
+const REMOTE_VISUAL_TELEPORT_DISTANCE: float = 160.0
 
 var _snapshot_timer: float = 0.0
 var _last_movement_sequence: Dictionary[int, int] = {}
+var _last_simulated_movement_sequence: Dictionary[int, int] = {}
 var _network_positions: Dictionary[String, Vector2] = {}
 var _network_velocities: Dictionary[String, Vector2] = {}
+var _remote_sprite_rest_positions: Dictionary[String, Vector2] = {}
 
 var world_data: WorldData
 
@@ -41,27 +43,25 @@ func _process(delta: float) -> void:
 		if not entity:
 			_network_positions.erase(instance_id)
 			_network_velocities.erase(instance_id)
+			_remote_sprite_rest_positions.erase(instance_id)
 			continue
 
-		var target_position := (_network_positions[instance_id])
+		var controller := entity.get_component(
+			&"base:player_controller"
+		) as PlayerControllerComponent
 
-		var controller := entity.get_component(&"base:player_controller") as PlayerControllerComponent
-
-		var locally_controlled := (controller and controller.is_locally_controlled())
-
-		var distance := entity.global_position.distance_to(target_position)
-
-		if distance > HARD_CORRECTION_DISTANCE:
-			entity.global_position = target_position
+		if controller and controller.is_locally_controlled():
 			continue
 
-		if locally_controlled:
-			_correct_local_prediction(entity,target_position)
-		else:
-			_interpolate_remote_entity(entity,target_position,delta)
+		_interpolate_remote_visual(
+			entity,
+			instance_id,
+			delta
+		)
 
-			if _network_velocities.has(instance_id):
-				entity.velocity = (_network_velocities[instance_id])
+		if _network_velocities.has(instance_id):
+			entity.velocity = _network_velocities[instance_id]
+
 
 func _physics_process(delta: float) -> void:
 	if not MultiplayerManager.session_active:
@@ -593,7 +593,11 @@ func submit_movement_input(entity: Entity, sequence: int, direction: Vector2) ->
 
 	# Client prediction:
 	# move our local copy immediately.
-	_set_entity_movement_input(entity,direction)
+	_set_entity_movement_input(
+		entity,
+		direction,
+		sequence
+	)
 
 	# Tell the authoritative host what input we used.
 	_receive_movement_input.rpc_id(1,entity.instance_id,sequence,direction)
@@ -637,11 +641,18 @@ func _apply_movement_input(sender_peer_id: int,entity_instance_id: String,sequen
 
 	_set_entity_movement_input(
 		entity,
-		direction
+		direction,
+		sequence
 	)
 
-func _set_entity_movement_input(entity: Entity,direction: Vector2) -> void:
-	var movement := entity.get_component(&"base:movement") as MovementComponent
+func _set_entity_movement_input(
+	entity: Entity,
+	direction: Vector2,
+	sequence: int = -1
+) -> void:
+	var movement := entity.get_component(
+		&"base:movement"
+	) as MovementComponent
 
 	if not movement:
 		return
@@ -650,6 +661,35 @@ func _set_entity_movement_input(entity: Entity,direction: Vector2) -> void:
 		direction = direction.normalized()
 
 	movement.input_direction = direction
+
+	if sequence >= 0:
+		movement.input_sequence = sequence
+
+
+func record_simulated_movement(
+	entity: Entity,
+	sequence: int
+) -> void:
+	if not MultiplayerManager.session_active:
+		return
+
+	if not MultiplayerManager.is_world_authority():
+		return
+
+	if not entity or sequence < 0:
+		return
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	_last_simulated_movement_sequence[
+		controller.controller_peer_id
+	] = sequence
+
 
 func _send_movement_snapshot() -> void:
 	var states: Array = []
@@ -666,7 +706,7 @@ func _send_movement_snapshot() -> void:
 
 		if controller:
 			last_input_sequence = int(
-				_last_movement_sequence.get(
+				_last_simulated_movement_sequence.get(
 					controller.controller_peer_id,
 					-1
 				)
@@ -686,7 +726,8 @@ func _send_movement_snapshot() -> void:
 
 @rpc("authority","call_remote","unreliable_ordered",2)
 func _receive_movement_snapshot(
-	states: Array) -> void:
+	states: Array
+) -> void:
 	if multiplayer.is_server():
 		return
 
@@ -695,43 +736,138 @@ func _receive_movement_snapshot(
 			continue
 
 		var state := state_value as Dictionary
-
-		var instance_id := String(state.get("instance_id", ""))
-
-		var _position = state.get("position",Vector2.ZERO)
-
-		var velocity = state.get("velocity",Vector2.ZERO)
+		var instance_id := String(
+			state.get("instance_id", "")
+		)
+		var server_position = state.get(
+			"position",
+			Vector2.ZERO
+		)
+		var velocity = state.get(
+			"velocity",
+			Vector2.ZERO
+		)
+		var last_input_sequence := int(
+			state.get("last_input_sequence", -1)
+		)
 
 		if instance_id.is_empty():
 			continue
 
-		if not _position is Vector2:
+		if not server_position is Vector2:
 			continue
 
 		if not velocity is Vector2:
 			continue
 
-		var entity := RuntimeObjectRegistry.get_entity(instance_id)
+		var entity := RuntimeObjectRegistry.get_entity(
+			instance_id
+		)
 
 		if not entity:
 			continue
 
-		_network_positions[instance_id] = _position
+		var controller := entity.get_component(
+			&"base:player_controller"
+		) as PlayerControllerComponent
 
+		if controller and controller.is_locally_controlled():
+			controller.reconcile_prediction(
+				last_input_sequence,
+				server_position
+			)
+			continue
+
+		_network_positions[instance_id] = server_position
 		_network_velocities[instance_id] = velocity
 
-func _correct_local_prediction(entity: Entity, target_position: Vector2) -> void:
-	var distance := entity.global_position.distance_to(target_position)
+		_apply_remote_snapshot(
+			entity,
+			instance_id,
+			server_position
+		)
 
-	if distance < HARD_CORRECTION_DISTANCE:
-		return
 
+func _apply_remote_snapshot(
+	entity: Entity,
+	instance_id: String,
+	target_position: Vector2
+) -> void:
+	var sprite := entity.get_node_or_null(
+		"Sprite2D"
+	) as Sprite2D
+
+	var old_entity_position := entity.global_position
+	var movement_distance := old_entity_position.distance_to(
+		target_position
+	)
+
+	if sprite and not _remote_sprite_rest_positions.has(
+		instance_id
+	):
+		_remote_sprite_rest_positions[instance_id] = (
+			sprite.position
+		)
+
+	var old_visual_position := Vector2.ZERO
+
+	if sprite:
+		old_visual_position = sprite.global_position
+
+	# Physics/collision uses the newest authoritative snapshot immediately.
 	entity.global_position = target_position
 
-func _interpolate_remote_entity(entity: Entity,target_position: Vector2,delta: float) -> void:
-	var interpolation_amount := (1.0 - exp(-REMOTE_INTERPOLATION_SPEED * delta))
+	if not sprite:
+		return
 
-	entity.global_position = (entity.global_position.lerp(target_position,interpolation_amount))
+	var rest_position := _remote_sprite_rest_positions.get(
+		instance_id,
+		sprite.position
+	) as Vector2
+
+	if movement_distance > REMOTE_VISUAL_TELEPORT_DISTANCE:
+		sprite.position = rest_position
+		return
+
+	# Preserve the previous rendered position, then visually catch the sprite
+	# up to the body's authoritative physics transform.
+	sprite.global_position = old_visual_position
+
+
+func _interpolate_remote_visual(
+	entity: Entity,
+	instance_id: String,
+	delta: float
+) -> void:
+	var sprite := entity.get_node_or_null(
+		"Sprite2D"
+	) as Sprite2D
+
+	if not sprite:
+		return
+
+	if not _remote_sprite_rest_positions.has(instance_id):
+		_remote_sprite_rest_positions[instance_id] = (
+			sprite.position
+		)
+
+	var rest_position := _remote_sprite_rest_positions[
+		instance_id
+	]
+
+	var interpolation_amount := (
+		1.0
+		- exp(
+			-REMOTE_VISUAL_INTERPOLATION_SPEED
+			* delta
+		)
+	)
+
+	sprite.position = sprite.position.lerp(
+		rest_position,
+		interpolation_amount
+	)
+
 
 func submit_interaction(
 	interaction: Interaction,
@@ -1632,6 +1768,7 @@ func _on_peer_left(peer_id: int) -> void:
 		return
 
 	_last_movement_sequence.erase(peer_id)
+	_last_simulated_movement_sequence.erase(peer_id)
 
 	for entity in get_entities():
 		var controller := entity.get_component(
