@@ -5,6 +5,8 @@ var component_id: StringName
 var root_item: Item
 var _sibling_watchers: Dictionary[StringName, Array] = {}
 
+signal state_changed
+
 func _set_owner(item: Item) -> void:
 	root_item = item
 
@@ -123,3 +125,6 @@ func serialize_state() -> Dictionary:
 ## Restores this component's mutable runtime state.
 func deserialize_state(_state: Dictionary) -> void:
 	pass
+
+func notify_state_changed() -> void:
+	state_changed.emit()
