@@ -377,7 +377,7 @@ func _receive_item_removed(instance_id: String) -> void:
 	if multiplayer.is_server():
 		return
 
-	var item = _items.get(instance_id)
+	var item = _items.get(instance_id) as String
 
 	if not item:
 		return

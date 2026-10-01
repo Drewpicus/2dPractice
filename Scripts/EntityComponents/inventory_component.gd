@@ -13,12 +13,14 @@ func add_item(item: Item) -> void:
 	items.append(item)
 	item_added.emit(item)
 	items_updated.emit()
+	notify_state_changed()
 
 func add_items(new_items: Array[Item]) -> void:
 	items.append_array(new_items)
 	for item in new_items:
 		item_added.emit(item)
 	items_updated.emit()
+	notify_state_changed()
 
 func remove_item(item: Item) -> Item:
 	if item not in items:
@@ -26,6 +28,7 @@ func remove_item(item: Item) -> Item:
 	items.erase(item)
 	item_removed.emit(item)
 	items_updated.emit()
+	notify_state_changed()
 	return item
 
 func remove_items(items_to_remove: Array[Item],ignore_missing: bool = true) -> Array[Item]:
@@ -41,6 +44,7 @@ func remove_items(items_to_remove: Array[Item],ignore_missing: bool = true) -> A
 	for item in removed_items:
 		item_removed.emit(item)
 	items_updated.emit()
+	notify_state_changed()
 	return removed_items
 
 func take_all_items() -> Array[Item]:
@@ -49,6 +53,7 @@ func take_all_items() -> Array[Item]:
 	for item in new_inventory:
 		item_removed.emit(item)
 	items_updated.emit()
+	notify_state_changed()
 	return new_inventory
 
 func drop_all_items() -> void:
@@ -58,6 +63,7 @@ func drop_all_items() -> void:
 		_spawn_loot_pickup(item, root_entity.global_position)
 		item_removed.emit(item)
 	items_updated.emit()
+	notify_state_changed()
 
 ## @deprecated dropped items may be old
 func _spawn_loot_pickup(_item_resource: Item, _drop_position: Vector2) -> void:
@@ -67,6 +73,7 @@ func _spawn_loot_pickup(_item_resource: Item, _drop_position: Vector2) -> void:
 	new_item.global_position = _drop_position
 	new_item.position += Vector2(randf_range(-16,16),randf_range(-16,16))
 	root_entity.get_parent().add_child(new_item)
+	notify_state_changed()
 	print("Dropped %s" % [new_item])
 
 func get_interaction_suggestions() -> Array[StringName]:
@@ -88,13 +95,15 @@ func serialize_state() -> Dictionary:
 	}
 
 func deserialize_state(state: Dictionary) -> void:
-	items.clear()
-
 	var saved_items = state.get("items", [])
 
 	if not saved_items is Array:
-		push_error("Serialized inventory items must be an Array.")
+		push_error(
+			"Serialized inventory items must be an Array."
+		)
 		return
+
+	var new_items: Array[Item] = []
 
 	for item_id_value in saved_items:
 		var item_id := String(item_id_value)
@@ -107,4 +116,18 @@ func deserialize_state(state: Dictionary) -> void:
 			)
 			continue
 
-		items.append(item)
+		new_items.append(item)
+
+	var old_items := items.duplicate()
+
+	for item in old_items:
+		if item not in new_items:
+			item_removed.emit(item)
+
+	items = new_items
+
+	for item in new_items:
+		if item not in old_items:
+			item_added.emit(item)
+
+	items_updated.emit()
