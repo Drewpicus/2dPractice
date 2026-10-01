@@ -27,18 +27,6 @@ func _initialize_game_world() -> void:
 	game_world.spawn_entity(&"base:tree",Vector2(216, -130))
 
 func _spawn_players() -> void:
-	if not MultiplayerManager.session_active:
-		game_world.spawn_entity(
-			&"base:player",
-			Vector2.ZERO,
-			{
-				"base:player_controller": {
-					"controller_peer_id": 1
-				}
-			}
-		)
-		return
-
 	var peer_ids: Array[int] = [1]
 
 	for peer_id in multiplayer.get_peers():

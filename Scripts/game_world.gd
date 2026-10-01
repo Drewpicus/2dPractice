@@ -104,41 +104,39 @@ static func find_world(node: Node) -> GameWorld:
 
 	return null
 
-func spawn_entity(entity_id: StringName, entity_position: Vector2, runtime_components: Dictionary = {}) -> Entity:
+func spawn_entity(
+	entity_id: StringName,
+	entity_position: Vector2,
+	runtime_components: Dictionary = {}
+) -> Entity:
+	if not MultiplayerManager.is_world_authority():
+		push_error(
+			"Non-authority tried to spawn Entity: %s"
+			% entity_id
+		)
+		return null
+
 	var definition := DefinitionRegistry.get_entity(entity_id)
 
 	if not definition:
-		push_error("No EntityDefinition registered for: %s" % entity_id)
+		push_error(
+			"No EntityDefinition registered for: %s"
+			% entity_id
+		)
 		return null
 
-	if not MultiplayerManager.session_active:
-		var singleplayer_entity := EntityFactory.spawn(definition, entity_position, entities)
+	var instance_id := RuntimeObjectRegistry.generate_unique_id()
 
-		if not singleplayer_entity:
-			return null
-
-		if not _apply_runtime_components(singleplayer_entity, runtime_components):
-			singleplayer_entity.queue_free()
-			return null
-
-		return singleplayer_entity
-	
-	#vvv MULTIPLAYER BEHAVIOR vvv
-	
-	if not multiplayer.is_server():
-		push_error("Client is trying to spawn something smh: %s" % entity_id)
-		return null
-	
-	var canon_instance_id := RuntimeObjectRegistry.generate_unique_id()
-	
 	var spawn_data := {
 		"entity_id": String(entity_id),
-		"instance_id": canon_instance_id,
+		"instance_id": instance_id,
 		"position": entity_position,
 		"runtime_components": runtime_components
 	}
-	
-	var entity := entity_spawner.spawn(spawn_data) as Entity
+
+	var entity := entity_spawner.spawn(
+		spawn_data
+	) as Entity
 
 	if entity:
 		_track_authoritative_entity(entity)
