@@ -9,7 +9,7 @@ var _items: Dictionary[String, Item] = {}
 
 const MOVEMENT_SNAPSHOT_RATE: float = 20.0
 const REMOTE_INTERPOLATION_SPEED: float = 50.0
-const HARD_CORRECTION_DISTANCE: float = 32.0
+const HARD_CORRECTION_DISTANCE: float = 96.0
 
 var _snapshot_timer: float = 0.0
 var _last_movement_sequence: Dictionary[int, int] = {}
