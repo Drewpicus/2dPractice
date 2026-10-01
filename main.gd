@@ -48,32 +48,50 @@ func _spawn_players() -> void:
 		)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not MultiplayerManager.is_world_authority():
+		return
+
 	if event.is_action_pressed("save_world"):
 		SaveManager.save_world(game_world)
+
 	if event.is_action_pressed("load_world"):
 		SaveManager.load_world(game_world)
-	if event.is_action_pressed("test"):
 
+	if event.is_action_pressed("test"):
 		for goblin in game_world.get_entities():
 			if not goblin.entity_id == &"base:goblin":
 				continue
+
 			if not goblin:
 				print("Couldn't find Goblin")
 				return
-			
-			var inventory := goblin.get_component(&"base:inventory") as InventoryComponent
+
+			var inventory := goblin.get_component(
+				&"base:inventory"
+			) as InventoryComponent
+
 			if not inventory:
 				print("Goblin has no inventory")
 				return
-			
-			var lightsaber := game_world.create_item(&"base:lightsaber")
-			var stick := game_world.create_item(&"base:stick")
-			var goblin_coin := game_world.create_item(&"base:goblin_coin")
-			var goblin_coin2 := game_world.create_item(&"base:goblin_coin")
-			
+
+			var lightsaber := game_world.create_item(
+				&"base:lightsaber"
+			)
+			var stick := game_world.create_item(
+				&"base:stick"
+			)
+			var goblin_coin := game_world.create_item(
+				&"base:goblin_coin"
+			)
+			var goblin_coin2 := game_world.create_item(
+				&"base:goblin_coin"
+			)
+
 			inventory.add_item(stick)
 			inventory.add_item(lightsaber)
 			inventory.add_item(goblin_coin)
 			inventory.add_item(goblin_coin2)
-			
-			print("Added Stick and Goblin Coin x2 to Goblin")
+
+			print(
+				"Added Stick and Goblin Coin x2 to Goblin"
+			)
