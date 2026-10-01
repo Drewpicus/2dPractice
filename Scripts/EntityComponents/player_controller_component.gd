@@ -7,11 +7,21 @@ class_name PlayerControllerComponent
 
 @export var controller_peer_id: int = 0
 
+const PREDICTION_HISTORY_LIMIT: int = 120
+const PREDICTION_CORRECTION_SPEED: float = 12.0
+const HARD_PREDICTION_CORRECTION_DISTANCE: float = 160.0
+
 var movement_sequence: int = 0
+var predicted_positions: Dictionary[int, Vector2] = {}
+var pending_correction: Vector2 = Vector2.ZERO
+var last_reconciled_sequence: int = -1
 
 @onready var player_camera: Camera2D = $Camera2D
 
 func on_added() -> void:
+	predicted_positions.clear()
+	pending_correction = Vector2.ZERO
+	last_reconciled_sequence = -1
 	watch_sibling(&"base:movement",_set_movement_component)
 
 func _set_movement_component(component: MovementComponent) -> void:
@@ -46,6 +56,81 @@ func _physics_process(_delta: float) -> void:
 		return
 
 	world.submit_movement_input(root_entity, movement_sequence, direction)
+
+	if MultiplayerManager.session_active and not multiplayer.is_server():
+		predicted_positions[movement_sequence] = root_entity.global_position
+		predicted_positions.erase(
+			movement_sequence - PREDICTION_HISTORY_LIMIT
+		)
+		_apply_prediction_correction(_delta)
+
+func reconcile_prediction(
+	sequence: int,
+	server_position: Vector2
+) -> void:
+	if sequence <= last_reconciled_sequence:
+		return
+
+	if not predicted_positions.has(sequence):
+		return
+
+	var predicted_position := predicted_positions[sequence]
+	var correction := server_position - predicted_position
+
+	last_reconciled_sequence = sequence
+	_discard_acknowledged_predictions(sequence)
+
+	if correction.length() > HARD_PREDICTION_CORRECTION_DISTANCE:
+		root_entity.global_position += correction
+		_shift_prediction_history(correction)
+		pending_correction = Vector2.ZERO
+		return
+
+	# Keep only the newest estimate. Adding successive estimates together
+	# would apply the same positional error more than once.
+	pending_correction = correction
+
+
+func _apply_prediction_correction(delta: float) -> void:
+	if not root_entity:
+		return
+
+	if pending_correction.length_squared() < 0.0001:
+		pending_correction = Vector2.ZERO
+		return
+
+	var correction_amount := (
+		1.0 - exp(-PREDICTION_CORRECTION_SPEED * delta)
+	)
+
+	var correction_step := (
+		pending_correction * correction_amount
+	)
+
+	root_entity.global_position += correction_step
+	pending_correction -= correction_step
+
+	# Future acknowledgements are compared against prediction history.
+	# Shift that history by corrections we've already applied so the same
+	# error is not counted again.
+	_shift_prediction_history(correction_step)
+
+
+func _shift_prediction_history(offset: Vector2) -> void:
+	if offset == Vector2.ZERO:
+		return
+
+	for sequence in predicted_positions.keys():
+		predicted_positions[sequence] += offset
+
+
+func _discard_acknowledged_predictions(
+	acknowledged_sequence: int
+) -> void:
+	for sequence in predicted_positions.keys():
+		if sequence <= acknowledged_sequence:
+			predicted_positions.erase(sequence)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_locally_controlled():
