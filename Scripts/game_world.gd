@@ -2,6 +2,8 @@ extends Node2D
 class_name GameWorld
 
 @onready var entities: Node2D = $Entities
+var _items: Dictionary[String, Item] = {}
+
 @onready var terrain: TerrainRenderer = $Terrain
 @onready var entity_spawner: MultiplayerSpawner = $EntitySpawner
 
@@ -282,28 +284,37 @@ func serialize_entities() -> Array:
 
 	return states
 
-## NOTE: Only gets items inside an inventory
 func get_items() -> Array[Item]:
 	var result: Array[Item] = []
-	var seen_ids: Dictionary[String, bool] = {}
 
-	for entity in get_entities():
-		var inventory := entity.get_component(&"base:inventory") as InventoryComponent
-
-		if not inventory:
-			continue
-
-		for item in inventory.items:
-			if not item:
-				continue
-
-			if seen_ids.has(item.instance_id):
-				continue
-
-			seen_ids[item.instance_id] = true
-			result.append(item)
+	for item in _items.values():
+		result.append(item)
 
 	return result
+
+func create_item(item_id: StringName) -> Item:
+	var definition := DefinitionRegistry.get_item(item_id)
+
+	if not definition:
+		return null
+
+	var item := ItemFactory.build(definition)
+
+	if not item:
+		return null
+
+	_items[item.instance_id] = item
+	return item
+
+func remove_item(item: Item) -> void:
+	if not item:
+		return
+
+	_items.erase(item.instance_id)
+	RuntimeObjectRegistry.unregister(
+		item.instance_id,
+		item
+	)
 
 func serialize_items() -> Array:
 	var states: Array = []
