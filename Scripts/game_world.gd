@@ -375,11 +375,6 @@ func remove_item(item: Item) -> void:
 	_items.erase(instance_id)
 	RuntimeObjectRegistry.unregister(instance_id, item)
 
-	RuntimeObjectRegistry.unregister(
-		instance_id,
-		item
-	)
-
 	if MultiplayerManager.session_active:
 		_receive_item_removed.rpc(instance_id)
 
@@ -452,14 +447,18 @@ func clear_runtime_state() -> void:
 	var current_entities := get_entities()
 
 	for item in current_items:
-		if item:
-			RuntimeObjectRegistry.unregister(
-				item.instance_id,
-				item
-			)
+		if not item:
+			continue
+
+		_untrack_authoritative_item(item)
+
+		RuntimeObjectRegistry.unregister(
+			item.instance_id,
+			item
+		)
 
 	_items.clear()
-
+	
 	for entity in current_entities:
 		if not entity:
 			continue
