@@ -88,7 +88,7 @@ func unequip(slot: StringName) -> Item:
 	return item
 
 func get_equipment(slot: StringName) -> Item:
-	return equipment.get(slot)
+	return equipment.get(slot) as Item
 
 func has_equipment(slot: StringName) -> bool:
 	return equipment.get(slot) != null
