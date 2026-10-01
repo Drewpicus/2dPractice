@@ -718,7 +718,9 @@ func _receive_player_controller_removed(
 		&"base:player_controller"
 	)
 
-func get_locally_controlled_entity() -> Entity:
+func get_entity_controlled_by_peer(
+	peer_id: int
+) -> Entity:
 	for entity in get_entities():
 		var controller := entity.get_component(
 			&"base:player_controller"
@@ -727,7 +729,13 @@ func get_locally_controlled_entity() -> Entity:
 		if not controller:
 			continue
 
-		if controller.is_locally_controlled():
+		if controller.controller_peer_id == peer_id:
 			return entity
 
 	return null
+
+
+func get_locally_controlled_entity() -> Entity:
+	return get_entity_controlled_by_peer(
+		multiplayer.get_unique_id()
+	)

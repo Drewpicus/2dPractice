@@ -3,11 +3,13 @@ class_name WorldMovementSystem
 
 
 const MOVEMENT_SNAPSHOT_RATE: float = 20.0
+const FAR_MOVEMENT_SNAPSHOT_RATE: float = 2.0
+const FULL_RATE_RADIUS: float = 1024.0
 const REMOTE_VISUAL_INTERPOLATION_SPEED: float = 50.0
 const REMOTE_VISUAL_TELEPORT_DISTANCE: float = 160.0
 
-
 var _snapshot_timer: float = 0.0
+var _far_snapshot_timer: float = 0.0
 
 var _last_movement_sequence: Dictionary[int, int] = {}
 var _last_simulated_movement_sequence: Dictionary[int, int] = {}
@@ -15,7 +17,6 @@ var _last_simulated_movement_sequence: Dictionary[int, int] = {}
 var _network_positions: Dictionary[String, Vector2] = {}
 var _network_velocities: Dictionary[String, Vector2] = {}
 var _remote_sprite_rest_positions: Dictionary[String, Vector2] = {}
-
 
 @onready var world: GameWorld = get_parent() as GameWorld
 
@@ -79,18 +80,23 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_snapshot_timer += delta
+	_far_snapshot_timer += delta
 
 	var snapshot_interval := (
 		1.0 / MOVEMENT_SNAPSHOT_RATE
 	)
 
-	if _snapshot_timer < snapshot_interval:
-		return
+	var far_snapshot_interval := (
+		1.0 / FAR_MOVEMENT_SNAPSHOT_RATE
+	)
 
-	_snapshot_timer -= snapshot_interval
+	if _snapshot_timer >= snapshot_interval:
+		_snapshot_timer -= snapshot_interval
+		_send_movement_snapshots(true)
 
-	_send_movement_snapshot()
-
+	if _far_snapshot_timer >= far_snapshot_interval:
+		_far_snapshot_timer -= far_snapshot_interval
+		_send_movement_snapshots(false)
 
 func submit_movement_input(
 	entity: Entity,
@@ -254,45 +260,86 @@ func record_simulated_movement(
 		controller.controller_peer_id
 	] = sequence
 
+func _send_movement_snapshots(
+	full_rate: bool
+) -> void:
+	var radius_squared := (
+		FULL_RATE_RADIUS
+		* FULL_RATE_RADIUS
+	)
 
-func _send_movement_snapshot() -> void:
-	var states: Array = []
+	for peer_value in multiplayer.get_peers():
+		var peer_id := int(peer_value)
 
-	for entity in world.get_entities():
-		if not entity.has_component(
-			&"base:movement"
-		):
+		var controlled_entity := (
+			world.get_entity_controlled_by_peer(
+				peer_id
+			)
+		)
+
+		if not controlled_entity:
 			continue
 
-		var last_input_sequence := -1
+		var states: Array = []
 
-		var controller := entity.get_component(
-			&"base:player_controller"
-		) as PlayerControllerComponent
+		for entity in world.get_entities():
+			if not entity.has_component(
+				&"base:movement"
+			):
+				continue
 
-		if controller:
-			last_input_sequence = int(
-				_last_simulated_movement_sequence.get(
-					controller.controller_peer_id,
-					-1
+			var distance_squared := (
+				controlled_entity.global_position
+				.distance_squared_to(
+					entity.global_position
 				)
 			)
 
-		states.append(
-			{
-				"instance_id": entity.instance_id,
-				"position": entity.global_position,
-				"velocity": entity.velocity,
-				"last_input_sequence":
-					last_input_sequence
-			}
+			var is_full_rate := (
+				entity == controlled_entity
+				or distance_squared
+					<= radius_squared
+			)
+
+			if is_full_rate != full_rate:
+				continue
+
+			states.append(
+				_build_movement_state(entity)
+			)
+
+		if states.is_empty():
+			continue
+
+		_receive_movement_snapshot.rpc_id(
+			peer_id,
+			states
 		)
 
-	if states.is_empty():
-		return
+func _build_movement_state(
+	entity: Entity
+) -> Dictionary:
+	var last_input_sequence := -1
 
-	_receive_movement_snapshot.rpc(states)
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
 
+	if controller:
+		last_input_sequence = int(
+			_last_simulated_movement_sequence.get(
+				controller.controller_peer_id,
+				-1
+			)
+		)
+
+	return {
+		"instance_id": entity.instance_id,
+		"position": entity.global_position,
+		"velocity": entity.velocity,
+		"last_input_sequence":
+			last_input_sequence
+	}
 
 @rpc(
 	"authority",
