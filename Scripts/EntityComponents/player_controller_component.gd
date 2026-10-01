@@ -2,8 +2,6 @@ extends EntityComponent
 class_name PlayerControllerComponent
 
 @export var movement_component : MovementComponent
-@export var interaction_menu: InteractionMenu
-@export var inventory_menu: InventoryMenu
 
 @export var controller_peer_id: int = 0
 
@@ -32,10 +30,6 @@ func _ready() -> void:
 	if not component_folder:
 		push_warning(self," has no Components node, Player Controller will be disabled")
 		return
-	if not inventory_menu:
-		inventory_menu = get_tree().root.get_node_or_null("Main/UI/InventoryMenu")
-	if not interaction_menu:
-		interaction_menu = get_tree().root.get_node_or_null("Main/UI/InteractionMenu")
 	
 	_update_local_control()
 
@@ -144,25 +138,6 @@ func _discard_acknowledged_predictions(
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_locally_controlled():
 		return
-	if event.is_action_pressed("inventory"):
-		if inventory_menu.visible:
-			inventory_menu.close_inventory()
-		else:
-			interaction_menu.hide()
-			inventory_menu.show_inventory(root_entity, root_entity)
-	if event.is_action_pressed("interact_menu"):
-		var target := _get_entity_under_mouse()
-		if not target:
-			interaction_menu.hide()
-			return
-		var visible_interactions: Array
-		if not target.has_component(&"base:interactable"):
-			return
-		visible_interactions = target.get_component(&"base:interactable").get_interactions(root_entity)
-		if not visible_interactions.is_empty():
-			interaction_menu.show_interactions(visible_interactions,root_entity,target)
-	if event.is_action_pressed("select"):
-		interaction_menu._on_empty_pressed()
 	_quick_action(event,"quick_attack",&"base:health",&"base:attack")
 	_quick_action(event,"quick_inspect",&"base:info",&"base:inspect",_get_entity_under_mouse(false))
 

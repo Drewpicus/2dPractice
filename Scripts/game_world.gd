@@ -717,3 +717,17 @@ func _receive_player_controller_removed(
 	entity.remove_component(
 		&"base:player_controller"
 	)
+
+func get_locally_controlled_entity() -> Entity:
+	for entity in get_entities():
+		var controller := entity.get_component(
+			&"base:player_controller"
+		) as PlayerControllerComponent
+
+		if not controller:
+			continue
+
+		if controller.is_locally_controlled():
+			return entity
+
+	return null
