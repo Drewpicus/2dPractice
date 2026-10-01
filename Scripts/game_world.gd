@@ -6,7 +6,6 @@ class_name GameWorld
 @onready var entity_spawner: MultiplayerSpawner = $EntitySpawner
 
 const MOVEMENT_SNAPSHOT_RATE: float = 20.0
-const LOCAL_CORRECTION_SPEED: float = 20.0
 const REMOTE_INTERPOLATION_SPEED: float = 50.0
 const HARD_CORRECTION_DISTANCE: float = 32.0
 
@@ -737,19 +736,14 @@ func _track_authoritative_entity(entity: Entity) -> void:
 	if not entity:
 		return
 
-	if not entity.component_added.is_connected(
-		_on_tracked_component_added
-	):
-		entity.component_added.connect(
-			_on_tracked_component_added.bind(entity)
-		)
+	var added_callback := _on_tracked_component_added.bind(entity)
+	var removing_callback := _on_tracked_component_removing.bind(entity)
 
-	if not entity.component_removing.is_connected(
-		_on_tracked_component_removing
-	):
-		entity.component_removing.connect(
-			_on_tracked_component_removing.bind(entity)
-		)
+	if not entity.component_added.is_connected(added_callback):
+		entity.component_added.connect(added_callback)
+
+	if not entity.component_removing.is_connected(removing_callback):
+		entity.component_removing.connect(removing_callback)
 
 	for component in entity.get_components():
 		_track_component(entity, component)
