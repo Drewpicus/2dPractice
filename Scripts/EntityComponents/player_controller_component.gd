@@ -58,11 +58,20 @@ func _physics_process(_delta: float) -> void:
 	world.submit_movement_input(root_entity, movement_sequence, direction)
 
 	if MultiplayerManager.session_active and not multiplayer.is_server():
-		predicted_positions[movement_sequence] = root_entity.global_position
-		predicted_positions.erase(
-			movement_sequence - PREDICTION_HISTORY_LIMIT
-		)
 		_apply_prediction_correction(_delta)
+
+func record_predicted_position(sequence: int) -> void:
+	if sequence < 0:
+		return
+
+	if not root_entity:
+		return
+
+	predicted_positions[sequence] = root_entity.global_position
+	predicted_positions.erase(
+		sequence - PREDICTION_HISTORY_LIMIT
+	)
+
 
 func reconcile_prediction(
 	sequence: int,
