@@ -113,7 +113,7 @@ func get_all_equipment() -> Array[Item]:
 
 func _on_item_removed(item: Item) -> void:
 	for slot in equipment.keys():
-		if item == equipment.get(slot) as Item:
+		if item == (equipment.get(slot) as Item):
 			unequip(slot)
 
 func on_event(event: GameEvent) -> void:
