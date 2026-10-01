@@ -175,29 +175,50 @@ func _take_selected() -> void:
 	if not is_instance_valid(_viewer):
 		return
 
-	var viewer_inventory := _viewer.get_component(&"base:inventory") as InventoryComponent
-
-	if not viewer_inventory:
+	if not is_instance_valid(_owner):
 		return
 
-	var taken_item := _inventory.remove_item(_selected_item)
+	var world := GameWorld.find_world(_viewer)
 
-	if taken_item:
-		viewer_inventory.add_item(taken_item)
+	if not world:
+		return
+
+	world.submit_take_item(
+		_viewer,
+		_owner,
+		_selected_item
+	)
 
 
 func _equip_selected(slot: StringName) -> void:
 	if not _selected_item:
 		return
 
-	if not _viewer_equipment:
+	if not is_instance_valid(_viewer):
 		return
 
-	_viewer_equipment.equip(slot, _selected_item)
+	var world := GameWorld.find_world(_viewer)
+
+	if not world:
+		return
+
+	world.submit_equip_item(
+		_viewer,
+		_selected_item,
+		slot
+	)
 
 
 func _unequip_slot(slot: StringName) -> void:
-	if not _viewer_equipment:
+	if not is_instance_valid(_viewer):
 		return
 
-	_viewer_equipment.unequip(slot)
+	var world := GameWorld.find_world(_viewer)
+
+	if not world:
+		return
+
+	world.submit_unequip_item(
+		_viewer,
+		slot
+	)

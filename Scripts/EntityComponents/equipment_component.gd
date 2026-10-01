@@ -34,46 +34,57 @@ func _set_inventory(inventory: InventoryComponent) -> void:
 func equip(slot: StringName, item: Item) -> bool:
 	if not item:
 		return false
-	
+
 	if slot not in slots:
 		return false
-	
-	var equippable = item.get_component(&"base:equippable") as EquippableItemComponent
+
+	var equippable = item.get_component(
+		&"base:equippable"
+	) as EquippableItemComponent
+
 	if not equippable:
 		return false
-	
+
 	if slot not in equippable.slots:
 		return false
-	
+
 	if not _inventory:
 		return false
 
 	if item not in _inventory.items:
 		return false
-	
+
 	if get_equipment(slot) == item:
 		return false
-	
+
 	if has_equipment(slot):
 		unequip(slot)
-	
+
 	for existing_slot in equipment.keys():
 		if get_equipment(existing_slot) == item:
 			unequip(existing_slot)
+
 	equipment[slot] = item
-	item.on_equipped(root_entity,slot)
+	item.on_equipped(root_entity, slot)
+
 	equipment_updated.emit()
+	notify_state_changed()
+
 	return true
 
 func unequip(slot: StringName) -> Item:
 	var item = equipment.get(slot) as Item
-	
+
 	if not item:
 		return null
-	
+
 	equipment.erase(slot)
-	item.on_equipped(root_entity,slot)
+
+	item.on_unequipped(root_entity, slot)
+
 	equipment_updated.emit()
+	notify_state_changed()
+
 	return item
 
 func get_equipment(slot: StringName) -> Item:
@@ -142,21 +153,55 @@ func deserialize_state(state: Dictionary) -> void:
 			for slot_value in saved_slots:
 				slots.append(StringName(slot_value))
 
-	equipment.clear()
-
 	var saved_equipment = state.get("equipment", {})
 
 	if not saved_equipment is Dictionary:
-		push_error("Serialized equipment must be a Dictionary.")
+		push_error(
+			"Serialized equipment must be a Dictionary."
+		)
 		return
+
+	var new_equipment := {}
 
 	for slot_key in saved_equipment:
 		var slot := StringName(slot_key)
-		var item_instance_id := String(saved_equipment[slot_key])
-		var item := RuntimeObjectRegistry.get_item(item_instance_id)
+		var item_instance_id := String(
+			saved_equipment[slot_key]
+		)
+
+		var item := RuntimeObjectRegistry.get_item(
+			item_instance_id
+		)
 
 		if not item:
-			push_error("Could not restore equipped Item instance: %s" % item_instance_id)
+			push_error(
+				"Could not restore equipped Item instance: %s"
+				% item_instance_id
+			)
 			continue
 
-		equipment[slot] = item
+		new_equipment[slot] = item
+
+	var old_equipment := equipment.duplicate()
+
+	for slot in old_equipment:
+		var old_item := old_equipment[slot] as Item
+
+		if old_item and new_equipment.get(slot) != old_item:
+			old_item.on_unequipped(
+				root_entity,
+				slot
+			)
+
+	equipment = new_equipment
+
+	for slot in equipment:
+		var new_item := equipment[slot] as Item
+
+		if new_item and old_equipment.get(slot) != new_item:
+			new_item.on_equipped(
+				root_entity,
+				slot
+			)
+
+	equipment_updated.emit()

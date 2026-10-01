@@ -4,6 +4,7 @@
 
 [node name="Entity" type="CharacterBody2D" unique_id=842891499]
 motion_mode = 1
+safe_margin = 0.2
 script = ExtResource("1_l7g7l")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=66657874]

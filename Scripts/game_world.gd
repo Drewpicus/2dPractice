@@ -377,7 +377,7 @@ func _receive_item_removed(instance_id: String) -> void:
 	if multiplayer.is_server():
 		return
 
-	var item = _items.get(instance_id) as String
+	var item = _items.get(instance_id)
 
 	if not item:
 		return
@@ -937,3 +937,336 @@ func _receive_component_state(
 		return
 
 	component.deserialize_state(state)
+
+func submit_take_item(
+	viewer: Entity,
+	source: Entity,
+	item: Item
+) -> void:
+	if not viewer or not source or not item:
+		return
+
+	if not MultiplayerManager.session_active:
+		_perform_take_item(
+			viewer,
+			source,
+			item
+		)
+		return
+
+	var controller := viewer.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if not controller.is_locally_controlled():
+		return
+
+	if multiplayer.is_server():
+		_apply_take_item_request(
+			multiplayer.get_unique_id(),
+			viewer.instance_id,
+			source.instance_id,
+			item.instance_id
+		)
+		return
+
+	_receive_take_item_request.rpc_id(
+		1,
+		viewer.instance_id,
+		source.instance_id,
+		item.instance_id
+	)
+
+@rpc("any_peer", "call_remote", "reliable", 3)
+func _receive_take_item_request(
+	viewer_instance_id: String,
+	source_instance_id: String,
+	item_instance_id: String
+) -> void:
+	if not multiplayer.is_server():
+		return
+
+	_apply_take_item_request(
+		multiplayer.get_remote_sender_id(),
+		viewer_instance_id,
+		source_instance_id,
+		item_instance_id
+	)
+
+func _apply_take_item_request(
+	sender_peer_id: int,
+	viewer_instance_id: String,
+	source_instance_id: String,
+	item_instance_id: String
+) -> void:
+	var viewer := RuntimeObjectRegistry.get_entity(
+		viewer_instance_id
+	)
+
+	var source := RuntimeObjectRegistry.get_entity(
+		source_instance_id
+	)
+
+	var item := RuntimeObjectRegistry.get_item(
+		item_instance_id
+	)
+
+	if not viewer or not source or not item:
+		return
+
+	var controller := viewer.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if controller.controller_peer_id != sender_peer_id:
+		return
+
+	_perform_take_item(
+		viewer,
+		source,
+		item
+	)
+
+func _perform_take_item(
+	viewer: Entity,
+	source: Entity,
+	item: Item
+) -> bool:
+	if viewer == source:
+		return false
+
+	var viewer_inventory := viewer.get_component(
+		&"base:inventory"
+	) as InventoryComponent
+
+	var source_inventory := source.get_component(
+		&"base:inventory"
+	) as InventoryComponent
+
+	if not viewer_inventory or not source_inventory:
+		return false
+
+	if item not in source_inventory.items:
+		return false
+
+	var interactor := viewer.get_component(
+		&"base:interactor"
+	) as InteractorComponent
+
+	if not interactor:
+		return false
+
+	if (
+		viewer.global_position.distance_to(
+			source.global_position
+		) > interactor.reach
+	):
+		return false
+
+	var taken_item := source_inventory.remove_item(item)
+
+	if not taken_item:
+		return false
+
+	viewer_inventory.add_item(taken_item)
+
+	return true
+
+func submit_equip_item(
+	entity: Entity,
+	item: Item,
+	slot: StringName
+) -> void:
+	if not entity or not item:
+		return
+
+	if not MultiplayerManager.session_active:
+		_perform_equip_item(entity, item, slot)
+		return
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if not controller.is_locally_controlled():
+		return
+
+	if multiplayer.is_server():
+		_apply_equip_item_request(
+			multiplayer.get_unique_id(),
+			entity.instance_id,
+			item.instance_id,
+			slot
+		)
+		return
+
+	_receive_equip_item_request.rpc_id(
+		1,
+		entity.instance_id,
+		item.instance_id,
+		String(slot)
+	)
+
+@rpc("any_peer", "call_remote", "reliable", 3)
+func _receive_equip_item_request(
+	entity_instance_id: String,
+	item_instance_id: String,
+	slot_string: String
+) -> void:
+	if not multiplayer.is_server():
+		return
+
+	_apply_equip_item_request(
+		multiplayer.get_remote_sender_id(),
+		entity_instance_id,
+		item_instance_id,
+		StringName(slot_string)
+	)
+
+func _apply_equip_item_request(
+	sender_peer_id: int,
+	entity_instance_id: String,
+	item_instance_id: String,
+	slot: StringName
+) -> void:
+	var entity := RuntimeObjectRegistry.get_entity(
+		entity_instance_id
+	)
+
+	var item := RuntimeObjectRegistry.get_item(
+		item_instance_id
+	)
+
+	if not entity or not item:
+		return
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if controller.controller_peer_id != sender_peer_id:
+		return
+
+	_perform_equip_item(
+		entity,
+		item,
+		slot
+	)
+
+func _perform_equip_item(
+	entity: Entity,
+	item: Item,
+	slot: StringName
+) -> bool:
+	var equipment := entity.get_component(
+		&"base:equipment"
+	) as EquipmentComponent
+
+	if not equipment:
+		return false
+
+	return equipment.equip(
+		slot,
+		item
+	)
+
+func submit_unequip_item(
+	entity: Entity,
+	slot: StringName
+) -> void:
+	if not entity:
+		return
+
+	if not MultiplayerManager.session_active:
+		_perform_unequip_item(entity, slot)
+		return
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if not controller.is_locally_controlled():
+		return
+
+	if multiplayer.is_server():
+		_apply_unequip_item_request(
+			multiplayer.get_unique_id(),
+			entity.instance_id,
+			slot
+		)
+		return
+
+	_receive_unequip_item_request.rpc_id(
+		1,
+		entity.instance_id,
+		String(slot)
+	)
+
+@rpc("any_peer", "call_remote", "reliable", 3)
+func _receive_unequip_item_request(
+	entity_instance_id: String,
+	slot_string: String
+) -> void:
+	if not multiplayer.is_server():
+		return
+
+	_apply_unequip_item_request(
+		multiplayer.get_remote_sender_id(),
+		entity_instance_id,
+		StringName(slot_string)
+	)
+
+func _apply_unequip_item_request(
+	sender_peer_id: int,
+	entity_instance_id: String,
+	slot: StringName
+) -> void:
+	var entity := RuntimeObjectRegistry.get_entity(
+		entity_instance_id
+	)
+
+	if not entity:
+		return
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if controller.controller_peer_id != sender_peer_id:
+		return
+
+	_perform_unequip_item(
+		entity,
+		slot
+	)
+
+func _perform_unequip_item(
+	entity: Entity,
+	slot: StringName
+) -> bool:
+	var equipment := entity.get_component(
+		&"base:equipment"
+	) as EquipmentComponent
+
+	if not equipment:
+		return false
+
+	return equipment.unequip(slot) != null

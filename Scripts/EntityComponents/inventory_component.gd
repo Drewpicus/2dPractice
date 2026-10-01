@@ -62,6 +62,7 @@ func drop_all_items() -> void:
 	for item in all_items:
 		_spawn_loot_pickup(item, root_entity.global_position)
 		item_removed.emit(item)
+		notify_state_changed()
 	items_updated.emit()
 	notify_state_changed()
 
@@ -73,7 +74,6 @@ func _spawn_loot_pickup(_item_resource: Item, _drop_position: Vector2) -> void:
 	new_item.global_position = _drop_position
 	new_item.position += Vector2(randf_range(-16,16),randf_range(-16,16))
 	root_entity.get_parent().add_child(new_item)
-	notify_state_changed()
 	print("Dropped %s" % [new_item])
 
 func get_interaction_suggestions() -> Array[StringName]:
