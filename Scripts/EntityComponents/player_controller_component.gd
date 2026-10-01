@@ -237,9 +237,6 @@ func set_controller_peer(peer_id: int) -> void:
 
 
 func is_locally_controlled() -> bool:
-	if not MultiplayerManager.session_active:
-		return true
-
 	return controller_peer_id == multiplayer.get_unique_id()
 
 func _update_local_control() -> void:
