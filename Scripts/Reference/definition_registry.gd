@@ -45,7 +45,7 @@ static func register_element(definition: ElementDefinition) -> bool:
 		push_error("Cannot register ElementDefinition with invalid ID: %s" % definition.element_id)
 		return false
 
-	if _entity_definitions.has(definition.element_id):
+	if _element_definitions.has(definition.element_id):
 		push_error("ElementDefinition ID already registered: %s" % definition.element_id)
 		return false
 
@@ -58,8 +58,8 @@ static func get_entity(entity_id: StringName) -> EntityDefinition:
 static func get_item(item_id: StringName) -> ItemDefinition:
 	return _item_definitions.get(item_id)
 
-static func get_element(item_id: StringName) -> ElementDefinition:
-	return _element_definitions.get(item_id)
+static func get_element(element_id: StringName) -> ElementDefinition:
+	return _element_definitions.get(element_id)
 
 
 static func has_entity(entity_id: StringName) -> bool:
@@ -68,8 +68,8 @@ static func has_entity(entity_id: StringName) -> bool:
 static func has_item(item_id: StringName) -> bool:
 	return _item_definitions.has(item_id)
 
-static func has_element(item_id: StringName) -> bool:
-	return _element_definitions.has(item_id)
+static func has_element(element_id: StringName) -> bool:
+	return _element_definitions.has(element_id)
 
 static func clear() -> void:
 	_entity_definitions.clear()
