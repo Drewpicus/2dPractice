@@ -28,6 +28,14 @@ static func load_world(world: GameWorld, path: String = DEFAULT_SAVE_PATH) -> bo
 	if not world:
 		return false
 
+	##NOTE: will change
+	if MultiplayerManager.session_active:
+		push_warning(
+			"Loading a world during an active multiplayer session "
+			+ "is not supported yet."
+		)
+		return false
+
 	if not FileAccess.file_exists(path):
 		push_error("Save file does not exist: %s" % path)
 		return false
