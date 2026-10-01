@@ -7,17 +7,7 @@ var _items: Dictionary[String, Item] = {}
 @onready var terrain: TerrainRenderer = $Terrain
 @onready var entity_spawner: MultiplayerSpawner = $EntitySpawner
 @onready var command_system: WorldCommandSystem = $CommandSystem
-
-const MOVEMENT_SNAPSHOT_RATE: float = 20.0
-const REMOTE_VISUAL_INTERPOLATION_SPEED: float = 50.0
-const REMOTE_VISUAL_TELEPORT_DISTANCE: float = 160.0
-
-var _snapshot_timer: float = 0.0
-var _last_movement_sequence: Dictionary[int, int] = {}
-var _last_simulated_movement_sequence: Dictionary[int, int] = {}
-var _network_positions: Dictionary[String, Vector2] = {}
-var _network_velocities: Dictionary[String, Vector2] = {}
-var _remote_sprite_rest_positions: Dictionary[String, Vector2] = {}
+@onready var movement_system: WorldMovementSystem = $MovementSystem
 
 var world_data: WorldData
 
@@ -30,57 +20,6 @@ func _ready() -> void:
 		MultiplayerManager.peer_left.connect(
 			_on_peer_left
 		)
-
-func _process(delta: float) -> void:
-	if not MultiplayerManager.session_active:
-		return
-
-	if MultiplayerManager.is_world_authority():
-		return
-
-	for instance_id in _network_positions.keys():
-		var entity := RuntimeObjectRegistry.get_entity(instance_id)
-
-		if not entity:
-			_network_positions.erase(instance_id)
-			_network_velocities.erase(instance_id)
-			_remote_sprite_rest_positions.erase(instance_id)
-			continue
-
-		var controller := entity.get_component(
-			&"base:player_controller"
-		) as PlayerControllerComponent
-
-		if controller and controller.is_locally_controlled():
-			continue
-
-		_interpolate_remote_visual(
-			entity,
-			instance_id,
-			delta
-		)
-
-		if _network_velocities.has(instance_id):
-			entity.velocity = _network_velocities[instance_id]
-
-
-func _physics_process(delta: float) -> void:
-	if not MultiplayerManager.session_active:
-		return
-
-	if not multiplayer.is_server():
-		return
-
-	_snapshot_timer += delta
-
-	var snapshot_interval := (1.0 / MOVEMENT_SNAPSHOT_RATE)
-
-	if _snapshot_timer < snapshot_interval:
-		return
-
-	_snapshot_timer -= snapshot_interval
-
-	_send_movement_snapshot()
 
 func generate_world(world_size: Vector2i, _seed: int) -> void:
 	var generator := WorldGenerator.new()
@@ -568,38 +507,16 @@ func _apply_runtime_components(
 
 	return true
 
-func submit_movement_input(entity: Entity, sequence: int, direction: Vector2) -> void:
-	if not entity:
-		return
-
-	# Normal singleplayer behavior.
-	if not MultiplayerManager.session_active:
-		_set_entity_movement_input(entity,direction)
-		return
-
-	var controller := entity.get_component(&"base:player_controller") as PlayerControllerComponent
-
-	if not controller:
-		return
-
-	if not controller.is_locally_controlled():
-		return
-
-	# Host player can submit directly to the authoritative simulation.
-	if multiplayer.is_server():
-		_apply_movement_input(multiplayer.get_unique_id(),entity.instance_id,sequence,direction)
-		return
-
-	# Client prediction:
-	# move our local copy immediately.
-	_set_entity_movement_input(
+func submit_movement_input(
+	entity: Entity,
+	sequence: int,
+	direction: Vector2
+) -> void:
+	movement_system.submit_movement_input(
 		entity,
-		direction,
-		sequence
+		sequence,
+		direction
 	)
-
-	# Tell the authoritative host what input we used.
-	_receive_movement_input.rpc_id(1,entity.instance_id,sequence,direction)
 
 @rpc("any_peer","call_remote","unreliable_ordered",1)
 func _receive_movement_input(entity_instance_id: String,sequence: int,direction: Vector2) -> void:
@@ -669,26 +586,10 @@ func record_simulated_movement(
 	entity: Entity,
 	sequence: int
 ) -> void:
-	if not MultiplayerManager.session_active:
-		return
-
-	if not MultiplayerManager.is_world_authority():
-		return
-
-	if not entity or sequence < 0:
-		return
-
-	var controller := entity.get_component(
-		&"base:player_controller"
-	) as PlayerControllerComponent
-
-	if not controller:
-		return
-
-	_last_simulated_movement_sequence[
-		controller.controller_peer_id
-	] = sequence
-
+	movement_system.record_simulated_movement(
+		entity,
+		sequence
+	)
 
 func _send_movement_snapshot() -> void:
 	var states: Array = []
@@ -1349,9 +1250,6 @@ func _on_peer_left(peer_id: int) -> void:
 
 	if not MultiplayerManager.is_world_authority():
 		return
-
-	_last_movement_sequence.erase(peer_id)
-	_last_simulated_movement_sequence.erase(peer_id)
 
 	for entity in get_entities():
 		var controller := entity.get_component(
