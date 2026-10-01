@@ -293,6 +293,12 @@ func get_items() -> Array[Item]:
 	return result
 
 func create_item(item_id: StringName) -> Item:
+	if (
+		MultiplayerManager.session_active
+		and not MultiplayerManager.is_world_authority()
+	):
+		return null
+
 	var definition := DefinitionRegistry.get_item(item_id)
 
 	if not definition:
@@ -304,15 +310,82 @@ func create_item(item_id: StringName) -> Item:
 		return null
 
 	_items[item.instance_id] = item
+
+	if MultiplayerManager.session_active:
+		_receive_item_created.rpc(
+			String(item.item_id),
+			item.instance_id
+		)
+
 	return item
+
+@rpc("authority", "call_remote", "reliable", 5)
+func _receive_item_created(
+	item_id_string: String,
+	instance_id: String
+) -> void:
+	if multiplayer.is_server():
+		return
+
+	if _items.has(instance_id):
+		return
+
+	var item_id := StringName(item_id_string)
+
+	if not GameID.is_valid(item_id):
+		return
+
+	var definition := DefinitionRegistry.get_item(item_id)
+
+	if not definition:
+		return
+
+	var item := ItemFactory.build(definition)
+
+	if not item:
+		return
+
+	if not item.restore_instance_id(instance_id):
+		return
+
+	_items[instance_id] = item
 
 func remove_item(item: Item) -> void:
 	if not item:
 		return
 
-	_items.erase(item.instance_id)
+	if (
+		MultiplayerManager.session_active
+		and not MultiplayerManager.is_world_authority()
+	):
+		return
+
+	var instance_id := item.instance_id
+
+	_items.erase(instance_id)
+
 	RuntimeObjectRegistry.unregister(
-		item.instance_id,
+		instance_id,
+		item
+	)
+
+	if MultiplayerManager.session_active:
+		_receive_item_removed.rpc(instance_id)
+
+@rpc("authority", "call_remote", "reliable", 5)
+func _receive_item_removed(instance_id: String) -> void:
+	if multiplayer.is_server():
+		return
+
+	var item = _items.get(instance_id)
+
+	if not item:
+		return
+
+	_items.erase(instance_id)
+
+	RuntimeObjectRegistry.unregister(
+		instance_id,
 		item
 	)
 
@@ -352,19 +425,27 @@ func deserialize_state(state: Dictionary) -> bool:
 		entities
 	)
 
-	return result.has("items") and result.has("entities")
+	if not result.has("items") or not result.has("entities"):
+		return false
+
+	for item in result["items"]:
+		if item is Item:
+			_items[item.instance_id] = item
+
+	return true
 
 func clear_runtime_state() -> void:
 	var current_items := get_items()
 	var current_entities := get_entities()
 
-	# Unregister Items first while inventories still exist.
 	for item in current_items:
 		if item:
 			RuntimeObjectRegistry.unregister(
 				item.instance_id,
 				item
 			)
+
+	_items.clear()
 
 	for entity in current_entities:
 		if not entity:

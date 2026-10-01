@@ -78,15 +78,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				print("Goblin has no inventory")
 				return
 			
-			var lightsaber_definition := DefinitionRegistry.get_item(&"base:lightsaber")
-			var lightsaber := ItemFactory.build(lightsaber_definition)
-			
-			var stick_definition := DefinitionRegistry.get_item(&"base:stick")
-			var stick := ItemFactory.build(stick_definition)
-			
-			var goblin_coin_definition := DefinitionRegistry.get_item(&"base:goblin_coin")
-			var goblin_coin := ItemFactory.build(goblin_coin_definition)
-			var goblin_coin2 := ItemFactory.build(goblin_coin_definition)
+			var lightsaber := game_world.create_item(&"base:lightsaber")
+			var stick := game_world.create_item(&"base:stick")
+			var goblin_coin := game_world.create_item(&"base:goblin_coin")
+			var goblin_coin2 := game_world.create_item(&"base:goblin_coin")
 			
 			inventory.add_item(stick)
 			inventory.add_item(lightsaber)
