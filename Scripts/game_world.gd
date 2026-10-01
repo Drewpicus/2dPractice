@@ -12,7 +12,7 @@ const REMOTE_INTERPOLATION_SPEED: float = 50.0
 const HARD_CORRECTION_DISTANCE: float = 32.0
 
 var _snapshot_timer: float = 0.0
-var _last_movement_sequence: Dictionary[String, int] = {}
+var _last_movement_sequence: Dictionary[int, int] = {}
 var _network_positions: Dictionary[String, Vector2] = {}
 var _network_velocities: Dictionary[String, Vector2] = {}
 
@@ -611,14 +611,22 @@ func _apply_movement_input(sender_peer_id: int,entity_instance_id: String,sequen
 	if controller.controller_peer_id != sender_peer_id:
 		return
 
-	var last_sequence := int(_last_movement_sequence.get(entity_instance_id,-1))
+	var last_sequence := int(
+		_last_movement_sequence.get(
+			sender_peer_id,
+			-1
+		)
+	)
 
 	if sequence <= last_sequence:
 		return
 
-	_last_movement_sequence[entity_instance_id] = sequence
+	_last_movement_sequence[sender_peer_id] = sequence
 
-	_set_entity_movement_input(entity,direction)
+	_set_entity_movement_input(
+		entity,
+		direction
+	)
 
 func _set_entity_movement_input(entity: Entity,direction: Vector2) -> void:
 	var movement := entity.get_component(&"base:movement") as MovementComponent
@@ -638,12 +646,25 @@ func _send_movement_snapshot() -> void:
 		if not entity.has_component(&"base:movement"):
 			continue
 
+		var last_input_sequence := -1
+
+		var controller := entity.get_component(
+			&"base:player_controller"
+		) as PlayerControllerComponent
+
+		if controller:
+			last_input_sequence = int(
+				_last_movement_sequence.get(
+					controller.controller_peer_id,
+					-1
+				)
+			)
+
 		states.append({
 			"instance_id": entity.instance_id,
 			"position": entity.global_position,
 			"velocity": entity.velocity,
-			"last_input_sequence":
-				int(_last_movement_sequence.get(entity.instance_id,-1))
+			"last_input_sequence": last_input_sequence
 		})
 
 	if states.is_empty():
@@ -841,19 +862,120 @@ func _track_authoritative_entity(entity: Entity) -> void:
 		_track_component(entity, component)
 
 func _on_tracked_component_added(
-	_component_id: StringName,
+	component_id: StringName,
 	component: EntityComponent,
 	entity: Entity
 ) -> void:
-	_track_component(entity, component)
+	_track_component(
+		entity,
+		component
+	)
 
+	if not MultiplayerManager.session_active:
+		return
+
+	if not MultiplayerManager.is_world_authority():
+		return
+
+	# PlayerController transfer has its own replication
+	# because controller_peer_id is session-specific.
+	if component_id == &"base:player_controller":
+		return
+
+	_receive_component_added.rpc(
+		entity.instance_id,
+		String(component_id),
+		component.serialize_state()
+	)
+
+@rpc("authority", "call_remote", "reliable", 5)
+func _receive_component_added(
+	entity_instance_id: String,
+	component_id_string: String,
+	state: Dictionary
+) -> void:
+	if multiplayer.is_server():
+		return
+
+	var entity := RuntimeObjectRegistry.get_entity(
+		entity_instance_id
+	)
+
+	if not entity:
+		return
+
+	var component_id := StringName(
+		component_id_string
+	)
+
+	if not GameID.is_valid(component_id):
+		return
+
+	# Defensive: if it somehow already exists,
+	# just accept the authoritative state.
+	if entity.has_component(component_id):
+		var existing := entity.get_component(
+			component_id
+		)
+
+		existing.deserialize_state(state)
+		return
+
+	var component := entity.add_component(
+		component_id
+	)
+
+	if not component:
+		return
+
+	component.deserialize_state(state)
+
+@rpc("authority", "call_remote", "reliable", 5)
+func _receive_component_removed(
+	entity_instance_id: String,
+	component_id_string: String
+) -> void:
+	if multiplayer.is_server():
+		return
+
+	var entity := RuntimeObjectRegistry.get_entity(
+		entity_instance_id
+	)
+
+	if not entity:
+		return
+
+	var component_id := StringName(
+		component_id_string
+	)
+
+	if not GameID.is_valid(component_id):
+		return
+
+	if not entity.has_component(component_id):
+		return
+
+	entity.remove_component(component_id)
 
 func _on_tracked_component_removing(
-	_component_id: StringName,
+	component_id: StringName,
 	component: EntityComponent,
 	entity: Entity
 ) -> void:
-	_untrack_component(entity, component)
+	if (
+		MultiplayerManager.session_active
+		and MultiplayerManager.is_world_authority()
+		and component_id != &"base:player_controller"
+	):
+		_receive_component_removed.rpc(
+			entity.instance_id,
+			String(component_id)
+		)
+
+	_untrack_component(
+		entity,
+		component
+	)
 
 func _track_component(
 	entity: Entity,

@@ -22,4 +22,5 @@ func _physics_process(_delta: float) -> void:
 				return
 
 	root_entity.velocity = (input_direction.normalized() * base_speed)
-	root_entity.move_and_slide()
+	if root_entity.velocity != Vector2.ZERO:
+		root_entity.move_and_slide()

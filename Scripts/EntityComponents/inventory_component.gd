@@ -57,12 +57,16 @@ func take_all_items() -> Array[Item]:
 	return new_inventory
 
 func drop_all_items() -> void:
-	var all_items := items
+	var all_items := items.duplicate()
 	items.clear()
+
 	for item in all_items:
-		_spawn_loot_pickup(item, root_entity.global_position)
+		_spawn_loot_pickup(
+			item,
+			root_entity.global_position
+		)
 		item_removed.emit(item)
-		notify_state_changed()
+
 	items_updated.emit()
 	notify_state_changed()
 
