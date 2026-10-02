@@ -10,6 +10,7 @@ const INTERACTIONS: Dictionary = {
 	&"base:pickpocket": preload("res://Scripts/Interactions/pickpocket_interaction.gd"),
 	&"base:be": preload("res://Scripts/Interactions/be_interaction.gd"),
 	&"base:pick_up_item": preload("res://Scripts/Interactions/pick_up_item_interaction.gd"),
+	&"base:unlock": preload("res://Scripts/Interactions/unlock_interaction.gd"),
 }
 
 static func create_interaction(interaction_id: StringName) -> Interaction:
