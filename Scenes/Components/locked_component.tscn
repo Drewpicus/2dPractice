@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://de5s6fwlwtppi"]
+
+[ext_resource type="Script" uid="uid://wqtbkv508hb4" path="res://Scripts/EntityComponents/locked_component.gd" id="1_1g50a"]
+
+[node name="LockedComponent" type="Node" unique_id=1171963823]
+script = ExtResource("1_1g50a")
+component_id = &"base:locked"

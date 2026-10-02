@@ -23,20 +23,22 @@ func refresh_collision_from_sprite() -> void:
 	collision_shape.position = sprite.position
 
 
-func get_interactions(
-	_interactor: Entity
-) -> Array[Interaction]:
+func get_interactions(_interactor: Entity) -> Array[Interaction]:
 	var suggestion_ids: Dictionary = {}
+	var blocked_ids: Dictionary = {}
 	var interactions: Array[Interaction] = []
 
 	for component in root_entity.get_components():
 		for interaction_id in component.get_interaction_suggestions():
 			suggestion_ids[interaction_id] = true
+		for interaction_id in component.get_blocked_interactions():
+			blocked_ids[interaction_id] = true
 
 	for interaction_id in suggestion_ids:
-		var interaction := InteractionRegistry.create_interaction(
-			interaction_id
-		)
+		if interaction_id in blocked_ids:
+			continue
+			
+		var interaction := InteractionRegistry.create_interaction(interaction_id)
 
 		if not interaction:
 			continue
