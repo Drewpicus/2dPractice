@@ -28,7 +28,7 @@ placeholder_text = "Port"
 
 [node name="IPAddress" type="LineEdit" parent="CanvasLayer/VBoxContainer" unique_id=796250554]
 layout_mode = 2
-text = "127.0.0.1"
+text = "24.61.224.177"
 placeholder_text = "IP Address"
 
 [node name="HostButton" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=1956508985]
