@@ -31,7 +31,7 @@ func _ready() -> void:
 	entity_sprite.add_child(locked_sprite)
 
 	locked_sprite.position = Vector2.ZERO
-	locked_sprite.z_index = 1
+	locked_sprite.z_index = entity_sprite.z_index
 
 
 func on_removing() -> void:

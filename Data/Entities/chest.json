@@ -1,0 +1,34 @@
+{
+	"entity_id": "base:chest",
+	"entity_name": "Chest",
+	"sprite": "res://chest.png",
+	"solid": true,
+	"draw_layer": 0,
+
+	"collision": {
+		"type": "rectangle",
+		"size": [28,20]
+	},
+
+	"components": [
+		{
+			"component_id": "base:info",
+			"parameters": {
+				"description": "A chest for storing things"
+			}
+		},
+		{
+			"component_id": "base:interactable"
+		},
+		{
+			"component_id": "base:inventory"
+		},
+		{
+			"component_id": "base:locked",
+			"parameters": {
+				"locked_sprite_path": "res://chest_lock.png",
+				"locked_interactions": ["base:open_inventory"]
+			}
+		}
+	]
+}

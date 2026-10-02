@@ -25,6 +25,7 @@ func _initialize_game_world() -> void:
 	game_world.spawn_entity(&"base:goblin",Vector2(-30, 125))
 	game_world.spawn_entity(&"base:rock",Vector2(-250, 152))
 	game_world.spawn_entity(&"base:tree",Vector2(216, -130))
+	game_world.spawn_entity(&"base:chest",Vector2(32, 256))
 
 func _spawn_players() -> void:
 	var peer_ids: Array[int] = [1]
