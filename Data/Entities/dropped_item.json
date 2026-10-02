@@ -2,7 +2,7 @@
 	"entity_id": "base:dropped_item",
 	"entity_name": "Item",
 	"solid": false,
-	"draw_layer": 0,
+	"draw_layer": -1,
 
 	"components": [
 		{

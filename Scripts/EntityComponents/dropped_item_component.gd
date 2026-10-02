@@ -87,7 +87,7 @@ func _try_resolve_item() -> bool:
 
 	var info := get_component(&"base:info") as InfoComponent
 	
-	if info and info.is_node_ready():
+	if info:
 		print("DESCRIPTION SET")
 		info.description = item.description
 
