@@ -14,12 +14,18 @@ func can_perform(_interactor: Entity, _target: Entity) -> bool:
 		return false
 	return true
 
-func perform(_interactor: Entity, _target: Entity) -> void:
-	var inventory_menu := _interactor.get_tree().root.get_node_or_null(
-		"Main/UI/InventoryMenu"
-	) as InventoryMenu
+func perform(
+	interactor: Entity,
+	target: Entity
+) -> void:
+	var world := GameWorld.find_world(
+		interactor
+	)
 
-	if not inventory_menu:
+	if not world:
 		return
 
-	inventory_menu.show_inventory(_interactor, _target)
+	world.request_inventory(
+		interactor,
+		target
+	)

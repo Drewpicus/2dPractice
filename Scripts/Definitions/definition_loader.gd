@@ -156,7 +156,9 @@ static func load_item_definition(path: String) -> ItemDefinition:
 			return null
 
 		definition.sprite = sprite_resource as Texture2D
-
+	
+	definition.description = String(data.get("description", ""))
+	
 	var component_data = data.get("components", [])
 
 	if not component_data is Array:

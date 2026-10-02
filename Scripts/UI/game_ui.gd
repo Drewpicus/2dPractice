@@ -3,15 +3,18 @@ class_name GameUI
 
 
 @onready var game_world: GameWorld = $"../GameWorld"
+@onready var interaction_menu: InteractionMenu = $InteractionMenu
+@onready var inventory_menu: InventoryMenu = $InventoryMenu
+@onready var inspect_window: InspectWindow = $InspectWindow
 
-@onready var interaction_menu: InteractionMenu = (
-	$InteractionMenu
-)
+func _ready() -> void:
+	game_world.inspection_requested.connect(
+		_on_inspection_requested
+	)
 
-@onready var inventory_menu: InventoryMenu = (
-	$InventoryMenu
-)
-
+	game_world.inventory_requested.connect(
+		_on_inventory_requested
+	)
 
 func _unhandled_input(event: InputEvent) -> void:
 	var controlled_entity := (
@@ -29,6 +32,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("select"):
 		interaction_menu._on_empty_pressed()
+	
+	if event.is_action_pressed("close_menu"):
+		interaction_menu.hide()
+		inspect_window.hide()
+		inventory_menu.close_inventory()
 
 
 func _toggle_inventory(
@@ -39,6 +47,7 @@ func _toggle_inventory(
 		return
 
 	interaction_menu.hide()
+	inspect_window.hide()
 
 	inventory_menu.show_inventory(
 		controlled_entity,
@@ -137,3 +146,27 @@ func _get_entity_under_mouse(
 		return entity
 
 	return null
+
+func _on_inspection_requested(
+	_viewer: Entity,
+	target: Entity
+) -> void:
+	interaction_menu.hide()
+	inventory_menu.close_inventory()
+
+	inspect_window.show_inspection(
+		target
+	)
+
+
+func _on_inventory_requested(
+	viewer: Entity,
+	owner: Entity
+) -> void:
+	interaction_menu.hide()
+	inspect_window.hide()
+
+	inventory_menu.show_inventory(
+		viewer,
+		owner
+	)

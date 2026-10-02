@@ -12,6 +12,9 @@ var _items: Dictionary[String, Item] = {}
 
 var world_data: WorldData
 
+signal inspection_requested(viewer: Entity, target: Entity)
+signal inventory_requested(viewer: Entity, owner: Entity)
+
 func _ready() -> void:
 	entity_spawner.spawn_function = _spawn_network_entity
 
@@ -581,4 +584,29 @@ func spawn_dropped_item(
 					item.instance_id
 			}
 		}
+	)
+
+func request_inspection(
+	viewer: Entity,
+	target: Entity
+) -> void:
+	if not viewer or not target:
+		return
+
+	inspection_requested.emit(
+		viewer,
+		target
+	)
+
+
+func request_inventory(
+	viewer: Entity,
+	owner: Entity
+) -> void:
+	if not viewer or not owner:
+		return
+
+	inventory_requested.emit(
+		viewer,
+		owner
 	)

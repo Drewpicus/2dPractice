@@ -10,6 +10,9 @@
 		},
 		{
 			"component_id": "base:interactable"
+		},
+		{
+			"component_id": "base:info"
 		}
 	]
 }

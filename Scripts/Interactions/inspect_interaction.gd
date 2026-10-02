@@ -12,5 +12,18 @@ func can_perform(_interactor: Entity, _target: Entity) -> bool:
 		return false
 	return true
 
-func perform(_interactor: Entity, _target: Entity) -> void:
-	print(_target.get_component(&"base:info").description)
+func perform(
+	interactor: Entity,
+	target: Entity
+) -> void:
+	var world := GameWorld.find_world(
+		interactor
+	)
+
+	if not world:
+		return
+
+	world.request_inspection(
+		interactor,
+		target
+	)

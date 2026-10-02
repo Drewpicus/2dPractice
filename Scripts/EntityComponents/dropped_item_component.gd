@@ -85,6 +85,12 @@ func _try_resolve_item() -> bool:
 				/ 2.0
 			)
 
+	var info := get_component(&"base:info") as InfoComponent
+	
+	if info and info.is_node_ready():
+		print("DESCRIPTION SET")
+		info.description = item.description
+
 	var interactable := get_component(
 		&"base:interactable"
 	) as InteractableComponent

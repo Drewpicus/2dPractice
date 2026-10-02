@@ -10,8 +10,9 @@
 [ext_resource type="Script" uid="uid://b5s2ur1r4bxm7" path="res://Scripts/World/world_movement_system.gd" id="8_hptm8"]
 [ext_resource type="Script" uid="uid://b1ikh47ub73j4" path="res://Scripts/World/world_replication_system.gd" id="9_d1ilt"]
 [ext_resource type="Script" uid="uid://74ssu6qlq32b" path="res://Scripts/UI/game_ui.gd" id="12_6iyac"]
-[ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/interaction_menu.gd" id="21_o1aky"]
-[ext_resource type="Script" uid="uid://cpefuibv0hxx" path="res://Scripts/inventory_menu.gd" id="22_kwxat"]
+[ext_resource type="Script" uid="uid://cvma3cseekwy3" path="res://Scripts/UI/inspect_window.gd" id="13_fdnlq"]
+[ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/UI/interaction_menu.gd" id="21_o1aky"]
+[ext_resource type="Script" uid="uid://cpefuibv0hxx" path="res://Scripts/UI/inventory_menu.gd" id="22_kwxat"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_d1ilt"]
 texture = ExtResource("3_344ge")
@@ -95,5 +96,38 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Close" type="Button" parent="UI/InventoryMenu/VBoxContainer" unique_id=1555944978]
+layout_mode = 2
+text = "Close"
+
+[node name="InspectWindow" type="PanelContainer" parent="UI" unique_id=299059649]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -155.0
+offset_top = -44.5
+offset_right = 155.0
+offset_bottom = 44.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("13_fdnlq")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/InspectWindow" unique_id=1178660022]
+layout_mode = 2
+alignment = 1
+
+[node name="Title" type="Label" parent="UI/InspectWindow/VBoxContainer" unique_id=1769202128]
+layout_mode = 2
+
+[node name="Texture" type="TextureRect" parent="UI/InspectWindow/VBoxContainer" unique_id=865161490]
+layout_mode = 2
+expand_mode = 4
+stretch_mode = 5
+
+[node name="Description" type="Label" parent="UI/InspectWindow/VBoxContainer" unique_id=835163057]
+layout_mode = 2
+
+[node name="Close" type="Button" parent="UI/InspectWindow/VBoxContainer" unique_id=1876743793]
 layout_mode = 2
 text = "Close"

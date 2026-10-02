@@ -16,6 +16,7 @@ static func build(definition: ItemDefinition) -> Item:
 	item.definition = definition
 	item.item_name = definition.item_name
 	item.sprite = definition.sprite
+	item.description = definition.description
 
 	for component in definition.components:
 		item.add_component(component.component_id, component.parameters)

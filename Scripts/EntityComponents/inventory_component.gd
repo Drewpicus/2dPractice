@@ -3,8 +3,6 @@ class_name InventoryComponent
 
 @export var items: Array[Item] = []
 
-const DROPPED_ITEM_SCENE: PackedScene = preload("res://dropped_item.tscn")
-
 signal items_updated
 signal item_added(item:Item)
 signal item_removed(item:Item)
@@ -55,30 +53,6 @@ func take_all_items() -> Array[Item]:
 	items_updated.emit()
 	notify_state_changed()
 	return new_inventory
-
-func drop_all_items() -> void:
-	var all_items := items.duplicate()
-	items.clear()
-
-	for item in all_items:
-		_spawn_loot_pickup(
-			item,
-			root_entity.global_position
-		)
-		item_removed.emit(item)
-
-	items_updated.emit()
-	notify_state_changed()
-
-## @deprecated dropped items may be old
-func _spawn_loot_pickup(_item_resource: Item, _drop_position: Vector2) -> void:
-	var new_item: DroppedItem = DROPPED_ITEM_SCENE.instantiate()
-	
-	new_item.item = _item_resource
-	new_item.global_position = _drop_position
-	new_item.position += Vector2(randf_range(-16,16),randf_range(-16,16))
-	root_entity.get_parent().add_child(new_item)
-	print("Dropped %s" % [new_item])
 
 func get_interaction_suggestions() -> Array[StringName]:
 	var capabilities: CapabilityComponent = get_component(&"base:capability")

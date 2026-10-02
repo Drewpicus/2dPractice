@@ -5,6 +5,7 @@ var instance_id: String
 var item_id: StringName
 var item_name: String
 var sprite: Texture2D
+var description: String
 var definition: ItemDefinition
 var _components: Dictionary[StringName, ItemComponent] = {}
 

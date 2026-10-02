@@ -2,6 +2,7 @@
 	"item_id": "base:stick",
 	"item_name": "Stick",
 	"sprite": "res://stick.png",
+	"description": "It's a stick.",
 	"components": [
 		{
 			"component_id": "base:equippable",
