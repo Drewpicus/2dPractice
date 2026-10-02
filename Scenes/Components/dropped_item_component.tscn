@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://ccnxglk8iuv2h"]
+
+[ext_resource type="Script" uid="uid://cgosgeqancwuq" path="res://Scripts/EntityComponents/dropped_item_component.gd" id="1_tgwp0"]
+
+[node name="DroppedItemComponent" type="Node" unique_id=2146381920]
+script = ExtResource("1_tgwp0")
+component_id = &"base:dropped_item"

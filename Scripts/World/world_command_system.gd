@@ -6,6 +6,7 @@ const COMMAND_INTERACTION := &"base:interaction"
 const COMMAND_TAKE_ITEM := &"base:take_item"
 const COMMAND_EQUIP_ITEM := &"base:equip_item"
 const COMMAND_UNEQUIP_ITEM := &"base:unequip_item"
+const COMMAND_DROP_ITEM := &"base:drop_item"
 
 
 func _submit_command(command_id: StringName, actor: Entity, arguments: Dictionary = {}) -> void:
@@ -62,6 +63,12 @@ func _apply_command(sender_peer_id: int, command_id: StringName, arguments: Dict
 				sender_peer_id,
 				String(arguments.get("entity_id", "")),
 				StringName(arguments.get("slot", "")))
+		
+		COMMAND_DROP_ITEM:
+			_apply_drop_item(
+				sender_peer_id,
+				String(arguments.get("entity_id", "")),
+				String(arguments.get("item_id", "")))
 
 		_:
 			push_warning("Unknown command ID :( : %s" % command_id)
@@ -270,3 +277,90 @@ func _perform_unequip_item(entity: Entity, slot: StringName) -> bool:
 		return false
 
 	return equipment.unequip(slot) != null
+
+func submit_drop_item(
+	entity: Entity,
+	item: Item
+) -> void:
+	if not entity or not item:
+		return
+
+	_submit_command(
+		COMMAND_DROP_ITEM,
+		entity,
+		{
+			"entity_id": entity.instance_id,
+			"item_id": item.instance_id
+		}
+	)
+
+
+func _apply_drop_item(
+	sender_peer_id: int,
+	entity_instance_id: String,
+	item_instance_id: String
+) -> void:
+	var entity := RuntimeObjectRegistry.get_entity(
+		entity_instance_id
+	)
+
+	var item := RuntimeObjectRegistry.get_item(
+		item_instance_id
+	)
+
+	if not entity or not item:
+		return
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if controller.controller_peer_id != sender_peer_id:
+		return
+
+	_perform_drop_item(
+		entity,
+		item
+	)
+
+
+func _perform_drop_item(
+	entity: Entity,
+	item: Item
+) -> bool:
+	var inventory := entity.get_component(
+		&"base:inventory"
+	) as InventoryComponent
+
+	if not inventory:
+		return false
+
+	if item not in inventory.items:
+		return false
+
+	var removed_item := inventory.remove_item(
+		item
+	)
+
+	if not removed_item:
+		return false
+
+	var world := GameWorld.find_world(entity)
+
+	if not world:
+		inventory.add_item(removed_item)
+		return false
+
+	var dropped_item := world.spawn_dropped_item(
+		removed_item,
+		entity.global_position
+	)
+
+	if not dropped_item:
+		inventory.add_item(removed_item)
+		return false
+
+	return true

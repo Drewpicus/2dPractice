@@ -3,34 +3,44 @@ class_name InteractableComponent
 
 @onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
 
+
 func _ready() -> void:
-	var sprite := root_entity.get_node_or_null("Sprite2D") as Sprite2D
-	
+	refresh_collision_from_sprite()
+
+
+func refresh_collision_from_sprite() -> void:
+	var sprite := root_entity.get_node_or_null(
+		"Sprite2D"
+	) as Sprite2D
+
 	if not sprite or not sprite.texture:
 		return
-	
+
 	var shape := RectangleShape2D.new()
 	shape.size = sprite.texture.get_size()
-	
+
 	collision_shape.shape = shape
 	collision_shape.position = sprite.position
 
-##Returns an array of created Interaction objects based on the
-##suggested Interactions from the [param _interactor] Entity's components
-func get_interactions(_interactor: Entity) -> Array[Interaction]:
+
+func get_interactions(
+	_interactor: Entity
+) -> Array[Interaction]:
 	var suggestion_ids: Dictionary = {}
 	var interactions: Array[Interaction] = []
-	
+
 	for component in root_entity.get_components():
 		for interaction_id in component.get_interaction_suggestions():
 			suggestion_ids[interaction_id] = true
-	
+
 	for interaction_id in suggestion_ids:
-		var interaction := InteractionRegistry.create_interaction(interaction_id)
-		
+		var interaction := InteractionRegistry.create_interaction(
+			interaction_id
+		)
+
 		if not interaction:
 			continue
-		
+
 		interactions.append(interaction)
-	
+
 	return interactions

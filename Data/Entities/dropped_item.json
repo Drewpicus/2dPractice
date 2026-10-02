@@ -1,0 +1,15 @@
+{
+	"entity_id": "base:dropped_item",
+	"entity_name": "Item",
+	"solid": false,
+	"draw_layer": 0,
+
+	"components": [
+		{
+			"component_id": "base:dropped_item"
+		},
+		{
+			"component_id": "base:interactable"
+		}
+	]
+}

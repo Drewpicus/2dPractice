@@ -132,8 +132,13 @@ func _rebuild_actions() -> void:
 			"Take",
 			_take_selected
 		)
-
 		return
+
+	if _owner == _viewer:
+		_add_action_button(
+			"Drop",
+			_drop_selected
+		)
 
 	if not _viewer_equipment:
 		return
@@ -221,4 +226,23 @@ func _unequip_slot(slot: StringName) -> void:
 	world.submit_unequip_item(
 		_viewer,
 		slot
+	)
+
+func _drop_selected() -> void:
+	if not _selected_item:
+		return
+
+	if not is_instance_valid(_viewer):
+		return
+
+	var world := GameWorld.find_world(
+		_viewer
+	)
+
+	if not world:
+		return
+
+	world.submit_drop_item(
+		_viewer,
+		_selected_item
 	)

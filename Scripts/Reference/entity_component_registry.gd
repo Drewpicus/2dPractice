@@ -22,6 +22,9 @@ const COMPONENT_SCENES: Dictionary = {
 	&"base:equipment": preload("res://Scenes/Components/equipment_component.tscn"),
 	&"base:remains": preload("res://Scenes/Components/remains_component.tscn"),
 	&"base:status": preload("res://Scenes/Components/status_component.tscn"),
+	
+	##Other
+	&"base:dropped_item": preload("res://Scenes/Components/dropped_item_component.tscn"),
 }
 
 static func get_component_scene(component_name: StringName) -> PackedScene:

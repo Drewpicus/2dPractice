@@ -468,6 +468,9 @@ func submit_equip_item(entity: Entity, item: Item, slot: StringName) -> void:
 func submit_unequip_item(entity: Entity, slot: StringName) -> void:
 	command_system.submit_unequip_item(entity, slot)
 
+func submit_drop_item(entity: Entity, item: Item) -> void:
+	command_system.submit_drop_item(entity, item)
+
 func _on_peer_left(peer_id: int) -> void:
 	if not MultiplayerManager.session_active:
 		return
@@ -551,3 +554,31 @@ func get_entity_controlled_by_peer(peer_id: int) -> Entity:
 
 func get_locally_controlled_entity() -> Entity:
 	return get_entity_controlled_by_peer(multiplayer.get_unique_id())
+
+func spawn_dropped_item(
+	item: Item,
+	world_position: Vector2
+) -> Entity:
+	if not MultiplayerManager.is_world_authority():
+		return null
+
+	if not item:
+		return null
+
+	if not _items.has(item.instance_id):
+		return null
+
+	if _items[item.instance_id] != item:
+		return null
+
+	return spawn_entity(
+		&"base:dropped_item",
+		world_position,
+		{},
+		{
+			"base:dropped_item": {
+				"item_instance_id":
+					item.instance_id
+			}
+		}
+	)
