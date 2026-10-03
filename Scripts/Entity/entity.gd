@@ -1,12 +1,27 @@
+##An Entity, something that can exist in the GameWorld, normally with a Sprite.
+##Entites can have [EntityComponent]s, which define the properties of the Entity.
+##This is the most common type of game object besides maybe Items.
+
 extends CharacterBody2D
 class_name Entity
 
-var instance_id: String
-var entity_id: StringName
-var entity_name: String
 @onready var collision: CollisionShape2D = $CollisionShape2D
+
+##The ID of the specific instance of this Entity for tracking purposes, handled
+##by [RuntimeObjectRegistry]
+var instance_id: String
+##The ID of the Entity's Definition, e.g. [param &"base:rock"]. This is the
+##ID the [EntityFactory] used to construct this Entity.
+var entity_id: StringName
+##The name of the Entity for gameplay purposes, e.g. "Goblin"
+var entity_name: String
+##Reference to the parent folder of this Entity's [EntityComponent]s.
+##Assigned by [method _get_components_folder].
 var components_folder: Node
+##If [code]true[/code], this Entity will interact with physics.
 var solid: bool = true
+##Dictionary of all [EntityComponent]s attached to this Entity.
+##[code]_components.[&"base:health"][/code] will refer to an attached [HealthComponent].
 var _components: Dictionary[StringName, EntityComponent] = {}
 
 signal component_added(component_id: StringName, component: EntityComponent)
@@ -16,10 +31,9 @@ func _init() -> void:
 	instance_id = RuntimeObjectRegistry.generate_unique_id()
 	RuntimeObjectRegistry.register(self, instance_id)
 
+#TODO: Remove health/die stuff from here
 func _ready() -> void:
-	var health_component := get_component(
-		&"base:health"
-	) as HealthComponent
+	var health_component := get_component(&"base:health") as HealthComponent
 
 	if health_component:
 		health_component.health_depleted.connect(die)
@@ -27,6 +41,9 @@ func _ready() -> void:
 	if not solid:
 		collision.disabled = true
 
+##This function is used locally when adding a new component or attaching an already-built component.
+##Adds [param component] to [member Entity._components] and emits the added signals at both the Entity and component levels.
+##Once a component is registered, the rest of the Entity can start talking to it. Returns [code]true[/code] if the registry was successful.
 func _register_component(component: EntityComponent) -> bool:
 	if not component:
 		return false
@@ -50,6 +67,7 @@ func _register_component(component: EntityComponent) -> bool:
 	component_added.emit(component_id, component)
 	return true
 
+## Deprecated, temporary function that spawns remains upon death and deletes the entity from the world
 func die() -> void:
 	var remains_component := get_component(&"base:remains") as RemainsComponent
 
@@ -63,9 +81,9 @@ func die() -> void:
 	else:
 		queue_free()
 
-##Add a component to the component folder, based on name, e.g. &"health"
+##Add a component to the component folder, based on ID, e.g. &"health".
 ##Parameters are a dict with the keys being variable names and the values being values
-func add_component(component_id:StringName,parameters:Dictionary={}) -> EntityComponent:
+func add_component(component_id: StringName, parameters: Dictionary={}) -> EntityComponent:
 	if not GameID.is_valid(component_id):
 		push_error("Invalid component ID: %s" % component_id)
 		return null
@@ -106,7 +124,8 @@ func add_component(component_id:StringName,parameters:Dictionary={}) -> EntityCo
 	folder.add_child(new_component)
 	return new_component
 
-##Remove a component from the component folder, based on name, e.g. &"base:health"
+##Remove a component from the component folder, based on ID, e.g. &"base:health".
+##The component is also deleted. To detatch without deleting, use [method detatch_component].
 func remove_component(component_id: StringName) -> void:
 	var component := get_component(component_id)
 
@@ -200,12 +219,14 @@ static func find_entity(node:Node) -> Entity:
 		node = node.get_parent()
 	return null
 
+##Sets [param components_folder] to the Entity's component's folder Node even if it hasn't been loaded yet.
 func _get_components_folder() -> Node:
 	if not components_folder:
 		components_folder = get_node_or_null("Components")
 
 	return components_folder
 
+##Tells all [EntityComponent]s about [param event] so they can respond accordingly
 func dispatch_event(event: GameEvent) -> void:
 	if not event:
 		return
@@ -213,6 +234,8 @@ func dispatch_event(event: GameEvent) -> void:
 	for component in get_components():
 		component.on_event(event)
 
+##Receives [param resolution], collects contributions from its components, applies any modifiers,
+##and returns [param resolution] after the Entity is done modifying it.
 func resolve(resolution: GameResolution) -> GameResolution:
 	if not resolution:
 		return null
@@ -226,6 +249,7 @@ func resolve(resolution: GameResolution) -> GameResolution:
 
 	return resolution
 
+##Asks all its [EntityComponent]s to contribute to [param resolution]
 func contribute_to_resolution(resolution: GameResolution) -> void:
 	if not resolution:
 		return
@@ -307,23 +331,19 @@ func restore_instance_id(saved_instance_id: String) -> bool:
 	if saved_instance_id == instance_id:
 		return true
 
-	if not RuntimeObjectRegistry.reassign(
-		self,
-		instance_id,
-		saved_instance_id
-	):
+	if not RuntimeObjectRegistry.reassign(self, instance_id, saved_instance_id):
 		return false
 
 	instance_id = saved_instance_id
 	return true
 
+##True if this entity should be allowed to run its own movement and physics on this machine.
+##For the host, this is true for every entity. For a client, it's just their controlled player.
 func is_simulated_locally() -> bool:
 	if MultiplayerManager.is_world_authority():
 		return true
 
-	var controller := get_component(
-		&"base:player_controller"
-	) as PlayerControllerComponent
+	var controller := get_component(&"base:player_controller") as PlayerControllerComponent
 
 	if not controller:
 		return false

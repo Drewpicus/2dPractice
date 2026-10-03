@@ -10,7 +10,6 @@ var definition: ItemDefinition
 var _components: Dictionary[StringName, ItemComponent] = {}
 
 signal component_added(component_id: StringName,component: ItemComponent)
-
 signal component_removing(component_id: StringName,component: ItemComponent)
 
 func _init() -> void:

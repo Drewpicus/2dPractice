@@ -2,7 +2,7 @@ extends RefCounted
 class_name RuntimeStateLoader
 
 
-static func reconstruct(item_states: Array,entity_states: Array,entity_parent: Node) -> Dictionary:
+static func reconstruct(item_states: Array, entity_states: Array, entity_parent: Node) -> Dictionary:
 	if not entity_parent:
 		push_error("RuntimeStateLoader requires an Entity parent.")
 		return {}

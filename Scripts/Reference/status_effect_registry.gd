@@ -2,7 +2,7 @@ extends RefCounted
 class_name StatusEffectRegistry
 
 const EFFECTS: Dictionary = {
-	# Add actual effects here as you create them.
+	
 }
 
 

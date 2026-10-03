@@ -21,6 +21,19 @@ func _ready() -> void:
 	if not MultiplayerManager.peer_left.is_connected(_on_peer_left):
 		MultiplayerManager.peer_left.connect(_on_peer_left)
 
+##Returns the GameWorld node in the Scene Tree that [param node] lives in.
+##If [param node] is not in a GameWorld, returns null.
+static func find_world(node: Node) -> GameWorld:
+	while node != null:
+		if node is GameWorld:
+			return node
+
+		node = node.get_parent()
+
+	return null
+
+#region World Terrain
+
 func generate_world(world_size: Vector2i, _seed: int) -> void:
 	var generator := WorldGenerator.new()
 
@@ -34,15 +47,9 @@ func cell_to_world(cell: Vector2i) -> Vector2:
 func world_to_cell(world_position: Vector2) -> Vector2i:
 	return terrain.local_to_map(terrain.to_local(world_position))
 
-static func find_world(node: Node) -> GameWorld:
-	while node != null:
-		if node is GameWorld:
-			return node
+#endregion
 
-		node = node.get_parent()
-
-	return null
-
+#region Entities
 func spawn_entity(entity_id: StringName, entity_position: Vector2, runtime_components: Dictionary = {}, initial_component_states: Dictionary = {}) -> Entity:
 	if not MultiplayerManager.is_world_authority():
 		push_error("Non-authority tried to spawn Entity like a naughty client: %s" % entity_id)
@@ -71,82 +78,6 @@ func spawn_entity(entity_id: StringName, entity_position: Vector2, runtime_compo
 
 	return entity
 
-func transfer_player_controller(from_entity: Entity, to_entity: Entity) -> bool:
-	if (MultiplayerManager.session_active and not MultiplayerManager.is_world_authority()):
-		return false
-
-	var controller := from_entity.get_component(&"base:player_controller") as PlayerControllerComponent
-
-	if not controller:
-		return false
-
-	var peer_id := controller.controller_peer_id
-
-	if not _apply_player_controller_transfer(from_entity, to_entity):
-		return false
-
-	if MultiplayerManager.session_active:
-		_receive_player_controller_transfer.rpc(from_entity.instance_id, to_entity.instance_id, peer_id)
-
-	return true
-
-func _apply_player_controller_transfer(from_entity: Entity, to_entity: Entity) -> bool:
-	if not from_entity or not to_entity:
-		return false
-
-	if to_entity.has_component(&"base:player_controller"):
-		return false
-
-	var controller := from_entity.get_component(&"base:player_controller") as PlayerControllerComponent
-
-	if not controller:
-		return false
-
-	# Don't leave either body moving from an old input source.
-	var old_movement := from_entity.get_component(&"base:movement") as MovementComponent
-
-	if old_movement:
-		old_movement.input_direction = Vector2.ZERO
-
-	var target_movement := to_entity.get_component(&"base:movement") as MovementComponent
-
-	if target_movement:
-		target_movement.input_direction = Vector2.ZERO
-
-	controller = from_entity.detach_component(&"base:player_controller") as PlayerControllerComponent
-
-	if not controller:
-		return false
-
-	if not to_entity.attach_component(controller):
-		from_entity.attach_component(controller)
-		return false
-
-	return true
-
-@rpc("authority", "call_remote", "reliable", 4)
-func _receive_player_controller_transfer(from_instance_id: String, to_instance_id: String, controller_peer_id: int) -> void:
-	if multiplayer.is_server():
-		return
-
-	var from_entity := RuntimeObjectRegistry.get_entity(from_instance_id)
-
-	var to_entity := RuntimeObjectRegistry.get_entity(to_instance_id)
-
-	if not from_entity or not to_entity:
-		return
-
-	var controller := from_entity.get_component(&"base:player_controller") as PlayerControllerComponent
-
-	if not controller:
-		return
-
-	# Sanity check: we're moving the same player's controller.
-	if controller.controller_peer_id != controller_peer_id:
-		return
-
-	_apply_player_controller_transfer(from_entity, to_entity)
-
 func remove_entity(entity: Entity) -> void:
 	if not entity:
 		return
@@ -169,13 +100,9 @@ func get_entities() -> Array[Entity]:
 
 	return result
 
-func serialize_entities() -> Array:
-	var states: Array = []
+#endregion
 
-	for entity in get_entities():
-		states.append(entity.serialize_state())
-
-	return states
+#region Items
 
 func get_items() -> Array[Item]:
 	var result: Array[Item] = []
@@ -266,6 +193,98 @@ func _receive_item_removed(instance_id: String) -> void:
 
 	RuntimeObjectRegistry.unregister(instance_id, item)
 
+#endregion
+
+#region Transfer Player Controller
+
+func transfer_player_controller(from_entity: Entity, to_entity: Entity) -> bool:
+	if (MultiplayerManager.session_active and not MultiplayerManager.is_world_authority()):
+		return false
+
+	var controller := from_entity.get_component(&"base:player_controller") as PlayerControllerComponent
+
+	if not controller:
+		return false
+
+	var peer_id := controller.controller_peer_id
+
+	if not _apply_player_controller_transfer(from_entity, to_entity):
+		return false
+
+	if MultiplayerManager.session_active:
+		_receive_player_controller_transfer.rpc(from_entity.instance_id, to_entity.instance_id, peer_id)
+
+	return true
+
+func _apply_player_controller_transfer(from_entity: Entity, to_entity: Entity) -> bool:
+	if not from_entity or not to_entity:
+		return false
+
+	if to_entity.has_component(&"base:player_controller"):
+		return false
+
+	var controller := from_entity.get_component(&"base:player_controller") as PlayerControllerComponent
+
+	if not controller:
+		return false
+
+	# Don't leave either body moving from an old input source.
+	var old_movement := from_entity.get_component(&"base:movement") as MovementComponent
+
+	if old_movement:
+		old_movement.input_direction = Vector2.ZERO
+
+	var target_movement := to_entity.get_component(&"base:movement") as MovementComponent
+
+	if target_movement:
+		target_movement.input_direction = Vector2.ZERO
+
+	controller = from_entity.detach_component(&"base:player_controller") as PlayerControllerComponent
+
+	if not controller:
+		return false
+
+	if not to_entity.attach_component(controller):
+		from_entity.attach_component(controller)
+		return false
+
+	return true
+
+@rpc("authority", "call_remote", "reliable", 4)
+func _receive_player_controller_transfer(from_instance_id: String, to_instance_id: String, controller_peer_id: int) -> void:
+	if multiplayer.is_server():
+		return
+
+	var from_entity := RuntimeObjectRegistry.get_entity(from_instance_id)
+
+	var to_entity := RuntimeObjectRegistry.get_entity(to_instance_id)
+
+	if not from_entity or not to_entity:
+		return
+
+	var controller := from_entity.get_component(&"base:player_controller") as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	# Sanity check: we're moving the same player's controller.
+	if controller.controller_peer_id != controller_peer_id:
+		return
+
+	_apply_player_controller_transfer(from_entity, to_entity)
+
+#endregion
+
+#region Serialization (Save/Load)
+
+func serialize_entities() -> Array:
+	var states: Array = []
+
+	for entity in get_entities():
+		states.append(entity.serialize_state())
+
+	return states
+
 func serialize_items() -> Array:
 	var states: Array = []
 
@@ -347,6 +366,9 @@ func clear_runtime_state() -> void:
 
 		entity.queue_free()
 
+#endregion
+
+##EntitySpawner's function for building entities
 func _spawn_network_entity(data: Variant) -> Node:
 	if not data is Dictionary:
 		push_error("Network Entity spawn data must be a Dictionary.")
@@ -459,6 +481,8 @@ func submit_movement_input(entity: Entity, sequence: int, direction: Vector2) ->
 func record_simulated_movement(entity: Entity, sequence: int) -> void:
 	movement_system.record_simulated_movement(entity, sequence)
 
+#region Command System handles
+
 func submit_interaction(interaction: Interaction, interactor: Entity, target: Entity) -> void:
 	command_system.submit_interaction(interaction, interactor, target)
 
@@ -473,6 +497,8 @@ func submit_unequip_item(entity: Entity, slot: StringName) -> void:
 
 func submit_drop_item(entity: Entity, item: Item) -> void:
 	command_system.submit_drop_item(entity, item)
+
+#endregion
 
 func _on_peer_left(peer_id: int) -> void:
 	if not MultiplayerManager.session_active:
@@ -558,10 +584,7 @@ func get_entity_controlled_by_peer(peer_id: int) -> Entity:
 func get_locally_controlled_entity() -> Entity:
 	return get_entity_controlled_by_peer(multiplayer.get_unique_id())
 
-func spawn_dropped_item(
-	item: Item,
-	world_position: Vector2
-) -> Entity:
+func spawn_dropped_item(item: Item, world_position: Vector2) -> Entity:
 	if not MultiplayerManager.is_world_authority():
 		return null
 
@@ -586,27 +609,19 @@ func spawn_dropped_item(
 		}
 	)
 
-func request_inspection(
-	viewer: Entity,
-	target: Entity
-) -> void:
+#region UI Requests
+
+func request_inspection(viewer: Entity, target: Entity) -> void:
 	if not viewer or not target:
 		return
 
-	inspection_requested.emit(
-		viewer,
-		target
-	)
+	inspection_requested.emit(viewer, target)
 
 
-func request_inventory(
-	viewer: Entity,
-	owner: Entity
-) -> void:
+func request_inventory(viewer: Entity, owner: Entity) -> void:
 	if not viewer or not owner:
 		return
 
-	inventory_requested.emit(
-		viewer,
-		owner
-	)
+	inventory_requested.emit(viewer, owner)
+
+#endregion

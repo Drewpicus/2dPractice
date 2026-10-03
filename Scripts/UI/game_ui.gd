@@ -7,19 +7,13 @@ class_name GameUI
 @onready var inventory_menu: InventoryMenu = $InventoryMenu
 @onready var inspect_window: InspectWindow = $InspectWindow
 
-func _ready() -> void:
-	game_world.inspection_requested.connect(
-		_on_inspection_requested
-	)
 
-	game_world.inventory_requested.connect(
-		_on_inventory_requested
-	)
+func _ready() -> void:
+	game_world.inspection_requested.connect(_on_inspection_requested)
+	game_world.inventory_requested.connect(_on_inventory_requested)
 
 func _unhandled_input(event: InputEvent) -> void:
-	var controlled_entity := (
-		game_world.get_locally_controlled_entity()
-	)
+	var controlled_entity := (game_world.get_locally_controlled_entity())
 
 	if not controlled_entity:
 		return
@@ -39,9 +33,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		inventory_menu.close_inventory()
 
 
-func _toggle_inventory(
-	controlled_entity: Entity
-) -> void:
+func _toggle_inventory(controlled_entity: Entity) -> void:
 	if inventory_menu.visible:
 		inventory_menu.close_inventory()
 		return
@@ -49,18 +41,11 @@ func _toggle_inventory(
 	interaction_menu.hide()
 	inspect_window.hide()
 
-	inventory_menu.show_inventory(
-		controlled_entity,
-		controlled_entity
-	)
+	inventory_menu.show_inventory(controlled_entity, controlled_entity)
 
 
-func _open_interaction_menu(
-	controlled_entity: Entity
-) -> void:
-	var target := _get_entity_under_mouse(
-		controlled_entity
-	)
+func _open_interaction_menu(controlled_entity: Entity) -> void:
+	var target := _get_entity_under_mouse(controlled_entity)
 
 	if not target:
 		interaction_menu.hide()
@@ -159,14 +144,8 @@ func _on_inspection_requested(
 	)
 
 
-func _on_inventory_requested(
-	viewer: Entity,
-	owner: Entity
-) -> void:
+func _on_inventory_requested(viewer: Entity, inv_owner: Entity) -> void:
 	interaction_menu.hide()
 	inspect_window.hide()
 
-	inventory_menu.show_inventory(
-		viewer,
-		owner
-	)
+	inventory_menu.show_inventory(viewer,inv_owner)

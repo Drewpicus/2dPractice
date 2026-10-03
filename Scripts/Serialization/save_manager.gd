@@ -30,10 +30,7 @@ static func load_world(world: GameWorld, path: String = DEFAULT_SAVE_PATH) -> bo
 
 	##NOTE: will change
 	if MultiplayerManager.session_active:
-		push_warning(
-			"Loading a world during an active multiplayer session "
-			+ "is not supported yet."
-		)
+		push_warning("Loading a world during an active multiplayer session is not supported yet because I can't figure out how.")
 		return false
 
 	if not FileAccess.file_exists(path):
@@ -47,12 +44,7 @@ static func load_world(world: GameWorld, path: String = DEFAULT_SAVE_PATH) -> bo
 
 	if error != OK:
 		push_error(
-			"Failed to parse save file at line %s: %s"
-			% [
-				json.get_error_line(),
-				json.get_error_message()
-			]
-		)
+			"Failed to parse save file at line %s: %s" % [json.get_error_line(), json.get_error_message()])
 		return false
 
 	if not json.data is Dictionary:

@@ -8,6 +8,7 @@ var _sibling_watchers: Dictionary[StringName, Array] = {}
 
 signal state_changed
 
+
 func _set_owner(entity: Entity) -> void:
 	root_entity = entity
 
@@ -79,7 +80,7 @@ func _handle_component_removing(target_id: StringName,component: EntityComponent
 	_notify_sibling_watchers(target_id, null)
 	on_sibling_removing(target_id, component)
 
-func _notify_sibling_watchers(target_id: StringName,component: EntityComponent) -> void:
+func _notify_sibling_watchers(target_id: StringName, component: EntityComponent) -> void:
 	if not _sibling_watchers.has(target_id):
 		return
 

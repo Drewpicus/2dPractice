@@ -12,7 +12,7 @@ var _applying_modifiers: bool = false
 func cancel() -> void:
 	cancelled = true
 
-func add_modifier(modifier: ResolutionModifier,source: Object = null) -> bool:
+func add_modifier(modifier: ResolutionModifier, source: Object = null) -> bool:
 	if not modifier:
 		return false
 

@@ -1,17 +1,20 @@
+##Makes an Entity interactable, meaning you can right click on it and
+##perform an interaction. Interactions are sourced from other Entity
+##components with [method EntityComponent.get_interaction_suggestions]
+
 extends EntityComponent
 class_name InteractableComponent
 
 @onready var collision_shape: CollisionShape2D = $Area2D/CollisionShape2D
 
-
 func _ready() -> void:
 	refresh_collision_from_sprite()
 
-
+##Sets the collision shape of the interactable region to a rectangle
+##bounding the dimensions of the sprite of the root entity. This just
+##changes the "clickable" region, not the entity's actual collider.
 func refresh_collision_from_sprite() -> void:
-	var sprite := root_entity.get_node_or_null(
-		"Sprite2D"
-	) as Sprite2D
+	var sprite := root_entity.get_node_or_null("Sprite2D") as Sprite2D
 
 	if not sprite or not sprite.texture:
 		return
@@ -22,7 +25,9 @@ func refresh_collision_from_sprite() -> void:
 	collision_shape.shape = shape
 	collision_shape.position = sprite.position
 
-
+##Returns an Array of interactions suggested by [param _interactor]'s components' 
+##[method get_interaction_suggestions] functions. Automatically filters out interactions
+##blocked by any [method get_blocked_interactions] functions inside [param _interactor]'s components.
 func get_interactions(_interactor: Entity) -> Array[Interaction]:
 	var suggestion_ids: Dictionary = {}
 	var blocked_ids: Dictionary = {}

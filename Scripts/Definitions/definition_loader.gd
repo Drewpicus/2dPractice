@@ -5,6 +5,7 @@ const ITEM_DIRECTORY := "res://Data/Items"
 const ENTITY_DIRECTORY := "res://Data/Entities"
 const ELEMENT_DIRECTORY := "res://Data/Elements"
 
+##Builds the entire [DefinitionRegistry]
 static func load_all_definitions() -> void:
 	DefinitionRegistry.clear()
 
@@ -208,7 +209,7 @@ static func load_element_definition(path: String) -> ElementDefinition:
 
 	return definition
 
-
+##Returns a [code]Dictionary[/code] from a JSON file at [param path]
 static func _load_json(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
 		push_error("Definition file does not exist: %s" % path)
@@ -229,6 +230,12 @@ static func _load_json(path: String) -> Dictionary:
 
 	return json.data as Dictionary
 
+##The Variant [param data] must be a Dictionary with a type and data, for example:
+##[codeblock]
+##{
+##	"type" : "circle",
+##	"radius" : 16.0
+##}[/codeblock]
 static func _load_collision_shape(data: Variant, definition_path: String) -> Shape2D:
 	if not data is Dictionary:
 		push_error("Collision definition must be an object in: %s" % definition_path)

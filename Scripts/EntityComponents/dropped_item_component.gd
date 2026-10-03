@@ -1,19 +1,19 @@
 extends EntityComponent
 class_name DroppedItemComponent
 
-
+##The instance ID of the exact item to show, from the RuntimeObjectRegistry
 var item_instance_id: String = ""
-var _item: Item
 
+##The Item object represented by this DroppedItem
+var _item: Item
 
 func on_added() -> void:
 	_try_resolve_item()
 
-
 func _ready() -> void:
 	_try_resolve_item()
 
-
+##Tries to resolve the item until it succeeds, then stops
 func _process(_delta: float) -> void:
 	if _item:
 		set_process(false)
@@ -22,7 +22,7 @@ func _process(_delta: float) -> void:
 	if _try_resolve_item():
 		set_process(false)
 
-
+##Returns the Item
 func get_item() -> Item:
 	if not _item:
 		_try_resolve_item()
@@ -35,32 +35,23 @@ func get_interaction_suggestions() -> Array[StringName]:
 
 
 func serialize_state() -> Dictionary:
-	return {
-		"item_instance_id": item_instance_id
-	}
+	return {"item_instance_id": item_instance_id}
 
 
 func deserialize_state(state: Dictionary) -> void:
-	item_instance_id = String(
-		state.get(
-			"item_instance_id",
-			""
-		)
-	)
+	item_instance_id = String(state.get("item_instance_id", ""))
 
 	_item = null
 
 	if not _try_resolve_item():
 		set_process(true)
 
-
+##Sets _item based on the instance ID, and sets up its properties in the GameWorld
 func _try_resolve_item() -> bool:
 	if item_instance_id.is_empty():
 		return false
 
-	var item := RuntimeObjectRegistry.get_item(
-		item_instance_id
-	)
+	var item := RuntimeObjectRegistry.get_item(item_instance_id)
 
 	if not item:
 		return false
@@ -72,33 +63,22 @@ func _try_resolve_item() -> bool:
 
 	root_entity.entity_name = item.item_name
 
-	var sprite := root_entity.get_node_or_null(
-		"Sprite2D"
-	) as Sprite2D
+	var sprite := root_entity.get_node_or_null("Sprite2D") as Sprite2D
 
 	if sprite:
 		sprite.texture = item.sprite
 
 		if sprite.texture:
-			sprite.position.y = (
-				-float(sprite.texture.get_height())
-				/ 2.0
-			)
+			sprite.position.y = (-float(sprite.texture.get_height())/ 2.0)
 
 	var info := get_component(&"base:info") as InfoComponent
 	
 	if info:
-		print("DESCRIPTION SET")
 		info.description = item.description
 
-	var interactable := get_component(
-		&"base:interactable"
-	) as InteractableComponent
+	var interactable := get_component(&"base:interactable") as InteractableComponent
 
-	if (
-		interactable
-		and interactable.is_node_ready()
-	):
+	if (interactable and interactable.is_node_ready()):
 		interactable.refresh_collision_from_sprite()
 
 	return true
