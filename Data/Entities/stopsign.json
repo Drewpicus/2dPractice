@@ -1,7 +1,7 @@
 {
 	"entity_id": "base:stopsign",
 	"entity_name": "Stop Sign",
-	"sprite": "res://stopsign.png",
+	"sprite": "res://Assets/stopsign.png",
 	"solid": true,
 	"draw_layer": 0,
 

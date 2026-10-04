@@ -8,4 +8,5 @@ var _submission_order: int = -1
 
 ## What this modifier does to a resolution.
 func apply(_resolution: GameResolution) -> void:
+	_submission_order = -1
 	pass

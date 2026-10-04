@@ -1,0 +1,17 @@
+{
+	"item_id": "base:sword",
+	"item_name": "Sword of Sharpitude",
+	"sprite": "res://Assets/sword.png",
+	"description": "A steel blade forged by journeyman Swordley.",
+	"components": [
+		{
+			"component_id": "base:equippable",
+			"parameters": {
+				"slots": [
+					"mainhand",
+					"offhand"
+				]
+			}
+		}
+	]
+}

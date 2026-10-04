@@ -1,7 +1,7 @@
 {
 	"item_id": "base:lightsaber",
 	"item_name": "Red Lightsaber",
-	"sprite": "res://lightsaber.png",
+	"sprite": "res://Assets/lightsaber.png",
 	"description": "Dark Vader's weapon for killing.",
 	"components": [
 		{

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c4xl6dplx66pv"
-path="res://.godot/imported/jet eye sprite.png-f19cf8fc381ef02f48b7b44747334f16.ctex"
+uid="uid://b57wr2y5wmhwr"
+path="res://.godot/imported/real man.png-8a86bf2a0c2f5b0fbc9432c409249bcb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://jet eye sprite.png"
-dest_files=["res://.godot/imported/jet eye sprite.png-f19cf8fc381ef02f48b7b44747334f16.ctex"]
+source_file="res://Assets/real man.png"
+dest_files=["res://.godot/imported/real man.png-8a86bf2a0c2f5b0fbc9432c409249bcb.ctex"]
 
 [params]
 

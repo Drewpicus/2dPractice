@@ -1,13 +1,13 @@
 {
 	"entity_id": "base:player",
 	"entity_name": "Player",
-	"sprite": "res://real man.png",
+	"sprite": "res://Assets/man.png",
 	"solid": true,
 	"draw_layer": 0,
 
 	"collision": {
 		"type": "circle",
-		"radius": 8.0
+		"radius": 4.0
 	},
 
 	"components": [

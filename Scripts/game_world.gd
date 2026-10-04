@@ -91,6 +91,7 @@ func remove_entity(entity: Entity) -> void:
 
 	entity.queue_free()
 
+##Returns an Array of every [Entity] in the [GameWorld]
 func get_entities() -> Array[Entity]:
 	var result: Array[Entity] = []
 
@@ -618,10 +619,10 @@ func request_inspection(viewer: Entity, target: Entity) -> void:
 	inspection_requested.emit(viewer, target)
 
 
-func request_inventory(viewer: Entity, owner: Entity) -> void:
-	if not viewer or not owner:
+func request_inventory(viewer: Entity, _owner: Entity) -> void:
+	if not viewer or not _owner:
 		return
 
-	inventory_requested.emit(viewer, owner)
+	inventory_requested.emit(viewer, _owner)
 
 #endregion

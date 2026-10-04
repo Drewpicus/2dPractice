@@ -1,7 +1,7 @@
 {
 	"entity_id": "base:goblin_corpse",
 	"entity_name": "Goblin Corpse",
-	"sprite": "res://dead_goblin.png",
+	"sprite": "res://Assets/dead_goblin.png",
 	"solid": false,
 	"draw_layer": -1,
 

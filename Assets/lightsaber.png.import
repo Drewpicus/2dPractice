@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cesg5wy4yoh64"
-path="res://.godot/imported/real man2.png-7c47766fcd0649d3a8958fa8a20dae28.ctex"
+uid="uid://cl73gfn325rs"
+path="res://.godot/imported/lightsaber.png-e3afa0ecf4dfc4573d2f3efe5a8db4b4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://real man2.png"
-dest_files=["res://.godot/imported/real man2.png-7c47766fcd0649d3a8958fa8a20dae28.ctex"]
+source_file="res://Assets/lightsaber.png"
+dest_files=["res://.godot/imported/lightsaber.png-e3afa0ecf4dfc4573d2f3efe5a8db4b4.ctex"]
 
 [params]
 

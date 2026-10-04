@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cyiv0dlq1rsg1"
-path="res://.godot/imported/chest_lock.png-50d648e87320e696f0a4b945bdf01f07.ctex"
+path="res://.godot/imported/chest_lock.png-cd7d41d157b28a4dfd786688686bd353.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://chest_lock.png"
-dest_files=["res://.godot/imported/chest_lock.png-50d648e87320e696f0a4b945bdf01f07.ctex"]
+source_file="res://Assets/chest_lock.png"
+dest_files=["res://.godot/imported/chest_lock.png-cd7d41d157b28a4dfd786688686bd353.ctex"]
 
 [params]
 

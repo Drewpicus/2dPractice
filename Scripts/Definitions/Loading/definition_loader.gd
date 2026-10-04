@@ -9,11 +9,42 @@ const ELEMENT_DIRECTORY := "res://Data/Elements"
 static func load_all_definitions() -> void:
 	DefinitionRegistry.clear()
 
-	_load_item_directory(ITEM_DIRECTORY)
-	_load_entity_directory(ENTITY_DIRECTORY)
-	_load_element_directory(ELEMENT_DIRECTORY)
+	_load_named_directory(ITEM_DIRECTORY,"item")
+	_load_named_directory(ENTITY_DIRECTORY,"entity")
+	_load_named_directory(ELEMENT_DIRECTORY,"element")
 
+	#_load_item_directory(ITEM_DIRECTORY)
+	#_load_entity_directory(ENTITY_DIRECTORY)
+	#_load_element_directory(ELEMENT_DIRECTORY)
 
+static func _load_named_directory(directory_path: String, directory_name: String) -> void:
+	var files := DirAccess.get_files_at(directory_path)
+	files.sort()
+
+	for file_name in files:
+		if not file_name.ends_with(".json"):
+			continue
+
+		var path := directory_path.path_join(file_name)
+		
+		var load_definition_callable: Callable = Callable(DefinitionLoader, "load_" + directory_name + "_definition").bind(path)
+		
+		if not load_definition_callable.is_valid():
+			push_error("Invalid directory name for definition loading: %s" % directory_name)
+			return
+		
+		var definition = load_definition_callable.call()
+
+		if definition:
+			
+			var register_callable: Callable = Callable(DefinitionRegistry, "register_" + directory_name).bind(definition)
+			if not register_callable.is_valid():
+				push_error("Invalid directory name for registration: %s" % directory_name)
+				return
+				
+			register_callable.call()
+
+#region Deprecated
 static func _load_item_directory(directory_path: String) -> void:
 	var files := DirAccess.get_files_at(directory_path)
 	files.sort()
@@ -56,6 +87,7 @@ static func _load_element_directory(directory_path: String) -> void:
 
 		if definition:
 			DefinitionRegistry.register_element(definition)
+#endregion
 
 static func load_entity_definition(path: String) -> EntityDefinition:
 	var data := _load_json(path)
@@ -69,9 +101,7 @@ static func load_entity_definition(path: String) -> EntityDefinition:
 
 	if not GameID.is_valid(definition.entity_id):
 		push_error(
-			"Invalid entity ID in definition %s: %s"
-			% [path, definition.entity_id]
-		)
+			"Invalid entity ID in definition %s: %s" % [path, definition.entity_id])
 		return null
 
 	definition.entity_name = String(data.get("entity_name", ""))
@@ -85,9 +115,7 @@ static func load_entity_definition(path: String) -> EntityDefinition:
 
 		if not sprite_resource is Texture2D:
 			push_error(
-				"Entity definition sprite is not a Texture2D: %s"
-				% sprite_path
-			)
+				"Entity definition sprite is not a Texture2D: %s" % sprite_path)
 			return null
 
 		definition.sprite = sprite_resource as Texture2D
@@ -206,6 +234,24 @@ static func load_element_definition(path: String) -> ElementDefinition:
 		return null
 
 	definition.element_name = String(data.get("element_name", ""))
+
+	return definition
+
+static func load_weapontype_definition(path: String) -> WeaponTypeDefinition:
+	var data := _load_json(path)
+
+	if data.is_empty():
+		return null
+
+	var definition := WeaponTypeDefinition.new()
+
+	definition.weapontype_id = StringName(data.get("weapontype_id", ""))
+
+	if not GameID.is_valid(definition.weapontype_id):
+		push_error("Invalid element ID in definition %s: %s" % [path, definition.weapontype_id])
+		return null
+
+	definition.weapontype_name = String(data.get("weapontype_name", ""))
 
 	return definition
 

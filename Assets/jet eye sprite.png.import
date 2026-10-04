@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://caycjc8offvuw"
-path="res://.godot/imported/dead_goblin.png-7f322b1ad5b609187c5df04a079abaa4.ctex"
+uid="uid://c4xl6dplx66pv"
+path="res://.godot/imported/jet eye sprite.png-de1682450a00a58e250e956094ffed94.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://dead_goblin.png"
-dest_files=["res://.godot/imported/dead_goblin.png-7f322b1ad5b609187c5df04a079abaa4.ctex"]
+source_file="res://Assets/jet eye sprite.png"
+dest_files=["res://.godot/imported/jet eye sprite.png-de1682450a00a58e250e956094ffed94.ctex"]
 
 [params]
 

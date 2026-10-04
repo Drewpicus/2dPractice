@@ -1,7 +1,7 @@
 {
 	"entity_id": "base:goblin",
 	"entity_name": "Goblin",
-	"sprite": "res://goblin.png",
+	"sprite": "res://Assets/goblin.png",
 	"solid": true,
 	"draw_layer": 0,
 

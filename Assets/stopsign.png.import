@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c7y6mrvyjtj2m"
-path="res://.godot/imported/chest.png-9e490aafea209e3940cdee9d07dd30a9.ctex"
+uid="uid://bf8cvsxw4yo85"
+path="res://.godot/imported/stopsign.png-07d96fd64576fe3a0837a8069a241d5b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://chest.png"
-dest_files=["res://.godot/imported/chest.png-9e490aafea209e3940cdee9d07dd30a9.ctex"]
+source_file="res://Assets/stopsign.png"
+dest_files=["res://.godot/imported/stopsign.png-07d96fd64576fe3a0837a8069a241d5b.ctex"]
 
 [params]
 

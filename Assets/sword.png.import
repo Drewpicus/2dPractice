@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cl73gfn325rs"
-path="res://.godot/imported/lightsaber.png-8d039e3b6a1ff3c6c21f285daf65918b.ctex"
+uid="uid://bqjm5ka5y404v"
+path="res://.godot/imported/sword.png-d559b30643454800d5db0aa85cfb3f18.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://lightsaber.png"
-dest_files=["res://.godot/imported/lightsaber.png-8d039e3b6a1ff3c6c21f285daf65918b.ctex"]
+source_file="res://Assets/sword.png"
+dest_files=["res://.godot/imported/sword.png-d559b30643454800d5db0aa85cfb3f18.ctex"]
 
 [params]
 

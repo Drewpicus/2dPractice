@@ -127,7 +127,7 @@ func _rebuild_actions() -> void:
 	if not _selected_item:
 		return
 
-	if _owner != _viewer:
+	if (_owner != _viewer) and _viewer.has_component(&"base:inventory"):
 		_add_action_button(
 			"Take",
 			_take_selected

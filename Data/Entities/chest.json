@@ -1,7 +1,7 @@
 {
 	"entity_id": "base:chest",
 	"entity_name": "Chest",
-	"sprite": "res://chest.png",
+	"sprite": "res://Assets/chest.png",
 	"solid": true,
 	"draw_layer": 0,
 
@@ -26,7 +26,7 @@
 		{
 			"component_id": "base:locked",
 			"parameters": {
-				"locked_sprite_path": "res://chest_lock.png",
+				"locked_sprite_path": "res://Assets/chest_lock.png",
 				"locked_interactions": ["base:open_inventory"]
 			}
 		}

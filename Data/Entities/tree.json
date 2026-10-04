@@ -1,7 +1,7 @@
 {
 	"entity_id": "base:tree",
 	"entity_name": "Tree",
-	"sprite": "res://tree.png",
+	"sprite": "res://Assets/tree.png",
 	"solid": true,
 	"draw_layer": 0,
 

@@ -26,6 +26,8 @@ func _initialize_game_world() -> void:
 	game_world.spawn_entity(&"base:rock",Vector2(-250, 152))
 	game_world.spawn_entity(&"base:tree",Vector2(216, -130))
 	game_world.spawn_entity(&"base:chest",Vector2(32, 256))
+	
+	_spawn_test_items()
 
 func _spawn_players() -> void:
 	var peer_ids: Array[int] = [1]
@@ -58,41 +60,60 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("load_world"):
 		SaveManager.load_world(game_world)
 
-	if event.is_action_pressed("test"):
-		for goblin in game_world.get_entities():
-			if not goblin.entity_id == &"base:goblin":
-				continue
+func _spawn_test_items() -> void:
+	var all_entities = game_world.get_entities()
+	
+	all_entities.shuffle()
+	
+	for goblin in all_entities:
+		if not goblin.entity_id == &"base:goblin":
+			continue
 
-			if not goblin:
-				print("Couldn't find Goblin")
-				return
+		if not goblin:
+			print("Couldn't find Goblin")
+			return
 
-			var inventory := goblin.get_component(
-				&"base:inventory"
-			) as InventoryComponent
+		var inventory := goblin.get_component(
+			&"base:inventory"
+		) as InventoryComponent
 
-			if not inventory:
-				print("Goblin has no inventory")
-				return
+		if not inventory:
+			print("Goblin has no inventory")
+			return
 
-			var lightsaber := game_world.create_item(
-				&"base:lightsaber"
-			)
-			var stick := game_world.create_item(
-				&"base:stick"
-			)
-			var goblin_coin := game_world.create_item(
-				&"base:goblin_coin"
-			)
-			var goblin_coin2 := game_world.create_item(
-				&"base:goblin_coin"
-			)
+		var lightsaber := game_world.create_item(
+			&"base:lightsaber"
+		)
+		var stick := game_world.create_item(
+			&"base:stick"
+		)
+		var goblin_coin := game_world.create_item(
+			&"base:goblin_coin"
+		)
+		var goblin_coin2 := game_world.create_item(
+			&"base:goblin_coin"
+		)
 
-			inventory.add_item(stick)
-			inventory.add_item(lightsaber)
-			inventory.add_item(goblin_coin)
-			inventory.add_item(goblin_coin2)
+		inventory.add_item(stick)
+		inventory.add_item(lightsaber)
+		inventory.add_item(goblin_coin)
+		inventory.add_item(goblin_coin2)
 
-			print(
-				"Added Stick and Goblin Coin x2 to Goblin"
-			)
+		print("Added Stick and Goblin Coin x2 to Goblin")
+		break
+
+	for chest in all_entities:
+		if not chest.entity_id == &"base:chest":
+			continue
+		
+		if not chest:
+			print("There's no chest bub")
+		
+		var inventory = chest.get_component(&"base:inventory") as InventoryComponent
+		
+		if not inventory:
+			print("This chest ain't got no insides bub")
+			continue
+		
+		var sword = game_world.create_item(&"base:sword")
+		inventory.add_item(sword)

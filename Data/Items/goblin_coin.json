@@ -1,7 +1,7 @@
 {
 	"item_id": "base:goblin_coin",
 	"item_name": "Goblin Coin",
-	"sprite": "res://goblin coin.png",
+	"sprite": "res://Assets/goblin coin.png",
 	"description": "With just one of these coins, you can buy an entire pile of crap.",
 	"components": []
 }

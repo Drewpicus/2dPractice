@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" uid="uid://38tado1b7n85" path="res://main.gd" id="1_ee4r6"]
 [ext_resource type="Script" uid="uid://8557yngorrft" path="res://Scripts/game_world.gd" id="2_u50mg"]
-[ext_resource type="Texture2D" uid="uid://b4gd5k21ok4qu" path="res://grass.png" id="3_344ge"]
+[ext_resource type="Texture2D" uid="uid://b4gd5k21ok4qu" path="res://Assets/grass.png" id="3_344ge"]
 [ext_resource type="Script" uid="uid://kkiu6rl0qgva" path="res://Scripts/terrain_renderer.gd" id="3_kry3j"]
-[ext_resource type="Texture2D" uid="uid://c3epolurdv6oy" path="res://dirt.png" id="4_ynf5e"]
-[ext_resource type="Texture2D" uid="uid://d00aiep580vns" path="res://water.png" id="5_hptm8"]
+[ext_resource type="Texture2D" uid="uid://c3epolurdv6oy" path="res://Assets/dirt.png" id="4_ynf5e"]
+[ext_resource type="Texture2D" uid="uid://d00aiep580vns" path="res://Assets/water.png" id="5_hptm8"]
 [ext_resource type="Script" uid="uid://7q0bjdssm656" path="res://Scripts/World/world_command_system.gd" id="7_ynf5e"]
 [ext_resource type="Script" uid="uid://b5s2ur1r4bxm7" path="res://Scripts/World/world_movement_system.gd" id="8_hptm8"]
 [ext_resource type="Script" uid="uid://b1ikh47ub73j4" path="res://Scripts/World/world_replication_system.gd" id="9_d1ilt"]

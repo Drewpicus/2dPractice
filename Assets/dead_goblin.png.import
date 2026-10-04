@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b2t20oyb4v62r"
-path="res://.godot/imported/stick.png-929efdea6457f72a817a4385cf0d83bd.ctex"
+uid="uid://caycjc8offvuw"
+path="res://.godot/imported/dead_goblin.png-03e5179b33943a453880b5e4bb858884.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://stick.png"
-dest_files=["res://.godot/imported/stick.png-929efdea6457f72a817a4385cf0d83bd.ctex"]
+source_file="res://Assets/dead_goblin.png"
+dest_files=["res://.godot/imported/dead_goblin.png-03e5179b33943a453880b5e4bb858884.ctex"]
 
 [params]
 
