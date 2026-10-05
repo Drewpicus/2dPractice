@@ -5,6 +5,7 @@ var effect_id: StringName
 var owner: Entity
 var source: Object
 
+var duration: float = -1.0
 
 func on_added() -> void:
 	pass

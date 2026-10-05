@@ -1,4 +1,4 @@
 {
-	"element_id": "base:sword",
-	"element_name": "Sword"
+	"weapontype_id": "base:sword",
+	"weapontype_name": "Sword"
 }

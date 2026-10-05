@@ -35,6 +35,52 @@ func on_resolution(resolution: GameResolution) -> void:
 		effect.on_resolution(resolution)
 		
 
+func apply_effect(
+	effect: StatusEffect,
+	source: Object = null,
+	duration: float = -1.0
+) -> bool:
+	if not effect:
+		return false
+
+	if not root_entity:
+		return false
+
+	var resolution := StatusApplicationResolution.new(
+		source,
+		root_entity,
+		effect,
+		duration
+	)
+
+	root_entity.contribute_to_resolution(
+		resolution
+	)
+
+	if source is Entity:
+		(source as Entity).contribute_to_resolution(
+			resolution
+	)
+
+	if source is Item:
+		(source as Item).contribute_to_resolution(
+			resolution
+	)
+
+	resolution.apply_modifiers()
+
+	if not resolution.allowed:
+		return false
+
+	effect.source = source
+	effect.duration = resolution.duration
+
+	add_effect(effect)
+
+	return true
+
+
+
 func serialize_state() -> Dictionary:
 	var serialized_effects: Array = []
 

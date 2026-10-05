@@ -2,7 +2,7 @@ extends RefCounted
 class_name StatusEffectRegistry
 
 const EFFECTS: Dictionary = {
-	
+	&"base:burning": preload("res://Scripts/StatusEffect/burning_status_effect.gd"),
 }
 
 

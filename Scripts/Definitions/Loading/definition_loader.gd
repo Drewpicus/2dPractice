@@ -4,6 +4,7 @@ class_name DefinitionLoader
 const ITEM_DIRECTORY := "res://Data/Items"
 const ENTITY_DIRECTORY := "res://Data/Entities"
 const ELEMENT_DIRECTORY := "res://Data/Elements"
+const WEAPONTYPE_DIRECTORY := "res://Data/WeaponTypes"
 
 ##Builds the entire [DefinitionRegistry]
 static func load_all_definitions() -> void:
@@ -12,10 +13,8 @@ static func load_all_definitions() -> void:
 	_load_named_directory(ITEM_DIRECTORY,"item")
 	_load_named_directory(ENTITY_DIRECTORY,"entity")
 	_load_named_directory(ELEMENT_DIRECTORY,"element")
+	_load_named_directory(WEAPONTYPE_DIRECTORY,"weapontype")
 
-	#_load_item_directory(ITEM_DIRECTORY)
-	#_load_entity_directory(ENTITY_DIRECTORY)
-	#_load_element_directory(ELEMENT_DIRECTORY)
 
 static func _load_named_directory(directory_path: String, directory_name: String) -> void:
 	var files := DirAccess.get_files_at(directory_path)
@@ -43,51 +42,6 @@ static func _load_named_directory(directory_path: String, directory_name: String
 				return
 				
 			register_callable.call()
-
-#region Deprecated
-static func _load_item_directory(directory_path: String) -> void:
-	var files := DirAccess.get_files_at(directory_path)
-	files.sort()
-
-	for file_name in files:
-		if not file_name.ends_with(".json"):
-			continue
-
-		var path := directory_path.path_join(file_name)
-		var definition := load_item_definition(path)
-
-		if definition:
-			DefinitionRegistry.register_item(definition)
-
-
-static func _load_entity_directory(directory_path: String) -> void:
-	var files := DirAccess.get_files_at(directory_path)
-	files.sort()
-
-	for file_name in files:
-		if not file_name.ends_with(".json"):
-			continue
-
-		var path := directory_path.path_join(file_name)
-		var definition := load_entity_definition(path)
-
-		if definition:
-			DefinitionRegistry.register_entity(definition)
-
-static func _load_element_directory(directory_path: String) -> void:
-	var files := DirAccess.get_files_at(directory_path)
-	files.sort()
-
-	for file_name in files:
-		if not file_name.ends_with(".json"):
-			continue
-
-		var path := directory_path.path_join(file_name)
-		var definition := load_element_definition(path)
-
-		if definition:
-			DefinitionRegistry.register_element(definition)
-#endregion
 
 static func load_entity_definition(path: String) -> EntityDefinition:
 	var data := _load_json(path)
@@ -248,7 +202,7 @@ static func load_weapontype_definition(path: String) -> WeaponTypeDefinition:
 	definition.weapontype_id = StringName(data.get("weapontype_id", ""))
 
 	if not GameID.is_valid(definition.weapontype_id):
-		push_error("Invalid element ID in definition %s: %s" % [path, definition.weapontype_id])
+		push_error("Invalid weapontype ID in definition %s: %s" % [path, definition.weapontype_id])
 		return null
 
 	definition.weapontype_name = String(data.get("weapontype_name", ""))

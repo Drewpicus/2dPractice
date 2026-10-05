@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://bwefe0nknrsev"]
+
+[ext_resource type="Script" uid="uid://ddhlydhajdtse" path="res://Scripts/EntityComponents/fire_resistant_component.gd" id="1_sn4db"]
+
+[node name="FireResistantComponent" type="Node" unique_id=2121754479]
+script = ExtResource("1_sn4db")
+component_id = &"base:fire_resistant"

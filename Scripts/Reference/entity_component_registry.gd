@@ -26,6 +26,9 @@ const COMPONENT_SCENES: Dictionary = {
 	##Interactable Objects
 	&"base:locked": preload("res://Scenes/Components/locked_component.tscn"),
 	
+	##States
+	&"base:fire_resistant": preload("res://Scenes/Components/fire_resistant_component.tscn"),
+	
 	##Other
 	&"base:dropped_item": preload("res://Scenes/Components/dropped_item_component.tscn"),
 }
