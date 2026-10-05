@@ -5,7 +5,7 @@ class_name WorldMovementSystem
 const MOVEMENT_SNAPSHOT_RATE: float = 20.0
 const FAR_MOVEMENT_SNAPSHOT_RATE: float = 2.0
 const FULL_RATE_RADIUS: float = 1024.0
-const REMOTE_VISUAL_INTERPOLATION_SPEED: float = 50.0
+const REMOTE_VISUAL_INTERPOLATION_SPEED: float = 20.0
 const REMOTE_VISUAL_TELEPORT_DISTANCE: float = 160.0
 
 var _snapshot_timer: float = 0.0

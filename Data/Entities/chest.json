@@ -7,7 +7,7 @@
 
 	"collision": {
 		"type": "rectangle",
-		"size": [28,20]
+		"size": [32,8]
 	},
 
 	"components": [

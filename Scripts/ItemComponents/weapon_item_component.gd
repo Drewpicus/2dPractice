@@ -1,10 +1,8 @@
 extends ItemComponent
 class_name WeaponItemComponent
 
-#NOTE: make weapon type data driven, add 
-var weapon_type
-var damage
-
+var weapon_type: StringName
+var damage: float
 
 func _init() -> void:
 	component_id = &"base:weapon"

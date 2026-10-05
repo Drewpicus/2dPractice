@@ -12,6 +12,13 @@
 					"offhand"
 				]
 			}
+		},
+		{
+			"component_id": "base:weapon",
+			"parameters": {
+				"weapon_type": "base:sword",
+				"damage": 5
+			}
 		}
 	]
 }
