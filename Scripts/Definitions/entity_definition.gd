@@ -1,11 +1,11 @@
 extends Resource
 class_name EntityDefinition
 
-@export var entity_id: StringName
-@export var entity_name: String
-@export var sprite: Texture2D
-@export var collision_shape: Shape2D
-@export var solid: bool = true
-@export var draw_layer: int = 0
+var entity_id: StringName
+var entity_name: String
+var sprite: Texture2D
+var collision_shape: Shape2D
+var solid: bool = true
+var draw_layer: int = 0
 
-@export var components: Array[EntityComponentDefinition]
+var components: Array[EntityComponentDefinition]

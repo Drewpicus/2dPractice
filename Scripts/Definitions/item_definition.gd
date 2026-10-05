@@ -1,8 +1,8 @@
 extends Resource
 class_name ItemDefinition
 
-@export var item_id: StringName
-@export var item_name: String
-@export var sprite: Texture2D
-@export var description: String
-@export var components: Array[ItemComponentDefinition]
+var item_id: StringName
+var item_name: String
+var sprite: Texture2D
+var description: String
+var components: Array[ItemComponentDefinition]

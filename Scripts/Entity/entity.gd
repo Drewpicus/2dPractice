@@ -62,6 +62,12 @@ func _register_component(component: EntityComponent) -> bool:
 		return false
 	
 	_components[component_id] = component
+	#It's important that _set_owner(self) is called first, since that connects the
+	#component_added signal. So the order is:
+	#1. Root entity set to Entity and signals are connected
+	#2. The particular component's on_added is run (which might call watch_sibling, etc.)
+	#3. The entity announces its component has been added, which runs that component's
+	#		_handle_component_added function, notifying its siblings and anyone watching it.
 	component._set_owner(self)
 	component.on_added()
 	component_added.emit(component_id, component)

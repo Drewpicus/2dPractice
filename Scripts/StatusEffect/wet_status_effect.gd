@@ -10,12 +10,13 @@ func on_resolution(resolution: GameResolution) -> void:
 	if not resolution is StatusApplicationResolution:
 		return
 
-	var status_resolution := (resolution as StatusApplicationResolution)
+	var status_resolution := resolution as StatusApplicationResolution
 
-	if (status_resolution.target != owner):
+	if status_resolution.target != owner:
 		return
 
-	if (status_resolution.effect.effect_id == &"base:burning"):
-		resolution.add_modifier(BlockStatusApplicationModifier.new(200),self)
+	if status_resolution.effect.effect_id == &"base:burning":
+		var _priority = ResolutionModifier.PRIORITY_STAGE.PERMISSION
+		resolution.add_modifier(BlockStatusApplicationModifier.new(_priority),self)
 	
 	return

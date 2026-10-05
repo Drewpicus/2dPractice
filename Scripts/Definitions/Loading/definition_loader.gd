@@ -15,7 +15,8 @@ static func load_all_definitions() -> void:
 	_load_named_directory(ELEMENT_DIRECTORY,"element")
 	_load_named_directory(WEAPONTYPE_DIRECTORY,"weapontype")
 
-
+##Loads the directory from the [param directory_path] and registers all the files in the
+##[DefinitionRegistry]. [param directory_name] is a [String] like "entity" or "weapontype"
 static func _load_named_directory(directory_path: String, directory_name: String) -> void:
 	var files := DirAccess.get_files_at(directory_path)
 	files.sort()
@@ -209,7 +210,7 @@ static func load_weapontype_definition(path: String) -> WeaponTypeDefinition:
 
 	return definition
 
-##Returns a [code]Dictionary[/code] from a JSON file at [param path]
+##Returns a [Dictionary] from a JSON file at [param path]
 static func _load_json(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
 		push_error("Definition file does not exist: %s" % path)
