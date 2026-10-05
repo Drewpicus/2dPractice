@@ -16,17 +16,3 @@ func _init(
 	source = _source
 	target = _target
 	effect = _effect
-
-var event := StatusAppliedEvent.new(
-	source,
-	root_entity,
-	effect
-)
-
-root_entity.dispatch_event(event)
-
-if source is Entity:
-	(source as Entity).dispatch_event(event)
-
-if source is Item:
-	(source as Item).dispatch_event(event)

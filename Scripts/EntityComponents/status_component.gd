@@ -14,6 +14,8 @@ func add_effect(effect: StatusEffect) -> void:
 	effect.owner = root_entity
 	effect.on_added()
 	gained_effect.emit(effect)
+	notify_state_changed()
+
 
 
 func remove_effect(effect: StatusEffect) -> void:
@@ -24,6 +26,8 @@ func remove_effect(effect: StatusEffect) -> void:
 	losing_effect.emit(effect)
 	effects.erase(effect)
 	effect.owner = null
+	notify_state_changed()
+
 
 func on_event(event: GameEvent) -> void:
 	for effect in effects.duplicate():
@@ -76,6 +80,21 @@ func apply_effect(
 	effect.duration = resolution.duration
 
 	add_effect(effect)
+	
+	var event := StatusAppliedEvent.new(
+	source,
+	root_entity,
+	effect
+)
+
+	root_entity.dispatch_event(event)
+
+	if source is Entity:
+		(source as Entity).dispatch_event(event)
+
+	if source is Item:
+		(source as Item).dispatch_event(event)
+	
 
 	return true
 
