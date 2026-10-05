@@ -28,6 +28,10 @@ func _initialize_game_world() -> void:
 	game_world.spawn_entity(&"base:chest",Vector2(32, 256))
 	
 	_spawn_test_items()
+	for entity in game_world.get_entities():
+		if entity.entity_id == &"base:goblin":
+			test_burning(entity)
+			break
 
 func _spawn_players() -> void:
 	var peer_ids: Array[int] = [1]
@@ -117,3 +121,33 @@ func _spawn_test_items() -> void:
 		
 		var sword = game_world.create_item(&"base:sword")
 		inventory.add_item(sword)
+
+func test_burning(entity: Entity) -> void:
+	var status := entity.get_component(
+		&"base:status"
+	) as StatusComponent
+
+	if not status:
+		print("No StatusComponent")
+		return
+
+	var wet := StatusEffectRegistry.create_effect(&"base:wet")
+
+	if not wet:
+		return
+
+	var wet_applied := status.apply_effect(wet,null,10.0)
+
+	print("Wet applied: ", wet_applied)
+
+	var burning := StatusEffectRegistry.create_effect(&"base:burning")
+
+	if not burning:
+		return
+
+	var applied := status.apply_effect(burning,null,10.0)
+
+	print("Burning applied: ", applied)
+
+	if applied:
+		print("Final duration: ", burning.duration)

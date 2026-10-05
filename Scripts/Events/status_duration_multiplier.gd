@@ -19,5 +19,9 @@ func apply(resolution: GameResolution) -> void:
 	var status_resolution := (
 		resolution as StatusApplicationResolution
 	)
+	
+	#Negative means infinite duration
+	if status_resolution.duration < 0.0:
+		return
 
 	status_resolution.duration *= multiplier

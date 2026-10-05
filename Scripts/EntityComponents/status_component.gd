@@ -57,19 +57,21 @@ func apply_effect(
 		duration
 	)
 
+	# Let the target contribute rules about receiving the status.
 	root_entity.contribute_to_resolution(
 		resolution
 	)
 
-	if source is Entity:
+	# Let the source contribute too, unless the source IS the target.
+	if source is Entity and source != root_entity:
 		(source as Entity).contribute_to_resolution(
 			resolution
-	)
+		)
 
 	if source is Item:
 		(source as Item).contribute_to_resolution(
 			resolution
-	)
+		)
 
 	resolution.apply_modifiers()
 
@@ -80,21 +82,20 @@ func apply_effect(
 	effect.duration = resolution.duration
 
 	add_effect(effect)
-	
+
 	var event := StatusAppliedEvent.new(
-	source,
-	root_entity,
-	effect
-)
+		source,
+		root_entity,
+		effect
+	)
 
 	root_entity.dispatch_event(event)
 
-	if source is Entity:
+	if source is Entity and source != root_entity:
 		(source as Entity).dispatch_event(event)
 
 	if source is Item:
 		(source as Item).dispatch_event(event)
-	
 
 	return true
 

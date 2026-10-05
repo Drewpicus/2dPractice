@@ -21,6 +21,12 @@
 			"component_id": "base:interactable"
 		},
 		{
+			"component_id": "base:status"
+		},
+		{
+			"component_id": "base:fire_resistant"
+		},
+		{
 			"component_id": "base:health",
 			"parameters": {
 				"max_health": 5
