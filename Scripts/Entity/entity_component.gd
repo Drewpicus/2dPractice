@@ -9,12 +9,15 @@ class_name EntityComponent
 
 ##The [Entity] this component modifies
 var root_entity: Entity
-##List of 
+##List of sibling components to watch for, along with an [Array] of
+##functions to call whenever the matching component is added or removed
 var _sibling_watchers: Dictionary[StringName, Array] = {}
 
 signal state_changed
 
-##Assigns an [Entity] this component modifies, and 
+##Assigns an [Entity] this component modifies, and connects the entity's added and removing
+##signals. This is the first step, with [method on_added] firing next, and [method _handle_component_added]
+##firing thirdly.
 func _set_owner(entity: Entity) -> void:
 	root_entity = entity
 
@@ -24,6 +27,8 @@ func _set_owner(entity: Entity) -> void:
 	if not root_entity.component_removing.is_connected(_handle_component_removing):
 		root_entity.component_removing.connect(_handle_component_removing)
 
+##Unlinks an [Entity]'s signals from this component and unlinks it from both the
+##[member root_entity] and all its siblings.
 func _clear_owner() -> void:
 	if root_entity:
 		if root_entity.component_added.is_connected(_handle_component_added):
