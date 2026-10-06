@@ -212,7 +212,9 @@ func _provide_ability_target(
 			var target := _get_entity_under_mouse(
 				controlled_entity,
 				false,
-				false
+				false,
+				true,
+				true
 			)
 
 			if target:
