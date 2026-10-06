@@ -6,6 +6,8 @@ var use: AbilityUse
 
 var _requirement_index: int = 0
 
+signal requirement_changed(requirement: Variant)
+
 func is_targeting() -> bool:
 	return ability != null and use != null
 
@@ -25,6 +27,11 @@ func begin(
 
 	if ability.target_requirements.is_empty():
 		_submit()
+		return
+
+	requirement_changed.emit(
+		get_current_requirement()
+	)
 
 func get_current_requirement() -> Variant:
 	if not ability:
@@ -45,6 +52,11 @@ func _advance() -> void:
 		>= ability.target_requirements.size()
 	):
 		_submit()
+		return
+
+	requirement_changed.emit(
+		get_current_requirement()
+	)
 
 func provide_position(
 	position: Vector2
@@ -72,6 +84,20 @@ func provide_entity(
 		return
 
 	use.target_entity = entity
+
+	_advance()
+
+func provide_item(item: Item) -> void:
+	if (
+		get_current_requirement()
+		!= Ability.TARGET_TYPE.ITEM
+	):
+		return
+
+	if not item:
+		return
+
+	use.item = item
 
 	_advance()
 

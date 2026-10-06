@@ -9,7 +9,7 @@ var _inventory: InventoryComponent
 var _viewer_equipment: EquipmentComponent
 
 var _selected_item: Item
-
+var _selection_mode: bool = false
 
 @onready var _title: Label = $VBoxContainer/Title
 @onready var _item_list: ItemList = $VBoxContainer/ItemList
@@ -17,15 +17,20 @@ var _selected_item: Item
 @onready var _close_button: Button = $VBoxContainer/Close
 
 
+signal item_chosen(item: Item)
+signal item_selection_cancelled
+
 func _ready() -> void:
 	hide()
 
 	_item_list.item_selected.connect(_on_item_selected)
-	_close_button.pressed.connect(close_inventory)
+	_close_button.pressed.connect(_on_close_pressed)
 
 
-func show_inventory(viewer: Entity, inv_owner: Entity) -> void:
+func show_inventory(viewer: Entity, inv_owner: Entity, selection_mode: bool = false) -> void:
 	_disconnect_sources()
+
+	_selection_mode = selection_mode
 
 	_viewer = viewer
 	_owner = inv_owner
@@ -55,6 +60,7 @@ func show_inventory(viewer: Entity, inv_owner: Entity) -> void:
 func close_inventory() -> void:
 	_disconnect_sources()
 
+	_selection_mode = false
 	_selected_item = null
 	_inventory = null
 	_viewer_equipment = null
@@ -125,6 +131,13 @@ func _rebuild_actions() -> void:
 		child.queue_free()
 
 	if not _selected_item:
+		return
+
+	if _selection_mode:
+		_add_action_button(
+			"Select",
+			_choose_selected
+		)
 		return
 
 	if (_owner != _viewer) and _viewer.has_component(&"base:inventory"):
@@ -246,3 +259,22 @@ func _drop_selected() -> void:
 		_viewer,
 		_selected_item
 	)
+
+func _choose_selected() -> void:
+	if not _selected_item:
+		return
+
+	var chosen_item := _selected_item
+
+	_selection_mode = false
+	close_inventory()
+
+	item_chosen.emit(chosen_item)
+
+func _on_close_pressed() -> void:
+	var was_selecting := _selection_mode
+
+	close_inventory()
+
+	if was_selecting:
+		item_selection_cancelled.emit()

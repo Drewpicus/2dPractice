@@ -64,6 +64,18 @@ func _unhandled_input(event: InputEvent) -> void:
 		interaction_menu.hide()
 		inspect_window.hide()
 		inventory_menu.close_inventory()
+		
+		ability_targeting.requirement_changed.connect(
+		_on_ability_requirement_changed
+	)
+
+	inventory_menu.item_chosen.connect(
+		_on_ability_item_chosen
+	)
+
+	inventory_menu.item_selection_cancelled.connect(
+		_on_ability_item_selection_cancelled
+	)
 
 
 func _toggle_inventory(controlled_entity: Entity) -> void:
@@ -221,3 +233,44 @@ func _provide_ability_target(
 				ability_targeting.provide_entity(
 					target
 				)
+
+func _on_ability_requirement_changed(
+	requirement: Variant
+) -> void:
+	match requirement:
+		Ability.TARGET_TYPE.ITEM:
+			var controlled_entity := (
+				game_world.get_locally_controlled_entity()
+			)
+
+			if not controlled_entity:
+				ability_targeting.cancel()
+				return
+
+			interaction_menu.hide()
+			inspect_window.hide()
+
+			inventory_menu.show_inventory(
+				controlled_entity,
+				controlled_entity,
+				true
+			)
+
+func _on_ability_item_chosen(
+	item: Item
+) -> void:
+	if not ability_targeting.is_targeting():
+		return
+
+	ability_targeting.provide_item(item)
+
+
+func _on_ability_item_selection_cancelled() -> void:
+	if not ability_targeting.is_targeting():
+		return
+
+	if (
+		ability_targeting.get_current_requirement()
+		== Ability.TARGET_TYPE.ITEM
+	):
+		ability_targeting.cancel()
