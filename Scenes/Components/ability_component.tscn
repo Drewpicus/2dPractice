@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://dxksslvue7dwi"]
+
+[ext_resource type="Script" uid="uid://dgfc0lsxxjprm" path="res://Scripts/EntityComponents/ability_component.gd" id="1_dxpfv"]
+
+[node name="AbilityComponent" type="Node" unique_id=1966312407]
+script = ExtResource("1_dxpfv")
+component_id = &"base:ability"

@@ -6,7 +6,6 @@ const COMPONENT_SCENES: Dictionary = {
 	&"base:info": preload("res://Scenes/Components/info_component.tscn"),
 	&"base:health": preload("res://Scenes/Components/health_component.tscn"),
 	&"base:interactable": preload("res://Scenes/Components/interactable_component.tscn"),
-	#material?
 	
 	##Player Specific
 	&"base:player_controller": preload("res://Scenes/Components/player_controller_component.tscn"),
@@ -15,6 +14,7 @@ const COMPONENT_SCENES: Dictionary = {
 	##Creatures
 	&"base:ai_controller": preload("res://Scenes/Components/ai_controller_component.tscn"),
 	&"base:movement": preload("res://Scenes/Components/movement_component.tscn"),
+	&"base:ability": preload("res://Scenes/Components/ability_component.tscn"),
 	&"base:capability": preload("res://Scenes/Components/capability_component.tscn"),
 	&"base:combat": preload("res://Scenes/Components/combat_component.tscn"),
 	&"base:stat_block": preload("res://Scenes/Components/stat_block_component.tscn"),
@@ -29,7 +29,7 @@ const COMPONENT_SCENES: Dictionary = {
 	##States
 	&"base:fire_resistant": preload("res://Scenes/Components/fire_resistant_component.tscn"),
 	
-	##Other
+	##Other/Specialized
 	&"base:dropped_item": preload("res://Scenes/Components/dropped_item_component.tscn"),
 }
 

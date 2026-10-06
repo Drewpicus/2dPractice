@@ -1,0 +1,34 @@
+{
+	"entity_id": "base:campfire",
+	"entity_name": "Campfire",
+	"sprite": "res://Assets/campfire.png",
+	"solid": true,
+	"draw_layer": 0,
+
+	"collision": {
+		"type": "rectangle",
+		"size": [18,6]
+	},
+
+	"components": [
+		{
+			"component_id": "base:info",
+			"parameters": {
+				"description": "Wards off more than the worst of the chill."
+			}
+		},
+		{
+			"component_id": "base:health",
+			"parameters":
+				{
+					"max_health": 4
+				}
+		},
+		{
+			"component_id": "base:interactable"
+		},
+		{
+			"component_id": "base:interactor"
+		}
+	]
+}
