@@ -1,7 +1,7 @@
 extends Ability
 class_name BlinkAbility
 
-var blink_range: float = 96.0
+#var blink_range: float = 96.0
 
 
 func _init() -> void:
@@ -22,13 +22,8 @@ func can_use(use: AbilityUse) -> bool:
 	if not use.has_target_position:
 		return false
 
-	if (
-		use.user.global_position.distance_to(
-			use.target_position
-		)
-		> blink_range
-	):
-		return false
+	#if (use.user.global_position.distance_to(use.target_position) > blink_range):
+	#	return false
 
 	return true
 

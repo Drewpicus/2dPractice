@@ -181,7 +181,7 @@ func test_blink() -> void:
 	use.user = player
 	use.set_target_position(
 		player.global_position
-		+ Vector2(-128.0, 0.0)
+		+ Vector2(0.0, -128.0)
 	)
 
 	print(
