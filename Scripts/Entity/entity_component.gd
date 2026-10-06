@@ -56,7 +56,7 @@ func on_sibling_added(_component_id: StringName,_component: EntityComponent) -> 
 func on_sibling_removing(_component_id: StringName,_component: EntityComponent) -> void:
 	pass
 
-##Adds an [EntityComponent] by its [param sibling_id] to [member _sibling_watchers], along
+##Adds a type of component by its [param sibling_id] to [member _sibling_watchers], along
 ##with a function ([param callback]) to run whenever the watched sibling is added or removed.
 ##Multiple [param callback]s can be tied to one sibling.
 func watch_sibling(sibling_id: StringName, callback: Callable) -> void:
@@ -95,7 +95,7 @@ func _handle_component_added(target_id: StringName, component: EntityComponent) 
 
 ##When a component is about to be removed, forward its [member component_id] (as [param target_id]) and the
 ##component object itself to any components plugged into [method on_sibling_removing] or that
-##have the added component as a sibling to watch.
+##have the removing component as a sibling to watch.
 func _handle_component_removing(target_id: StringName, component: EntityComponent) -> void:
 	if component == self:
 		return
@@ -103,8 +103,7 @@ func _handle_component_removing(target_id: StringName, component: EntityComponen
 	_notify_sibling_watchers(target_id, null)
 	on_sibling_removing(target_id, component)
 
-##For all attached components watching for the [param target_id] as a sibling, execute their
-##respective functions tied to the watched sibling with [method watch_sibling]
+##Calls every function this component tied to [param target_id]
 func _notify_sibling_watchers(target_id: StringName, component: EntityComponent) -> void:
 	if not _sibling_watchers.has(target_id):
 		return
@@ -128,7 +127,7 @@ func has_component(target_id: StringName) -> bool:
 
 ##Returns an [Array] of [Interaction] suggestions by ID, meant to be
 ##overwritten by components with specific [Interaction]s they enable.
-##e.g. [InteractableComponent] suggests the interaction [code]&"base:interact"[/code]
+##e.g. [InfoComponent] suggests the interaction [code]&"base:inspect"[/code]
 func get_interaction_suggestions() -> Array[StringName]:
 	return []
 

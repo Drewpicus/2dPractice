@@ -66,7 +66,7 @@ func _register_component(component: EntityComponent) -> bool:
 	#component_added signal. So the order is:
 	#1. Root entity set to Entity and signals are connected
 	#2. The particular component's on_added is run (which might call watch_sibling, etc.)
-	#3. The entity announces its component has been added, which runs that component's
+	#3. The entity announces its component has been added, which runs every component's
 	#		_handle_component_added function, notifying its siblings and anyone watching it.
 	component._set_owner(self)
 	component.on_added()

@@ -18,7 +18,7 @@ func on_resolution(resolution: GameResolution) -> void:
 	if status_resolution.effect.effect_id != &"base:burning":
 		return
 	
-	var _resistance := 0.5
-	var _priority := ResolutionModifier.PRIORITY_STAGE.MULTIPLICATION
+	var resistance := 0.5
+	var priority := ResolutionModifier.PRIORITY_STAGE.MULTIPLICATION
 	
-	contribute_modifier(resolution,StatusDurationMultiplier.new(_resistance, _priority))
+	contribute_modifier(resolution,StatusDurationMultiplier.new(resistance, priority))

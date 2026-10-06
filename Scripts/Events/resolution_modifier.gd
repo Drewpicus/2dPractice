@@ -5,8 +5,8 @@ class_name ResolutionModifier
 
 enum PRIORITY_STAGE {
 	FIRST = 0,
-	EARLY_REPLACEMENT = 100,
-	ADDITION_SUBTRACTIOM = 200,
+	EARLY_TRANSFORMATION = 100,
+	ADDITION_SUBTRACTION = 200,
 	MULTIPLICATION = 300,
 	MIN_MAX_CLAMP = 400,
 	PERMISSION = 500,
@@ -22,7 +22,7 @@ enum PRIORITY_STAGE {
 ##600  Special case absolute final overrides
 var priority: int = 0
 var source: Object
-var _submission_order: int = -1
+var submission_order: int = -1
 
 ## What this modifier does to a resolution.
 func apply(_resolution: GameResolution) -> void:

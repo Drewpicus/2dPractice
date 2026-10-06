@@ -21,7 +21,7 @@ func add_modifier(modifier: ResolutionModifier, source: Object = null) -> bool:
 		return false
 
 	modifier.source = source
-	modifier._submission_order = _next_submission_order
+	modifier.submission_order = _next_submission_order
 	_next_submission_order += 1
 
 	_modifiers.append(modifier)
@@ -44,6 +44,6 @@ func apply_modifiers() -> void:
 
 func _sort_modifiers(a: ResolutionModifier,b: ResolutionModifier) -> bool:
 	if a.priority == b.priority:
-		return a._submission_order < b._submission_order
+		return a.submission_order < b.submission_order
 
 	return a.priority < b.priority
