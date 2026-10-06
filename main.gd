@@ -20,6 +20,7 @@ func _initialize_game_world() -> void:
 		return
 	
 	_spawn_players()
+	test_blink()
 	game_world.spawn_entity(&"base:stopsign",Vector2(-200, -100))
 	game_world.spawn_entity(&"base:goblin",Vector2(198, 95))
 	game_world.spawn_entity(&"base:goblin",Vector2(-30, 125))
@@ -151,3 +152,44 @@ func test_burning(entity: Entity) -> void:
 
 	if applied:
 		print("Final duration: ", burning.duration)
+
+func test_blink() -> void:
+	var player := game_world.get_entity_controlled_by_peer(1)
+
+	if not player:
+		print("No player for Blink test")
+		return
+
+	var abilities := player.get_component(
+		&"base:ability"
+	) as AbilityComponent
+
+	if not abilities:
+		print("Player has no AbilityComponent")
+		return
+
+	var blink := abilities.get_ability(
+		&"base:blink"
+	)
+
+	if not blink:
+		print("Couldn't create Blink")
+		return
+
+	var use := AbilityUse.new()
+
+	use.user = player
+	use.set_target_position(
+		player.global_position
+		+ Vector2(-128.0, 0.0)
+	)
+
+	print(
+		"Blink can use: ",
+		blink.can_use(use)
+	)
+
+	print(
+		"Blink performed: ",
+		blink.perform(use)
+	)

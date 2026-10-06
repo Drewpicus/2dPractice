@@ -7,4 +7,10 @@ class_name AbilityUse
 var user: Entity
 var target_entity: Entity
 var target_position: Vector2
+var has_target_position: bool = false
 var item: Item
+
+
+func set_target_position(position: Vector2) -> void:
+	target_position = position
+	has_target_position = true
