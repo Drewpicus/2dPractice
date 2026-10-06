@@ -6,16 +6,47 @@ class_name GameUI
 @onready var interaction_menu: InteractionMenu = $InteractionMenu
 @onready var inventory_menu: InventoryMenu = $InventoryMenu
 @onready var inspect_window: InspectWindow = $InspectWindow
+@onready var ability_menu: AbilityMenu = $AbilityMenu
+@onready var ability_targeting: AbilityTargeting = $AbilityTargeting
 
 
 func _ready() -> void:
 	game_world.inspection_requested.connect(_on_inspection_requested)
 	game_world.inventory_requested.connect(_on_inventory_requested)
+	ability_menu.ability_selected.connect(_on_ability_selected)
 
 func _unhandled_input(event: InputEvent) -> void:
-	var controlled_entity := (game_world.get_locally_controlled_entity())
+	var controlled_entity := (
+		game_world.get_locally_controlled_entity()
+	)
 
 	if not controlled_entity:
+		return
+
+	if event.is_action_pressed("abilities"):
+		if ability_targeting.is_targeting():
+			ability_targeting.cancel()
+
+		if ability_menu.visible:
+			ability_menu.close_menu()
+		else:
+			interaction_menu.hide()
+			inventory_menu.close_inventory()
+			inspect_window.hide()
+
+			ability_menu.show_abilities(
+				controlled_entity
+			)
+
+		return
+
+	if (
+		event.is_action_pressed("select")
+		and ability_targeting.is_targeting()
+	):
+		_provide_ability_target(
+			controlled_entity
+		)
 		return
 
 	if event.is_action_pressed("inventory"):
@@ -26,8 +57,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("select"):
 		interaction_menu._on_empty_pressed()
-	
+
 	if event.is_action_pressed("close_menu"):
+		ability_targeting.cancel()
+		ability_menu.close_menu()
 		interaction_menu.hide()
 		inspect_window.hide()
 		inventory_menu.close_inventory()
@@ -149,3 +182,40 @@ func _on_inventory_requested(viewer: Entity, inv_owner: Entity) -> void:
 	inspect_window.hide()
 
 	inventory_menu.show_inventory(viewer,inv_owner)
+
+func _on_ability_selected(
+	ability: Ability,
+	user: Entity
+) -> void:
+	ability_targeting.begin(
+		ability,
+		user
+	)
+
+
+func _provide_ability_target(
+	controlled_entity: Entity
+) -> void:
+	var requirement = (
+		ability_targeting
+		.get_current_requirement()
+	)
+
+	match requirement:
+		Ability.TARGET_TYPE.POSITION:
+			ability_targeting.provide_position(
+				controlled_entity
+				.get_global_mouse_position()
+			)
+
+		Ability.TARGET_TYPE.ENTITY:
+			var target := _get_entity_under_mouse(
+				controlled_entity,
+				false,
+				false
+			)
+
+			if target:
+				ability_targeting.provide_entity(
+					target
+				)

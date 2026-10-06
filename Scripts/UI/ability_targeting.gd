@@ -6,6 +6,8 @@ var use: AbilityUse
 
 var _requirement_index: int = 0
 
+func is_targeting() -> bool:
+	return ability != null and use != null
 
 func begin(
 	selected_ability: Ability,
@@ -20,6 +22,9 @@ func begin(
 	use.user = user
 
 	_requirement_index = 0
+
+	if ability.target_requirements.is_empty():
+		_submit()
 
 func get_current_requirement() -> Variant:
 	if not ability:

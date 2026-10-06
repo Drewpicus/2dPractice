@@ -11,6 +11,8 @@
 [ext_resource type="Script" uid="uid://b1ikh47ub73j4" path="res://Scripts/World/world_replication_system.gd" id="9_d1ilt"]
 [ext_resource type="Script" uid="uid://74ssu6qlq32b" path="res://Scripts/UI/game_ui.gd" id="12_6iyac"]
 [ext_resource type="Script" uid="uid://cvma3cseekwy3" path="res://Scripts/UI/inspect_window.gd" id="13_fdnlq"]
+[ext_resource type="Script" uid="uid://cinxuuh06ilsq" path="res://Scripts/UI/ability_menu.gd" id="14_wsu2k"]
+[ext_resource type="Script" uid="uid://r54bxxup4g72" path="res://Scripts/UI/ability_targeting.gd" id="15_k12tt"]
 [ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/UI/interaction_menu.gd" id="21_o1aky"]
 [ext_resource type="Script" uid="uid://cpefuibv0hxx" path="res://Scripts/UI/inventory_menu.gd" id="22_kwxat"]
 
@@ -135,7 +137,10 @@ text = "Close"
 [node name="AbilityMenu" type="PanelContainer" parent="UI" unique_id=136943615]
 offset_right = 40.0
 offset_bottom = 40.0
+script = ExtResource("14_wsu2k")
 
-[node name="AbilityTargeting" type="PanelContainer" parent="UI" unique_id=1963518287]
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/AbilityMenu" unique_id=1515310300]
+layout_mode = 2
+
+[node name="AbilityTargeting" type="Node" parent="UI" unique_id=1299858218]
+script = ExtResource("15_k12tt")
