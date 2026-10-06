@@ -57,6 +57,17 @@
 				"base_dexterity": 0,
 				"base_wisdom": 0
 			}
+		},
+		{
+			"component_id": "base:ability",
+			"parameters": {
+				"ability_ids": [
+					"base:blink",
+					"base:place_campfire",
+					"base:heal",
+					"base:throw"
+				]
+			}
 		}
 	]
 }

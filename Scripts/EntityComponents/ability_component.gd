@@ -1,7 +1,11 @@
 extends EntityComponent
 class_name AbilityComponent
 
-@export var abilities: Array = []
+@export var ability_ids: Array = []
 
 func has_ability(ability_id: StringName) -> bool:
-	return ability_id in abilities
+	for id in ability_ids:
+		if StringName(id) == ability_id:
+			return true
+
+	return false

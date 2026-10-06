@@ -3,8 +3,16 @@
 extends RefCounted
 class_name Ability
 
+enum TARGET_TYPE {
+	POSITION,
+	ENTITY,
+	ITEM
+}
+
 var ability_id: StringName
 var ability_name: String
+
+var target_requirements: Array = []
 
 ##True if the [AbilityUse] can be used
 func can_use(_use: AbilityUse) -> bool:
