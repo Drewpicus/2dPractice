@@ -7,7 +7,7 @@ const COMMAND_TAKE_ITEM := &"base:take_item"
 const COMMAND_EQUIP_ITEM := &"base:equip_item"
 const COMMAND_UNEQUIP_ITEM := &"base:unequip_item"
 const COMMAND_DROP_ITEM := &"base:drop_item"
-
+const COMMAND_ABILITY := &"base:ability"
 
 func _submit_command(command_id: StringName, actor: Entity, arguments: Dictionary = {}) -> void:
 	if not actor:
@@ -69,6 +69,17 @@ func _apply_command(sender_peer_id: int, command_id: StringName, arguments: Dict
 				sender_peer_id,
 				String(arguments.get("entity_id", "")),
 				String(arguments.get("item_id", "")))
+		
+		COMMAND_ABILITY:
+			_apply_ability(
+				sender_peer_id,
+				StringName(arguments.get("ability_id", "")),
+				String(arguments.get("user_id", "")),
+				String(arguments.get("target_entity_id", "")),
+				arguments.get("target_position", Vector2.ZERO),
+				bool(arguments.get("has_target_position", false)),
+				String(arguments.get("item_id", ""))
+			)
 
 		_:
 			push_warning("Unknown command ID :( : %s" % command_id)
@@ -364,3 +375,114 @@ func _perform_drop_item(
 		return false
 
 	return true
+
+func submit_ability(
+	ability: Ability,
+	use: AbilityUse
+) -> void:
+	if not ability or not use:
+		return
+
+	if not use.user:
+		return
+
+	var abilities := use.user.get_component(
+		&"base:ability"
+	) as AbilityComponent
+
+	if not abilities:
+		return
+
+	if not abilities.has_ability(ability.ability_id):
+		return
+
+	_submit_command(
+		COMMAND_ABILITY,
+		use.user,
+		{
+			"ability_id": String(ability.ability_id),
+			"user_id": use.user.instance_id,
+			"target_entity_id":
+				use.target_entity.instance_id
+				if use.target_entity
+				else "",
+			"target_position": use.target_position,
+			"has_target_position":
+				use.has_target_position,
+			"item_id":
+				use.item.instance_id
+				if use.item
+				else ""
+		}
+	)
+
+func _apply_ability(
+	sender_peer_id: int,
+	ability_id: StringName,
+	user_instance_id: String,
+	target_entity_instance_id: String,
+	target_position: Variant,
+	has_target_position: bool,
+	item_instance_id: String
+) -> void:
+	var user := RuntimeObjectRegistry.get_entity(
+		user_instance_id
+	)
+
+	if not user:
+		return
+
+	var controller := user.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if controller.controller_peer_id != sender_peer_id:
+		return
+
+	var abilities := user.get_component(
+		&"base:ability"
+	) as AbilityComponent
+
+	if not abilities:
+		return
+
+	if not abilities.has_ability(ability_id):
+		return
+
+	var ability := abilities.get_ability(
+		ability_id
+	)
+
+	if not ability:
+		return
+
+	var use := AbilityUse.new()
+	use.user = user
+
+	if not target_entity_instance_id.is_empty():
+		use.target_entity = (
+			RuntimeObjectRegistry.get_entity(
+				target_entity_instance_id
+			)
+		)
+
+	if has_target_position:
+		if not target_position is Vector2:
+			return
+
+		use.set_target_position(
+			target_position as Vector2
+		)
+
+	if not item_instance_id.is_empty():
+		use.item = RuntimeObjectRegistry.get_item(
+			item_instance_id
+		)
+
+	if not ability.can_use(use):
+		return
+
+	ability.perform(use)

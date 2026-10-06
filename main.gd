@@ -189,7 +189,4 @@ func test_blink() -> void:
 		blink.can_use(use)
 	)
 
-	print(
-		"Blink performed: ",
-		blink.perform(use)
-	)
+	game_world.submit_ability(blink, use)
