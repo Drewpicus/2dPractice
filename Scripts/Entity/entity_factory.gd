@@ -28,9 +28,24 @@ static func build(definition: EntityDefinition) -> Entity:
 	
 	entity.z_index = definition.draw_layer
 	
-	for component in definition.components:
-		entity.add_component(component.component_id,component.parameters)
-	
+	for component_definition in definition.components:
+		var component := entity.add_component(
+			component_definition.component_id,
+			component_definition.parameters
+		)
+
+		if not component:
+			push_error(
+				"Failed to build Entity %s because component %s could not be added."
+				% [
+					definition.entity_id,
+					component_definition.component_id
+				]
+			)
+
+			_cleanup_failed_entity(entity)
+			return null
+
 	return entity
 
 static func spawn(entity: EntityDefinition, global_position: Vector2, parent: Node) -> Entity:
@@ -41,3 +56,21 @@ static func spawn(entity: EntityDefinition, global_position: Vector2, parent: No
 	new_entity.global_position = global_position
 	
 	return new_entity
+
+static func _cleanup_failed_entity(
+	entity: Entity
+) -> void:
+	if not entity:
+		return
+
+	for component in entity.get_components():
+		entity.remove_component(
+			component.component_id
+		)
+
+	RuntimeObjectRegistry.unregister(
+		entity.instance_id,
+		entity
+	)
+
+	entity.free()

@@ -18,7 +18,38 @@ static func build(definition: ItemDefinition) -> Item:
 	item.sprite = definition.sprite
 	item.description = definition.description
 
-	for component in definition.components:
-		item.add_component(component.component_id, component.parameters)
+	for component_definition in definition.components:
+		var component := item.add_component(
+			component_definition.component_id,
+			component_definition.parameters
+		)
+
+		if not component:
+			push_error(
+				"Failed to build Item %s because component %s could not be added."
+				% [
+					definition.item_id,
+					component_definition.component_id
+				]
+			)
+
+			_cleanup_failed_item(item)
+			return null
 
 	return item
+
+static func _cleanup_failed_item(
+	item: Item
+) -> void:
+	if not item:
+		return
+
+	for component in item.get_components():
+		item.remove_component(
+			component.component_id
+		)
+
+	RuntimeObjectRegistry.unregister(
+		item.instance_id,
+		item
+	)
