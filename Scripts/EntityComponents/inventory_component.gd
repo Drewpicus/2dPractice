@@ -8,6 +8,8 @@ signal item_added(item: Item)
 signal item_removed(item: Item)
 
 func add_item(item: Item) -> void:
+	if item in items:
+		return
 	items.append(item)
 	_notify_item_added(item)
 	items_updated.emit()
