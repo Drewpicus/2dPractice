@@ -216,3 +216,7 @@ func is_locally_controlled() -> bool:
 
 func _update_local_control() -> void:
 	player_camera.enabled = is_locally_controlled()
+
+func clear_prediction_after_teleport() -> void:
+	predicted_positions.clear()
+	pending_correction = Vector2.ZERO

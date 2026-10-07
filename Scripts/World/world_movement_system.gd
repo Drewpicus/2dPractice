@@ -311,3 +311,68 @@ func _interpolate_remote_visual(entity: Entity, instance_id: String, delta: floa
 func _on_peer_left(peer_id: int) -> void:
 	_last_movement_sequence.erase(peer_id)
 	_last_simulated_movement_sequence.erase(peer_id)
+
+func teleport_entity(
+	entity: Entity,
+	destination: Vector2
+) -> bool:
+	if not MultiplayerManager.is_world_authority():
+		return false
+
+	if not entity:
+		return false
+
+	entity.global_position = destination
+
+	if MultiplayerManager.session_active:
+		_receive_teleport.rpc(
+			entity.instance_id,
+			destination
+		)
+
+	return true
+
+@rpc("authority", "call_remote", "reliable", 6)
+func _receive_teleport(
+	instance_id: String,
+	destination: Vector2
+) -> void:
+	if MultiplayerManager.is_world_authority():
+		return
+
+	var entity := RuntimeObjectRegistry.get_entity(
+		instance_id
+	)
+
+	if not entity:
+		return
+
+	entity.global_position = destination
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if controller and controller.is_locally_controlled():
+		controller.clear_prediction_after_teleport()
+		return
+
+	var sprite := entity.get_node_or_null(
+		"Sprite2D"
+	) as Sprite2D
+
+	if sprite:
+		var rest_position := (
+			_remote_sprite_rest_positions.get(
+				instance_id,
+				sprite.position
+			) as Vector2
+		)
+
+		_remote_sprite_rest_positions[
+			instance_id
+		] = rest_position
+
+		sprite.position = rest_position
+
+	_network_positions[instance_id] = destination

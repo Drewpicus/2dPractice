@@ -32,6 +32,13 @@ func perform(use: AbilityUse) -> bool:
 	if not can_use(use):
 		return false
 
-	use.user.global_position = use.target_position
+	var resolution := TeleportSystem.apply_teleport(
+		use.user,
+		use.user,
+		use.target_position
+	)
 
-	return true
+	return (
+		resolution != null
+		and not resolution.cancelled
+	)
