@@ -4,6 +4,8 @@ class_name InventoryComponent
 @export var items: Array[Item] = []
 
 signal items_updated
+signal item_added(item: Item)
+signal item_removed(item: Item)
 
 func add_item(item: Item) -> void:
 	items.append(item)
@@ -62,7 +64,7 @@ func _notify_item_added(
 		root_entity
 	)
 
-	_notify_item_added(item)
+	item_added.emit(item)
 
 
 func _notify_item_removed(
@@ -75,7 +77,7 @@ func _notify_item_removed(
 		root_entity
 	)
 
-	_notify_item_removed(item)
+	item_removed.emit(item)
 
 func get_interaction_suggestions() -> Array[StringName]:
 	var capabilities: CapabilityComponent = get_component(&"base:capability")
