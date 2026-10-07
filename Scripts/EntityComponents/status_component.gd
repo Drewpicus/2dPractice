@@ -17,7 +17,6 @@ func add_effect(effect: StatusEffect) -> void:
 	notify_state_changed()
 
 
-
 func remove_effect(effect: StatusEffect) -> void:
 	if effect not in effects:
 		return
@@ -28,6 +27,16 @@ func remove_effect(effect: StatusEffect) -> void:
 	effect.owner = null
 	notify_state_changed()
 
+func get_effects_by_id(
+	effect_id: StringName
+) -> Array[StatusEffect]:
+	var result: Array[StatusEffect] = []
+
+	for effect in effects:
+		if effect.effect_id == effect_id:
+			result.append(effect)
+
+	return result
 
 func on_event(event: GameEvent) -> void:
 	if event is WorldTickEvent:
@@ -87,23 +96,66 @@ func apply_effect(
 	effect.source = source
 	effect.duration = resolution.duration
 
-	add_effect(effect)
-
-	var event := StatusAppliedEvent.new(
-		source,
-		root_entity,
-		effect
+	var existing := get_effects_by_id(
+		effect.effect_id
 	)
 
-	root_entity.dispatch_event(event)
+	match effect.stack_mode:
+		StatusEffect.STACK_MODE.STACK:
+			add_effect(effect)
 
-	if source is Entity and source != root_entity:
-		(source as Entity).dispatch_event(event)
+		StatusEffect.STACK_MODE.REFRESH:
+			if existing.is_empty():
+				add_effect(effect)
+			else:
+				var current := existing[0]
 
-	if source is Item:
-		(source as Item).dispatch_event(event)
+				current.source = effect.source
 
-	return true
+				# Negative duration means indefinite.
+				# An indefinite effect stays indefinite, and applying
+				# an indefinite version makes the existing one indefinite.
+				if current.duration < 0.0 or effect.duration < 0.0:
+					current.duration = -1.0
+				else:
+					current.duration = max(
+						current.duration,
+						effect.duration
+					)
+
+				notify_state_changed()
+
+				effect = current
+
+		StatusEffect.STACK_MODE.EXTEND:
+			if existing.is_empty():
+				add_effect(effect)
+			else:
+				var current := existing[0]
+
+				current.source = effect.source
+
+				# Indefinite + anything remains indefinite.
+				if current.duration < 0.0 or effect.duration < 0.0:
+					current.duration = -1.0
+				else:
+					current.duration += effect.duration
+
+				notify_state_changed()
+
+				effect = current
+
+		StatusEffect.STACK_MODE.REPLACE:
+			for current in existing:
+				remove_effect(current)
+
+			add_effect(effect)
+
+		StatusEffect.STACK_MODE.IGNORE:
+			if not existing.is_empty():
+				return false
+
+			add_effect(effect)
 
 
 

@@ -1,11 +1,20 @@
 extends RefCounted
 class_name StatusEffect
 
+enum STACK_MODE {
+	STACK,
+	EXTEND,
+	REFRESH,
+	REPLACE,
+	IGNORE
+}
+
 var effect_id: StringName
 var owner: Entity
 var source: Object
 
 var duration: float = -1.0
+var stack_mode: STACK_MODE = STACK_MODE.REFRESH
 
 func on_added() -> void:
 	pass
