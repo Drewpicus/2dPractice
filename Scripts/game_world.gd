@@ -9,6 +9,7 @@ var _items: Dictionary[String, Item] = {}
 @onready var command_system: WorldCommandSystem = $CommandSystem
 @onready var movement_system: WorldMovementSystem = $MovementSystem
 @onready var replication_system: WorldReplicationSystem = $ReplicationSystem
+@onready var tick_system: WorldTickSystem = $TickSystem
 
 var world_data: WorldData
 

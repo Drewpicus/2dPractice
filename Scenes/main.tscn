@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://7q0bjdssm656" path="res://Scripts/World/world_command_system.gd" id="7_ynf5e"]
 [ext_resource type="Script" uid="uid://b5s2ur1r4bxm7" path="res://Scripts/World/world_movement_system.gd" id="8_hptm8"]
 [ext_resource type="Script" uid="uid://b1ikh47ub73j4" path="res://Scripts/World/world_replication_system.gd" id="9_d1ilt"]
+[ext_resource type="Script" uid="uid://cbqw6h23kysju" path="res://Scripts/World/world_tick_system.gd" id="10_k12tt"]
 [ext_resource type="Script" uid="uid://74ssu6qlq32b" path="res://Scripts/UI/game_ui.gd" id="12_6iyac"]
 [ext_resource type="Script" uid="uid://cvma3cseekwy3" path="res://Scripts/UI/inspect_window.gd" id="13_fdnlq"]
 [ext_resource type="Script" uid="uid://cinxuuh06ilsq" path="res://Scripts/UI/ability_menu.gd" id="14_wsu2k"]
@@ -66,6 +67,9 @@ script = ExtResource("8_hptm8")
 
 [node name="ReplicationSystem" type="Node" parent="GameWorld" unique_id=153282602]
 script = ExtResource("9_d1ilt")
+
+[node name="TickSystem" type="Node" parent="GameWorld" unique_id=1211211538]
+script = ExtResource("10_k12tt")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1044784727]
 script = ExtResource("12_6iyac")

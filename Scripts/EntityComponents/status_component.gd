@@ -30,6 +30,12 @@ func remove_effect(effect: StatusEffect) -> void:
 
 
 func on_event(event: GameEvent) -> void:
+	if event is WorldTickEvent:
+		_handle_world_tick(
+			event as WorldTickEvent
+		)
+		return
+
 	for effect in effects.duplicate():
 		effect.on_event(event)
 
@@ -110,6 +116,7 @@ func serialize_state() -> Dictionary:
 
 		serialized_effects.append({
 			"effect_id": String(effect.effect_id),
+			"duration": effect.duration,
 			"state": effect.serialize_state()
 		})
 
@@ -141,6 +148,8 @@ func deserialize_state(state: Dictionary) -> void:
 			continue
 
 		effect.owner = root_entity
+		
+		effect.duration = float(effect_data.get("duration",-1.0))
 
 		var effect_state = effect_data.get("state", {})
 
@@ -148,3 +157,32 @@ func deserialize_state(state: Dictionary) -> void:
 			effect.deserialize_state(effect_state)
 
 		effects.append(effect)
+
+func _handle_world_tick(
+	event: WorldTickEvent
+) -> void:
+	var duration_changed := false
+
+	for effect in effects.duplicate():
+		if not effect:
+			continue
+
+		# The effect gets to act while it is still active.
+		effect.on_event(event)
+
+		# The effect may have removed itself while handling the tick.
+		if effect not in effects:
+			continue
+
+		# Negative duration means indefinite.
+		if effect.duration < 0.0:
+			continue
+
+		effect.duration -= event.delta_seconds
+		duration_changed = true
+
+		if effect.duration <= 0.0:
+			remove_effect(effect)
+
+	if duration_changed:
+		notify_state_changed()
