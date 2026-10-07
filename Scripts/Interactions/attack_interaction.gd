@@ -24,68 +24,9 @@ func perform(
 	interactor: Entity,
 	target: Entity
 ) -> void:
-	var attack_damage: float = 1.0
-
-	var interactor_stats := interactor.get_component(
-		&"base:stat_block"
-	) as StatBlockComponent
-
-	if interactor_stats:
-		attack_damage = interactor_stats.get_stat(
-			Stat.STRENGTH
-		)
-
-	var source_item: Item
-
-	var equipment := interactor.get_component(
-		&"base:equipment"
-	) as EquipmentComponent
-
-	if equipment:
-		source_item = equipment.get_equipment(&"mainhand")
-
-	var resolution := DamageResolution.new(
+	AttackSystem.perform_mainhand_attack(
 		interactor,
-		target,
-		attack_damage,
-		source_item
-	)
-
-	interactor.contribute_to_resolution(
-		resolution
-	)
-
-	if target != interactor:
-		target.contribute_to_resolution(
-			resolution
-		)
-
-	resolution.apply_modifiers()
-
-	if not resolution.allowed:
-		return
-
-	var target_health := target.get_component(
-		&"base:health"
-	) as HealthComponent
-
-	if not target_health:
-		return
-
-	var final_damage := int(resolution.damage)
-
-	if final_damage <= 0:
-		return
-
-	target_health.damage(final_damage)
-
-	print(
-		"%s attacks %s for %d damage!"
-		% [
-			interactor.entity_name,
-			target.entity_name,
-			final_damage
-		]
+		target
 	)
 
 func requires_authority() -> bool:
