@@ -98,6 +98,9 @@ func add_component(component_id: StringName, parameters: Dictionary={}) -> Entit
 		new_component.free()
 		return null
 	
+	new_component._set_creation_parameters(
+	parameters)
+	
 	for key in parameters:
 		if key in new_component:
 			var value = ParameterCoercion.coerce_for_property(new_component, key, parameters[key])
