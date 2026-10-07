@@ -278,3 +278,6 @@ func _on_close_pressed() -> void:
 
 	if was_selecting:
 		item_selection_cancelled.emit()
+
+func is_selecting_item() -> bool:
+	return _selection_mode

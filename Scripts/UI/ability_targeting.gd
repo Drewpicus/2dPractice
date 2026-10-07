@@ -110,6 +110,7 @@ func _submit() -> void:
 	)
 
 	if not world:
+		cancel()
 		return
 
 	world.submit_ability(

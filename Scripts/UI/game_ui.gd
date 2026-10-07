@@ -15,6 +15,20 @@ func _ready() -> void:
 	game_world.inventory_requested.connect(_on_inventory_requested)
 	ability_menu.ability_selected.connect(_on_ability_selected)
 
+
+		
+	ability_targeting.requirement_changed.connect(
+		_on_ability_requirement_changed
+	)
+
+	inventory_menu.item_chosen.connect(
+		_on_ability_item_chosen
+	)
+
+	inventory_menu.item_selection_cancelled.connect(
+		_on_ability_item_selection_cancelled
+	)
+
 func _unhandled_input(event: InputEvent) -> void:
 	var controlled_entity := (
 		game_world.get_locally_controlled_entity()
@@ -64,29 +78,25 @@ func _unhandled_input(event: InputEvent) -> void:
 		interaction_menu.hide()
 		inspect_window.hide()
 		inventory_menu.close_inventory()
-		
-		ability_targeting.requirement_changed.connect(
-		_on_ability_requirement_changed
-	)
-
-	inventory_menu.item_chosen.connect(
-		_on_ability_item_chosen
-	)
-
-	inventory_menu.item_selection_cancelled.connect(
-		_on_ability_item_selection_cancelled
-	)
 
 
-func _toggle_inventory(controlled_entity: Entity) -> void:
+func _toggle_inventory(
+	controlled_entity: Entity
+) -> void:
 	if inventory_menu.visible:
+		if inventory_menu.is_selecting_item():
+			ability_targeting.cancel()
+
 		inventory_menu.close_inventory()
 		return
 
 	interaction_menu.hide()
 	inspect_window.hide()
 
-	inventory_menu.show_inventory(controlled_entity, controlled_entity)
+	inventory_menu.show_inventory(
+		controlled_entity,
+		controlled_entity
+	)
 
 
 func _open_interaction_menu(controlled_entity: Entity) -> void:
