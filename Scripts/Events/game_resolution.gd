@@ -47,3 +47,16 @@ func _sort_modifiers(a: ResolutionModifier,b: ResolutionModifier) -> bool:
 		return a.submission_order < b.submission_order
 
 	return a.priority < b.priority
+
+var _contributors: Array[Object] = []
+
+
+func claim_contributor(contributor: Object) -> bool:
+	if not contributor:
+		return false
+
+	if contributor in _contributors:
+		return false
+
+	_contributors.append(contributor)
+	return true

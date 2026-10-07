@@ -155,12 +155,19 @@ func resolve(resolution: GameResolution) -> GameResolution:
 
 	return resolution
 
-func contribute_to_resolution(resolution: GameResolution) -> void:
+func contribute_to_resolution(
+	resolution: GameResolution
+) -> void:
 	if not resolution:
 		return
 
 	if resolution.resolved:
-		push_error("Cannot contribute to an already-resolved GameResolution.")
+		push_error(
+			"Cannot contribute to an already-resolved GameResolution."
+		)
+		return
+
+	if not resolution.claim_contributor(self):
 		return
 
 	for component in get_components():
