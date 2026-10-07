@@ -430,7 +430,7 @@ func _apply_received_teleport(
 		)
 	)
 
-	if revision < known_revision:
+	if revision <= known_revision:
 		return
 
 	_teleport_revisions[
