@@ -12,6 +12,14 @@
 					"offhand"
 				]
 			}
+		},
+		{
+			"component_id": "base:ability_grant",
+			"parameters": {
+				"ability_ids": [
+					"base:place_campfire"
+				]
+			}
 		}
 	]
 }

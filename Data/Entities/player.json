@@ -63,7 +63,6 @@
 			"parameters": {
 				"ability_ids": [
 					"base:blink",
-					"base:place_campfire",
 					"base:heal",
 					"base:throw"
 				]
