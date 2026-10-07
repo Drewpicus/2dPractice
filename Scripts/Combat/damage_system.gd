@@ -47,6 +47,29 @@ static func apply_damage(
 	if final_damage <= 0:
 		return resolution
 
+	var old_health := health.health
+
 	health.damage(final_damage)
+
+	var applied_damage := old_health - health.health
+
+	if applied_damage <= 0:
+		return resolution
+
+	var event := DamageAppliedEvent.new(
+		source,
+		target,
+		applied_damage,
+		resolution,
+		source_item
+	)
+
+	target.dispatch_event(event)
+
+	if source is Entity and source != target:
+		(source as Entity).dispatch_event(event)
+
+	if source is Item:
+		(source as Item).dispatch_event(event)
 
 	return resolution
