@@ -297,15 +297,81 @@ func serialize_items() -> Array:
 
 ## Save game
 func serialize_state() -> Dictionary:
+	if not world_data:
+		push_error(
+			"Cannot serialize GameWorld without WorldData."
+		)
+		return {}
+
 	return {
+		"world_data": {
+			"size": [
+				world_data.size.x,
+				world_data.size.y
+			],
+			"seed": world_data.get_seed()
+		},
 		"items": serialize_items(),
 		"entities": serialize_entities()
 	}
 
 ## Load game from save
 func deserialize_state(state: Dictionary) -> bool:
-	var item_states = state.get("items", [])
-	var entity_states = state.get("entities", [])
+	var world_data_state = state.get(
+		"world_data",
+		{}
+	)
+
+	if not world_data_state is Dictionary:
+		push_error(
+			"Serialized world data must be a Dictionary."
+		)
+		return false
+
+	var size_data = world_data_state.get(
+		"size",
+		[]
+	)
+
+	if (
+		not size_data is Array
+		or size_data.size() != 2
+	):
+		push_error(
+			"Serialized world size must contain two values."
+		)
+		return false
+
+	var world_size := Vector2i(
+		int(size_data[0]),
+		int(size_data[1])
+	)
+
+	if world_size.x <= 0 or world_size.y <= 0:
+		push_error(
+			"Serialized world size must be positive."
+		)
+		return false
+
+	if not world_data_state.has("seed"):
+		push_error(
+			"Serialized world data is missing its seed."
+		)
+		return false
+
+	var world_seed := int(
+		world_data_state["seed"]
+	)
+
+	var item_states = state.get(
+		"items",
+		[]
+	)
+
+	var entity_states = state.get(
+		"entities",
+		[]
+	)
 
 	if not item_states is Array:
 		push_error("GameWorld item states must be an Array.")
@@ -317,7 +383,16 @@ func deserialize_state(state: Dictionary) -> bool:
 
 	clear_runtime_state()
 
-	var result := RuntimeStateLoader.reconstruct(item_states, entity_states, entities)
+	generate_world(
+		world_size,
+		world_seed
+	)
+
+	var result := RuntimeStateLoader.reconstruct(
+		item_states,
+		entity_states,
+		entities
+	)
 
 	if not result.has("items") or not result.has("entities"):
 		return false
