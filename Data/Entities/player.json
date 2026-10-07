@@ -62,7 +62,6 @@
 			"component_id": "base:ability",
 			"parameters": {
 				"ability_ids": [
-					"base:blink",
 					"base:heal",
 					"base:throw"
 				]

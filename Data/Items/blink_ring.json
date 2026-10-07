@@ -1,0 +1,26 @@
+{
+	"item_id": "base:blink_ring",
+	"item_name": "Blinkly's Magic Ring",
+	"sprite": "res://Assets/blink_ring.png",
+	"description": "Grants Blinkly's special ability.",
+	"components": [
+		{
+			"component_id": "base:equippable",
+			"parameters": {
+				"slots": [
+					"mainhand",
+					"offhand"
+				]
+			}
+		},
+		{
+			"component_id": "base:ability_grant",
+			"parameters": {
+				"ability_ids": [
+					"base:blink"
+				],
+				"grant_when": "equipped"
+			}
+		}
+	]
+}

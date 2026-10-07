@@ -104,8 +104,10 @@ func _spawn_test_items() -> void:
 		inventory.add_item(lightsaber)
 		inventory.add_item(goblin_coin)
 		inventory.add_item(goblin_coin2)
-
-		print("Added Stick and Goblin Coin x2 to Goblin")
+		
+		var ring = game_world.create_item(&"base:blink_ring")
+		game_world.spawn_dropped_item(ring,Vector2(-300,-500))
+		
 		break
 
 	for chest in all_entities:
