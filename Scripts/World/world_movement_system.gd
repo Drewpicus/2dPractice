@@ -18,6 +18,8 @@ var _network_positions: Dictionary[String, Vector2] = {}
 var _network_velocities: Dictionary[String, Vector2] = {}
 var _remote_sprite_rest_positions: Dictionary[String, Vector2] = {}
 
+var _teleport_revisions: Dictionary[String, int] = {}
+
 @onready var world: GameWorld = get_parent() as GameWorld
 
 
@@ -201,16 +203,29 @@ func _send_movement_snapshots(full_rate: bool) -> void:
 func _build_movement_state(entity: Entity) -> Dictionary:
 	var last_input_sequence := -1
 
-	var controller := entity.get_component(&"base:player_controller") as PlayerControllerComponent
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
 
 	if controller:
-		last_input_sequence = int(_last_simulated_movement_sequence.get(controller.controller_peer_id, -1))
+		last_input_sequence = int(
+			_last_simulated_movement_sequence.get(
+				controller.controller_peer_id,
+				-1
+			)
+		)
 
 	return {
 		"instance_id": entity.instance_id,
 		"position": entity.global_position,
 		"velocity": entity.velocity,
-		"last_input_sequence": last_input_sequence
+		"last_input_sequence": last_input_sequence,
+		"teleport_revision": int(
+			_teleport_revisions.get(
+				entity.instance_id,
+				0
+			)
+		)
 	}
 
 @rpc("authority", "call_remote", "unreliable_ordered", 2)
@@ -244,6 +259,41 @@ func _receive_movement_snapshot(states: Array) -> void:
 		var entity := RuntimeObjectRegistry.get_entity(instance_id)
 
 		if not entity:
+			continue
+
+		var teleport_revision := int(
+			state.get(
+				"teleport_revision",
+				0
+			)
+		)
+
+		var known_revision := int(
+			_teleport_revisions.get(
+				instance_id,
+				0
+			)
+		)
+
+		# This snapshot predates a teleport we've
+		# already received.
+		if teleport_revision < known_revision:
+			continue
+
+		# The snapshot itself may arrive before the
+		# reliable teleport RPC.
+		if teleport_revision > known_revision:
+			_apply_received_teleport(
+				entity,
+				instance_id,
+				server_position,
+				teleport_revision
+			)
+
+			_network_velocities[
+				instance_id
+			] = velocity
+
 			continue
 
 		var controller := entity.get_component(&"base:player_controller") as PlayerControllerComponent
@@ -322,12 +372,24 @@ func teleport_entity(
 	if not entity:
 		return false
 
+	var revision := int(
+		_teleport_revisions.get(
+			entity.instance_id,
+			0
+		)
+	) + 1
+
+	_teleport_revisions[
+		entity.instance_id
+	] = revision
+
 	entity.global_position = destination
 
 	if MultiplayerManager.session_active:
 		_receive_teleport.rpc(
 			entity.instance_id,
-			destination
+			destination,
+			revision
 		)
 
 	return true
@@ -335,7 +397,8 @@ func teleport_entity(
 @rpc("authority", "call_remote", "reliable", 6)
 func _receive_teleport(
 	instance_id: String,
-	destination: Vector2
+	destination: Vector2,
+	revision: int
 ) -> void:
 	if MultiplayerManager.is_world_authority():
 		return
@@ -346,6 +409,33 @@ func _receive_teleport(
 
 	if not entity:
 		return
+
+	_apply_received_teleport(
+		entity,
+		instance_id,
+		destination,
+		revision
+	)
+
+func _apply_received_teleport(
+	entity: Entity,
+	instance_id: String,
+	destination: Vector2,
+	revision: int
+) -> void:
+	var known_revision := int(
+		_teleport_revisions.get(
+			instance_id,
+			0
+		)
+	)
+
+	if revision < known_revision:
+		return
+
+	_teleport_revisions[
+		instance_id
+	] = revision
 
 	entity.global_position = destination
 
@@ -375,4 +465,6 @@ func _receive_teleport(
 
 		sprite.position = rest_position
 
-	_network_positions[instance_id] = destination
+	_network_positions[
+		instance_id
+	] = destination
