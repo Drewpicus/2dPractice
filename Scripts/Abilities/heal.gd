@@ -50,5 +50,5 @@ func perform(use: AbilityUse) -> bool:
 
 	return (
 		resolution != null
-		and resolution.allowed
+		and not resolution.cancelled
 	)

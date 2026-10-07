@@ -90,7 +90,7 @@ func apply_effect(
 
 	resolution.apply_modifiers()
 
-	if not resolution.allowed:
+	if resolution.cancelled:
 		return false
 
 	effect.source = source

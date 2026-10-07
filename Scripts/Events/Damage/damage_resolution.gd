@@ -9,8 +9,6 @@ var target: Entity
 var base_damage: float
 var damage: float
 
-var allowed: bool = true
-
 
 func _init(
 	_source: Object,

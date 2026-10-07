@@ -38,7 +38,7 @@ static func apply_death(
 
 	resolution.apply_modifiers()
 
-	if not resolution.allowed:
+	if resolution.cancelled:
 		return resolution
 
 	var event := DeathAppliedEvent.new(

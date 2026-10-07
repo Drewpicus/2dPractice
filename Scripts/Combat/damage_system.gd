@@ -47,7 +47,7 @@ static func apply_damage(
 
 	resolution.apply_modifiers()
 
-	if not resolution.allowed:
+	if resolution.cancelled:
 		return resolution
 
 	var final_damage := int(

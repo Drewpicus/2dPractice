@@ -6,8 +6,6 @@ var target: Entity
 var effect: StatusEffect
 
 var duration: float
-var allowed: bool = true
-
 
 func _init(
 	_source: Object,

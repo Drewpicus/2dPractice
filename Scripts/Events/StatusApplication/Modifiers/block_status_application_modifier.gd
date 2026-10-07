@@ -10,8 +10,4 @@ func apply(resolution: GameResolution) -> void:
 	if not resolution is StatusApplicationResolution:
 		return
 
-	var status_resolution := (
-		resolution as StatusApplicationResolution
-	)
-
-	status_resolution.allowed = false
+	resolution.cancel()

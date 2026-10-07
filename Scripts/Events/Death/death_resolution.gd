@@ -6,8 +6,6 @@ var source: Object
 var source_item: Item
 var target: Entity
 
-var allowed: bool = true
-
 
 func _init(
 	_source: Object,
