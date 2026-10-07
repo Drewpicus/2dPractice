@@ -1,27 +1,18 @@
 extends RefCounted
-class_name DamageSystem
+class_name DeathSystem
 
 
-static func apply_damage(
+static func apply_death(
 	source: Object,
 	target: Entity,
-	base_damage: float,
 	source_item: Item = null
-) -> DamageResolution:
+) -> DeathResolution:
 	if not target:
 		return null
 
-	var health := target.get_component(
-		&"base:health"
-	) as HealthComponent
-
-	if not health:
-		return null
-
-	var resolution := DamageResolution.new(
+	var resolution := DeathResolution.new(
 		source,
 		target,
-		base_damage,
 		source_item
 	)
 
@@ -50,26 +41,9 @@ static func apply_damage(
 	if not resolution.allowed:
 		return resolution
 
-	var final_damage := int(
-		resolution.damage
-	)
-
-	if final_damage <= 0:
-		return resolution
-
-	var old_health := health.health
-
-	health.damage(final_damage)
-
-	var applied_damage := old_health - health.health
-
-	if applied_damage <= 0:
-		return resolution
-
-	var event := DamageAppliedEvent.new(
+	var event := DeathAppliedEvent.new(
 		source,
 		target,
-		applied_damage,
 		resolution,
 		source_item
 	)
@@ -82,11 +56,13 @@ static func apply_damage(
 	if source is Item:
 		(source as Item).dispatch_event(event)
 
-	if not health.is_alive():
-		DeathSystem.apply_death(
-			source,
-			target,
-			source_item
-		)
+	var world := GameWorld.find_world(
+		target
+	)
+
+	if world:
+		world.remove_entity(target)
+	else:
+		target.queue_free()
 
 	return resolution

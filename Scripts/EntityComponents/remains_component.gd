@@ -49,3 +49,14 @@ func spawn_remains() -> Entity:
 		inventory.take_all_items()
 
 	return remains_entity
+
+func on_event(event: GameEvent) -> void:
+	if not event is DeathAppliedEvent:
+		return
+
+	var death_event := event as DeathAppliedEvent
+
+	if death_event.target != root_entity:
+		return
+
+	spawn_remains()

@@ -31,13 +31,7 @@ func _init() -> void:
 	instance_id = RuntimeObjectRegistry.generate_unique_id()
 	RuntimeObjectRegistry.register(self, instance_id)
 
-#TODO: Remove health/die stuff from here
 func _ready() -> void:
-	var health_component := get_component(&"base:health") as HealthComponent
-
-	if health_component:
-		health_component.health_depleted.connect(die)
-
 	if not solid:
 		collision.disabled = true
 
@@ -72,20 +66,6 @@ func _register_component(component: EntityComponent) -> bool:
 	component.on_added()
 	component_added.emit(component_id, component)
 	return true
-
-## Deprecated, temporary function that spawns remains upon death and deletes the entity from the world
-func die() -> void:
-	var remains_component := get_component(&"base:remains") as RemainsComponent
-
-	if remains_component:
-		remains_component.spawn_remains()
-
-	var world := GameWorld.find_world(self)
-
-	if world:
-		world.remove_entity(self)
-	else:
-		queue_free()
 
 ##Add a component to the component folder, based on ID, e.g. &"health".
 ##Parameters are a dict with the keys being variable names and the values being values
