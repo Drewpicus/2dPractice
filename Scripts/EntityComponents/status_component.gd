@@ -2,6 +2,7 @@ extends EntityComponent
 class_name StatusComponent
 
 var effects: Array[StatusEffect] = []
+var _restoring_state: bool = false
 
 signal gained_effect(status: StatusEffect)
 signal losing_effect(status: StatusEffect)
@@ -14,7 +15,9 @@ func add_effect(effect: StatusEffect) -> void:
 	effect.owner = root_entity
 	effect.on_added()
 	gained_effect.emit(effect)
-	notify_state_changed()
+
+	if not _restoring_state:
+		notify_state_changed()
 
 
 func remove_effect(effect: StatusEffect) -> void:
@@ -25,7 +28,9 @@ func remove_effect(effect: StatusEffect) -> void:
 	losing_effect.emit(effect)
 	effects.erase(effect)
 	effect.owner = null
-	notify_state_changed()
+
+	if not _restoring_state:
+		notify_state_changed()
 
 func get_effects_by_id(
 	effect_id: StringName
@@ -37,6 +42,11 @@ func get_effects_by_id(
 			result.append(effect)
 
 	return result
+
+func on_removing() -> void:
+	for effect in effects.duplicate():
+		remove_effect(effect)
+
 
 func on_event(event: GameEvent) -> void:
 	if event is WorldTickEvent:
@@ -184,6 +194,7 @@ func serialize_state() -> Dictionary:
 		serialized_effects.append({
 			"effect_id": String(effect.effect_id),
 			"duration": effect.duration,
+			"source_instance_id": _source_instance_id(effect.source),
 			"state": effect.serialize_state()
 		})
 
@@ -192,13 +203,16 @@ func serialize_state() -> Dictionary:
 	}
 
 func deserialize_state(state: Dictionary) -> void:
-	effects.clear()
-
 	var saved_effects = state.get("effects", [])
 
 	if not saved_effects is Array:
 		push_error("Serialized status effects must be an Array.")
 		return
+
+	_restoring_state = true
+
+	for effect in effects.duplicate():
+		remove_effect(effect)
 
 	for effect_value in saved_effects:
 		if not effect_value is Dictionary:
@@ -214,16 +228,38 @@ func deserialize_state(state: Dictionary) -> void:
 		if not effect:
 			continue
 
-		effect.owner = root_entity
-		
-		effect.duration = float(effect_data.get("duration",-1.0))
+		effect.duration = float(effect_data.get("duration", -1.0))
 
 		var effect_state = effect_data.get("state", {})
 
 		if effect_state is Dictionary:
 			effect.deserialize_state(effect_state)
 
-		effects.append(effect)
+		effect.source = _source_from_instance_id(
+			String(effect_data.get("source_instance_id", ""))
+		)
+
+		add_effect(effect)
+
+	_restoring_state = false
+	notify_state_changed()
+
+
+func _source_instance_id(source: Object) -> String:
+	if source is Entity:
+		return (source as Entity).instance_id
+
+	if source is Item:
+		return (source as Item).instance_id
+
+	return ""
+
+
+func _source_from_instance_id(instance_id: String) -> Object:
+	if instance_id.is_empty():
+		return null
+
+	return RuntimeObjectRegistry.get_object(instance_id)
 
 func _handle_world_tick(
 	event: WorldTickEvent

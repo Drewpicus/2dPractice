@@ -81,6 +81,10 @@ func _notify_item_removed(
 
 	item_removed.emit(item)
 
+func on_removing() -> void:
+	take_all_items()
+
+
 func get_interaction_suggestions() -> Array[StringName]:
 	var capabilities: CapabilityComponent = get_component(&"base:capability")
 	if capabilities:

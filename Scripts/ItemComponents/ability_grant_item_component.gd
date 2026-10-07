@@ -21,6 +21,19 @@ func on_added() -> void:
 			"Unsupported ability grant condition: %s"
 			% grant_when
 		)
+		return
+
+	var holder := _current_holder()
+
+	if holder:
+		_grant_to(holder)
+
+
+func on_removing() -> void:
+	var holder := _current_holder()
+
+	if holder:
+		_revoke_from(holder)
 
 
 func on_added_to_inventory(
@@ -59,6 +72,19 @@ func on_unequipped(
 		return
 
 	_revoke_from(wearer)
+
+
+func _current_holder() -> Entity:
+	if not root_item:
+		return null
+
+	if grant_when == WHEN_EQUIPPED:
+		return root_item.get_equipped_wearer()
+
+	if grant_when == WHEN_IN_INVENTORY:
+		return root_item.get_inventory_holder()
+
+	return null
 
 
 func _grant_to(entity: Entity) -> void:

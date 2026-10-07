@@ -201,6 +201,9 @@ func _perform_take_item(viewer: Entity, source: Entity, item: Item) -> bool:
 	if (viewer.global_position.distance_to(source.global_position) > interactor.reach):
 		return false
 
+	if not _can_access_inventory(viewer, source):
+		return false
+
 	var taken_item := source_inventory.remove_item(item)
 
 	if not taken_item:
@@ -209,6 +212,34 @@ func _perform_take_item(viewer: Entity, source: Entity, item: Item) -> bool:
 	viewer_inventory.add_item(taken_item)
 
 	return true
+
+
+## True when the viewer could open this inventory through a real interaction.
+## A lock blocks the interaction, so it also blocks the take command.
+func _can_access_inventory(viewer: Entity, source: Entity) -> bool:
+	var interactable := source.get_component(
+		&"base:interactable"
+	) as InteractableComponent
+
+	if not interactable:
+		return false
+
+	for interaction in interactable.get_interactions(viewer):
+		var opens_inventory := (
+			interaction.interaction_id == &"base:open_inventory"
+			or interaction.interaction_id == &"base:pickpocket"
+		)
+
+		if not opens_inventory:
+			continue
+
+		if not interaction.should_show(viewer, source):
+			continue
+
+		if interaction.can_perform(viewer, source):
+			return true
+
+	return false
 
 
 func submit_equip_item(entity: Entity, item: Item, slot: StringName) -> void:

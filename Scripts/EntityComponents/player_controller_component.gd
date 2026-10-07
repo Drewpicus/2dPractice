@@ -192,17 +192,34 @@ func _get_entity_under_mouse(exclude_self: bool = true, is_interactable: bool = 
 
 ## Returns this component's mutable runtime state.
 func serialize_state() -> Dictionary:
-	var zoom_x := player_camera.zoom.x
-	var zoom_y := player_camera.zoom.y
-	return {
-		"camera_zoom": [zoom_x,zoom_y]
+	var state := {
+		"controller_peer_id": controller_peer_id
 	}
 
+	if is_instance_valid(player_camera):
+		state["camera_zoom"] = [
+			player_camera.zoom.x,
+			player_camera.zoom.y
+		]
+
+	return state
+
 ## Restores this component's mutable runtime state.
-func deserialize_state(_state: Dictionary) -> void:
-	var zoom_array = _state.get("camera_zoom")
-	player_camera.zoom.x = zoom_array[0]
-	player_camera.zoom.y = zoom_array[1]
+func deserialize_state(state: Dictionary) -> void:
+	if state.has("controller_peer_id"):
+		set_controller_peer(int(state["controller_peer_id"]))
+
+	var zoom_array = state.get("camera_zoom")
+
+	if (
+		zoom_array is Array
+		and zoom_array.size() == 2
+		and is_instance_valid(player_camera)
+	):
+		player_camera.zoom = Vector2(
+			float(zoom_array[0]),
+			float(zoom_array[1])
+		)
 
 func set_controller_peer(peer_id: int) -> void:
 	controller_peer_id = peer_id
