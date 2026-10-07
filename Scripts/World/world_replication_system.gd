@@ -159,11 +159,20 @@ func _on_tracked_component_added(component_id: StringName, component: EntityComp
 	if component_id == &"base:player_controller":
 		return
 
-	_receive_component_added.rpc(entity.instance_id, String(component_id), component.serialize_state())
-
+	_receive_component_added.rpc(
+		entity.instance_id,
+		String(component_id),
+		component.get_creation_parameters(),
+		component.serialize_state()
+	)
 
 @rpc("authority", "call_remote", "reliable", 5)
-func _receive_component_added(entity_instance_id: String, component_id_string: String, state: Dictionary) -> void:
+func _receive_component_added(
+	entity_instance_id: String,
+	component_id_string: String,
+	parameters: Dictionary,
+	state: Dictionary
+) -> void:
 	if MultiplayerManager.is_world_authority():
 		return
 
@@ -183,7 +192,10 @@ func _receive_component_added(entity_instance_id: String, component_id_string: S
 		existing.deserialize_state(state)
 		return
 
-	var component := entity.add_component(component_id)
+	var component := entity.add_component(
+		component_id,
+		parameters
+	)
 
 	if not component:
 		return
@@ -269,11 +281,21 @@ func _on_tracked_item_component_added(component_id: StringName, component: ItemC
 	if not MultiplayerManager.is_world_authority():
 		return
 
-	_receive_item_component_added.rpc(item.instance_id, String(component_id), component.serialize_state())
+	_receive_item_component_added.rpc(
+		item.instance_id,
+		String(component_id),
+		component.get_creation_parameters(),
+		component.serialize_state()
+	)
 
 
 @rpc("authority", "call_remote", "reliable", 5)
-func _receive_item_component_added(item_instance_id: String, component_id_string: String, state: Dictionary) -> void:
+func _receive_item_component_added(
+	item_instance_id: String,
+	component_id_string: String,
+	parameters: Dictionary,
+	state: Dictionary
+) -> void:
 	if MultiplayerManager.is_world_authority():
 		return
 
@@ -293,7 +315,10 @@ func _receive_item_component_added(item_instance_id: String, component_id_string
 		existing.deserialize_state(state)
 		return
 
-	var component := item.add_component(component_id)
+	var component := item.add_component(
+		component_id,
+		parameters
+	)
 
 	if not component:
 		return
