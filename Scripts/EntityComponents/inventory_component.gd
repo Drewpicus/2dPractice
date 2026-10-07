@@ -4,8 +4,6 @@ class_name InventoryComponent
 @export var items: Array[Item] = []
 
 signal items_updated
-signal item_added(item:Item)
-signal item_removed(item:Item)
 
 func add_item(item: Item) -> void:
 	items.append(item)
