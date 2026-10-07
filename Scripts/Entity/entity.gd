@@ -259,11 +259,31 @@ func contribute_to_resolution(
 
 func serialize_state() -> Dictionary:
 	var component_states := {}
+	var component_parameters := {}
 
 	for component in get_components():
-		component_states[String(component.component_id)] = component.serialize_state()
+		var component_id := String(
+			component.component_id
+		)
 
-	return {"instance_id": instance_id, "entity_id": String(entity_id), "position": [global_position.x, global_position.y], "components": component_states}
+		component_states[
+			component_id
+		] = component.serialize_state()
+
+		component_parameters[
+			component_id
+		] = component.get_creation_parameters()
+
+	return {
+		"instance_id": instance_id,
+		"entity_id": String(entity_id),
+		"position": [
+			global_position.x,
+			global_position.y
+		],
+		"components": component_states,
+		"component_parameters": component_parameters
+	}
 
 func deserialize_state(state: Dictionary) -> bool:
 	if state.has("entity_id"):
@@ -277,6 +297,17 @@ func deserialize_state(state: Dictionary) -> bool:
 
 	if not component_states is Dictionary:
 		push_error("Serialized Entity components must be a Dictionary.")
+		return false
+
+	var component_parameters = state.get(
+		"component_parameters",
+		{}
+	)
+
+	if not component_parameters is Dictionary:
+		push_error(
+			"Serialized Entity component parameters must be a Dictionary."
+		)
 		return false
 
 	for component_key in component_states:
@@ -298,10 +329,28 @@ func deserialize_state(state: Dictionary) -> bool:
 		var component_id := StringName(component_key)
 
 		if not has_component(component_id):
-			var added_component := add_component(component_id)
+			var parameters = component_parameters.get(
+				String(component_id),
+				{}
+			)
+
+			if not parameters is Dictionary:
+				push_error(
+					"Saved parameters for EntityComponent %s must be a Dictionary."
+					% component_id
+				)
+				return false
+
+			var added_component := add_component(
+				component_id,
+				parameters
+			)
 
 			if not added_component:
-				push_error("Could not restore EntityComponent: %s" % component_id)
+				push_error(
+					"Could not restore EntityComponent: %s"
+					% component_id
+				)
 				return false
 
 		var component := get_component(component_id)
