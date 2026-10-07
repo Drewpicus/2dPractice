@@ -51,6 +51,10 @@ func add_component(component_id: StringName, parameters: Dictionary = {}) -> Ite
 			"ItemComponent ID mismatch. Requested %s, component identifies as %s." % [component_id, new_component.component_id])
 		return null
 
+	new_component._set_creation_parameters(
+		parameters
+	)
+
 	for key in parameters:
 		if key in new_component:
 			var value = ParameterCoercion.coerce_for_property(new_component, key, parameters[key])
@@ -195,11 +199,27 @@ func contribute_to_resolution(
 
 func serialize_state() -> Dictionary:
 	var component_states := {}
+	var component_parameters := {}
 
 	for component in get_components():
-		component_states[String(component.component_id)] = component.serialize_state()
+		var component_id := String(
+			component.component_id
+		)
 
-	return {"instance_id": instance_id, "item_id": String(item_id), "components": component_states}
+		component_states[
+			component_id
+		] = component.serialize_state()
+
+		component_parameters[
+			component_id
+		] = component.get_creation_parameters()
+
+	return {
+		"instance_id": instance_id,
+		"item_id": String(item_id),
+		"components": component_states,
+		"component_parameters": component_parameters
+	}
 
 func deserialize_state(state: Dictionary) -> bool:
 	if state.has("item_id"):
@@ -213,6 +233,17 @@ func deserialize_state(state: Dictionary) -> bool:
 
 	if not component_states is Dictionary:
 		push_error("Serialized Item components must be a Dictionary.")
+		return false
+
+	var component_parameters = state.get(
+		"component_parameters",
+		{}
+	)
+
+	if not component_parameters is Dictionary:
+		push_error(
+			"Serialized Item component parameters must be a Dictionary."
+		)
 		return false
 
 	# Validate the saved component data before changing anything.
@@ -237,10 +268,28 @@ func deserialize_state(state: Dictionary) -> bool:
 		var component_id := StringName(component_key)
 
 		if not has_component(component_id):
-			var added_component := add_component(component_id)
+			var parameters = component_parameters.get(
+				String(component_id),
+				{}
+			)
+
+			if not parameters is Dictionary:
+				push_error(
+					"Saved parameters for ItemComponent %s must be a Dictionary."
+					% component_id
+				)
+				return false
+
+			var added_component := add_component(
+				component_id,
+				parameters
+			)
 
 			if not added_component:
-				push_error("Could not restore ItemComponent: %s" % component_id)
+				push_error(
+					"Could not restore ItemComponent: %s"
+					% component_id
+				)
 				return false
 
 		var component := get_component(component_id)

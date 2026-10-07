@@ -4,6 +4,7 @@ class_name ItemComponent
 var component_id: StringName
 var root_item: Item
 var _sibling_watchers: Dictionary[StringName, Array] = {}
+var _creation_parameters: Dictionary = {}
 
 signal state_changed
 
@@ -139,3 +140,12 @@ func deserialize_state(_state: Dictionary) -> void:
 
 func notify_state_changed() -> void:
 	state_changed.emit()
+
+func _set_creation_parameters(
+	parameters: Dictionary
+) -> void:
+	_creation_parameters = parameters.duplicate(true)
+
+
+func get_creation_parameters() -> Dictionary:
+	return _creation_parameters.duplicate(true)
