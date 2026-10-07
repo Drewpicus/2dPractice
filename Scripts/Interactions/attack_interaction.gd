@@ -42,17 +42,9 @@ func perform(
 	) as EquipmentComponent
 
 	if equipment:
-		var mainhand_item := equipment.get_equipment(
+		source_item = equipment.get_equipment(
 			&"mainhand"
 		)
-
-		if (
-			mainhand_item
-			and mainhand_item.has_component(
-				&"base:weapon"
-			)
-		):
-			source_item = mainhand_item
 
 	var resolution := DamageResolution.new(
 		interactor,
