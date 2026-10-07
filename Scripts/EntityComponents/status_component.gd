@@ -157,6 +157,21 @@ func apply_effect(
 
 			add_effect(effect)
 
+	var event := StatusAppliedEvent.new(
+		source,
+		root_entity,
+		effect
+	)
+
+	root_entity.dispatch_event(event)
+
+	if source is Entity and source != root_entity:
+		(source as Entity).dispatch_event(event)
+
+	if source is Item:
+		(source as Item).dispatch_event(event)
+
+	return true
 
 
 func serialize_state() -> Dictionary:
