@@ -5,7 +5,7 @@ extends Node2D
 func _ready() -> void:
 	DefinitionLoader.load_all_definitions()
 	
-	game_world.generate_world(Vector2i(50, 50),12345)
+	game_world.generate_world(Vector2i(50, 50),randi())
 	
 	if MultiplayerManager.session_active:
 		MultiplayerManager.game_ready.connect(_on_game_ready)
@@ -28,7 +28,9 @@ func _initialize_game_world() -> void:
 	game_world.spawn_entity(&"base:chest",Vector2(32, 256))
 	
 	_spawn_test_items()
-	for entity in game_world.get_entities():
+	var world_entities = game_world.get_entities()
+	world_entities.shuffle()
+	for entity in world_entities:
 		if entity.entity_id == &"base:goblin":
 			test_burning(entity)
 			break
@@ -130,15 +132,6 @@ func test_burning(entity: Entity) -> void:
 	if not status:
 		print("No StatusComponent")
 		return
-
-	var wet := StatusEffectRegistry.create_effect(&"base:wet")
-
-	if not wet:
-		return
-
-	var wet_applied := status.apply_effect(wet,null,10.0)
-
-	print("Wet applied: ", wet_applied)
 
 	var burning := StatusEffectRegistry.create_effect(&"base:burning")
 
