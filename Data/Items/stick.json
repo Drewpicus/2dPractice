@@ -18,7 +18,8 @@
 			"parameters": {
 				"ability_ids": [
 					"base:place_campfire"
-				]
+				],
+				"grant_when": "equipped"
 			}
 		}
 	]

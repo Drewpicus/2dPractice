@@ -104,6 +104,17 @@ func on_equipped(_wearer: Entity, _slot: StringName) -> void:
 func on_unequipped(_wearer: Entity, _slot: StringName) -> void:
 	pass
 
+func on_added_to_inventory(
+	_holder: Entity
+) -> void:
+	pass
+
+
+func on_removed_from_inventory(
+	_holder: Entity
+) -> void:
+	pass
+
 ## Called when this Item receives a GameEvent.
 func on_event(_event: GameEvent) -> void:
 	pass

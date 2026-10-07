@@ -9,14 +9,14 @@ signal item_removed(item:Item)
 
 func add_item(item: Item) -> void:
 	items.append(item)
-	item_added.emit(item)
+	_notify_item_added(item)
 	items_updated.emit()
 	notify_state_changed()
 
 func add_items(new_items: Array[Item]) -> void:
 	items.append_array(new_items)
 	for item in new_items:
-		item_added.emit(item)
+		_notify_item_added(item)
 	items_updated.emit()
 	notify_state_changed()
 
@@ -24,7 +24,7 @@ func remove_item(item: Item) -> Item:
 	if item not in items:
 		return null
 	items.erase(item)
-	item_removed.emit(item)
+	_notify_item_removed(item)
 	items_updated.emit()
 	notify_state_changed()
 	return item
@@ -40,7 +40,7 @@ func remove_items(items_to_remove: Array[Item],ignore_missing: bool = true) -> A
 	
 	items = items.filter(func(item): return not removed_items.has(item))
 	for item in removed_items:
-		item_removed.emit(item)
+		_notify_item_removed(item)
 	items_updated.emit()
 	notify_state_changed()
 	return removed_items
@@ -49,10 +49,35 @@ func take_all_items() -> Array[Item]:
 	var new_inventory := items.duplicate()
 	items.clear()
 	for item in new_inventory:
-		item_removed.emit(item)
+		_notify_item_removed(item)
 	items_updated.emit()
 	notify_state_changed()
 	return new_inventory
+
+func _notify_item_added(
+	item: Item
+) -> void:
+	if not item:
+		return
+
+	item.on_added_to_inventory(
+		root_entity
+	)
+
+	_notify_item_added(item)
+
+
+func _notify_item_removed(
+	item: Item
+) -> void:
+	if not item:
+		return
+
+	item.on_removed_from_inventory(
+		root_entity
+	)
+
+	_notify_item_removed(item)
 
 func get_interaction_suggestions() -> Array[StringName]:
 	var capabilities: CapabilityComponent = get_component(&"base:capability")
@@ -100,12 +125,12 @@ func deserialize_state(state: Dictionary) -> void:
 
 	for item in old_items:
 		if item not in new_items:
-			item_removed.emit(item)
+			_notify_item_removed(item)
 
 	items = new_items
 
 	for item in new_items:
 		if item not in old_items:
-			item_added.emit(item)
+			_notify_item_added(item)
 
 	items_updated.emit()
