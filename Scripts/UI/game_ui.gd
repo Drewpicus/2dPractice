@@ -14,8 +14,6 @@ func _ready() -> void:
 	game_world.inspection_requested.connect(_on_inspection_requested)
 	game_world.inventory_requested.connect(_on_inventory_requested)
 	ability_menu.ability_selected.connect(_on_ability_selected)
-
-
 		
 	ability_targeting.requirement_changed.connect(
 		_on_ability_requirement_changed
@@ -90,6 +88,9 @@ func _toggle_inventory(
 		inventory_menu.close_inventory()
 		return
 
+	if ability_targeting.is_targeting():
+		ability_targeting.cancel()
+
 	interaction_menu.hide()
 	inspect_window.hide()
 
@@ -99,8 +100,15 @@ func _toggle_inventory(
 	)
 
 
-func _open_interaction_menu(controlled_entity: Entity) -> void:
-	var target := _get_entity_under_mouse(controlled_entity)
+func _open_interaction_menu(
+	controlled_entity: Entity
+) -> void:
+	if ability_targeting.is_targeting():
+		ability_targeting.cancel()
+
+	var target := _get_entity_under_mouse(
+		controlled_entity
+	)
 
 	if not target:
 		interaction_menu.hide()
