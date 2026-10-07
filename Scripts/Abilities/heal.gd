@@ -42,13 +42,13 @@ func perform(use: AbilityUse) -> bool:
 	if not can_use(use):
 		return false
 
-	var health := use.target_entity.get_component(
-		&"base:health"
-	) as HealthComponent
+	var resolution := HealSystem.apply_healing(
+		use.user,
+		use.target_entity,
+		heal_amount
+	)
 
-	if not health:
-		return false
-
-	health.heal(heal_amount)
-
-	return true
+	return (
+		resolution != null
+		and resolution.allowed
+	)
