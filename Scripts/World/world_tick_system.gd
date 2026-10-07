@@ -31,6 +31,8 @@ func _run_tick() -> void:
 		tick_interval,
 		_tick_index
 	)
+	
+	print("tick")
 
 	for entity in world.get_entities():
 		entity.dispatch_event(event)
