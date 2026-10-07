@@ -17,38 +17,10 @@ signal inspection_requested(viewer: Entity, target: Entity)
 signal inventory_requested(viewer: Entity, owner: Entity)
 
 func _ready() -> void:
-	DefinitionLoader.load_all_definitions()
+	entity_spawner.spawn_function = _spawn_network_entity
 
-	if MultiplayerManager.session_active:
-		MultiplayerManager.game_ready.connect(
-			_on_game_ready
-		)
-	else:
-		_start_new_world()
-
-func _on_game_ready() -> void:
-	if not MultiplayerManager.is_world_authority():
-		return
-
-	_start_new_world()
-
-func _start_new_world() -> void:
-	if not MultiplayerManager.is_world_authority():
-		return
-
-	var world_size := Vector2i(
-		50,
-		50
-	)
-
-	var world_seed := randi()
-
-	game_world.start_new_world(
-		world_size,
-		world_seed
-	)
-
-	_initialize_game_world()
+	if not MultiplayerManager.peer_left.is_connected(_on_peer_left):
+		MultiplayerManager.peer_left.connect(_on_peer_left)
 
 ##Returns the GameWorld node in the Scene Tree that [param node] lives in.
 ##If [param node] is not in a GameWorld, returns null.

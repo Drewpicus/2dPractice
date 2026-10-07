@@ -4,15 +4,36 @@ extends Node2D
 
 func _ready() -> void:
 	DefinitionLoader.load_all_definitions()
-	
-	game_world.generate_world(Vector2i(50, 50),randi())
-	
+
 	if MultiplayerManager.session_active:
-		MultiplayerManager.game_ready.connect(_on_game_ready)
+		MultiplayerManager.game_ready.connect(
+			_on_game_ready
+		)
 	else:
-		_initialize_game_world()
+		_start_new_world()
 
 func _on_game_ready() -> void:
+	if not MultiplayerManager.is_world_authority():
+		return
+
+	_start_new_world()
+
+func _start_new_world() -> void:
+	if not MultiplayerManager.is_world_authority():
+		return
+
+	var world_size := Vector2i(
+		50,
+		50
+	)
+
+	var world_seed := randi()
+
+	game_world.start_new_world(
+		world_size,
+		world_seed
+	)
+
 	_initialize_game_world()
 
 func _initialize_game_world() -> void:
