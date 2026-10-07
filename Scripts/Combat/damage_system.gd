@@ -30,6 +30,16 @@ static func apply_damage(
 			resolution
 		)
 
+	if source is Item:
+		(source as Item).contribute_to_resolution(
+			resolution
+		)
+
+	if source_item:
+		source_item.contribute_to_resolution(
+			resolution
+		)
+
 	if target != source:
 		target.contribute_to_resolution(
 			resolution
