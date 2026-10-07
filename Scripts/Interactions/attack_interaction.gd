@@ -1,3 +1,6 @@
+#NOTE: Right now this is just a mainhand attack, it might be good to
+#generalize this in the future.
+
 extends Interaction
 class_name AttackInteraction
 
@@ -32,10 +35,30 @@ func perform(
 			Stat.STRENGTH
 		)
 
+	var source_item: Item
+
+	var equipment := interactor.get_component(
+		&"base:equipment"
+	) as EquipmentComponent
+
+	if equipment:
+		var mainhand_item := equipment.get_equipment(
+			&"mainhand"
+		)
+
+		if (
+			mainhand_item
+			and mainhand_item.has_component(
+				&"base:weapon"
+			)
+		):
+			source_item = mainhand_item
+
 	var resolution := DamageResolution.new(
 		interactor,
 		target,
-		attack_damage
+		attack_damage,
+		source_item
 	)
 
 	interactor.contribute_to_resolution(
