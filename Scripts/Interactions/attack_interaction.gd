@@ -17,16 +17,63 @@ func can_perform(_interactor: Entity, _target: Entity) -> bool:
 		return false
 	return true
 
-func perform(_interactor: Entity, _target: Entity) -> void:
+func perform(
+	interactor: Entity,
+	target: Entity
+) -> void:
 	var attack_damage: float = 1.0
-	var interactor_stats: StatBlockComponent = _interactor.get_component(&"base:stat_block")
-	if interactor_stats != null:
-		attack_damage = interactor_stats.get_stat(Stat.STRENGTH)
-	
-	var target_health: HealthComponent = _target.get_component(&"base:health")
-	target_health.damage(int(attack_damage))
-	
-	print("%s attacks %s for %d damage!" % [_interactor.entity_name,_target.entity_name,attack_damage])
+
+	var interactor_stats := interactor.get_component(
+		&"base:stat_block"
+	) as StatBlockComponent
+
+	if interactor_stats:
+		attack_damage = interactor_stats.get_stat(
+			Stat.STRENGTH
+		)
+
+	var resolution := DamageResolution.new(
+		interactor,
+		target,
+		attack_damage
+	)
+
+	interactor.contribute_to_resolution(
+		resolution
+	)
+
+	if target != interactor:
+		target.contribute_to_resolution(
+			resolution
+		)
+
+	resolution.apply_modifiers()
+
+	if not resolution.allowed:
+		return
+
+	var target_health := target.get_component(
+		&"base:health"
+	) as HealthComponent
+
+	if not target_health:
+		return
+
+	var final_damage := int(resolution.damage)
+
+	if final_damage <= 0:
+		return
+
+	target_health.damage(final_damage)
+
+	print(
+		"%s attacks %s for %d damage!"
+		% [
+			interactor.entity_name,
+			target.entity_name,
+			final_damage
+		]
+	)
 
 func requires_authority() -> bool:
 	return true
