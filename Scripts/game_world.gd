@@ -17,10 +17,38 @@ signal inspection_requested(viewer: Entity, target: Entity)
 signal inventory_requested(viewer: Entity, owner: Entity)
 
 func _ready() -> void:
-	entity_spawner.spawn_function = _spawn_network_entity
+	DefinitionLoader.load_all_definitions()
 
-	if not MultiplayerManager.peer_left.is_connected(_on_peer_left):
-		MultiplayerManager.peer_left.connect(_on_peer_left)
+	if MultiplayerManager.session_active:
+		MultiplayerManager.game_ready.connect(
+			_on_game_ready
+		)
+	else:
+		_start_new_world()
+
+func _on_game_ready() -> void:
+	if not MultiplayerManager.is_world_authority():
+		return
+
+	_start_new_world()
+
+func _start_new_world() -> void:
+	if not MultiplayerManager.is_world_authority():
+		return
+
+	var world_size := Vector2i(
+		50,
+		50
+	)
+
+	var world_seed := randi()
+
+	game_world.start_new_world(
+		world_size,
+		world_seed
+	)
+
+	_initialize_game_world()
 
 ##Returns the GameWorld node in the Scene Tree that [param node] lives in.
 ##If [param node] is not in a GameWorld, returns null.
@@ -35,12 +63,52 @@ static func find_world(node: Node) -> GameWorld:
 
 #region World Terrain
 
-func generate_world(world_size: Vector2i, _seed: int) -> void:
+func generate_world(world_size: Vector2i, seed: int) -> void:
 	var generator := WorldGenerator.new()
 
-	world_data = generator.generate(world_size,_seed)
+	world_data = generator.generate(world_size, seed)
 
 	terrain.render(world_data)
+
+func start_new_world(
+	world_size: Vector2i,
+	world_seed: int
+) -> void:
+	if not MultiplayerManager.is_world_authority():
+		return
+
+	if world_size.x <= 0 or world_size.y <= 0:
+		push_error(
+			"World size must be positive."
+		)
+		return
+
+	generate_world(
+		world_size,
+		world_seed
+	)
+
+	if MultiplayerManager.session_active:
+		_receive_world_generation.rpc(
+			world_size,
+			world_seed
+		)
+
+@rpc("authority", "call_remote", "reliable")
+func _receive_world_generation(
+	world_size: Vector2i,
+	world_seed: int
+) -> void:
+	if MultiplayerManager.is_world_authority():
+		return
+
+	if world_size.x <= 0 or world_size.y <= 0:
+		return
+
+	generate_world(
+		world_size,
+		world_seed
+	)
 
 func cell_to_world(cell: Vector2i) -> Vector2:
 	return terrain.to_global(terrain.map_to_local(cell))
