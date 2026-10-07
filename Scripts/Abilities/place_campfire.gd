@@ -20,6 +20,18 @@ func can_use(use: AbilityUse) -> bool:
 	if not use.has_target_position:
 		return false
 
+	var equipment := use.user.get_component(
+		&"base:equipment"
+	) as EquipmentComponent
+
+	if not equipment:
+		return false
+
+	if not equipment.has_equipped_item(
+		&"base:stick"
+	):
+		return false
+
 	var world := GameWorld.find_world(
 		use.user
 	)

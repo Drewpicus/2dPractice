@@ -93,6 +93,15 @@ func get_equipment(slot: StringName) -> Item:
 func has_equipment(slot: StringName) -> bool:
 	return equipment.get(slot) != null
 
+func has_equipped_item(
+	item_id: StringName
+) -> bool:
+	for item in get_all_equipment():
+		if item.item_id == item_id:
+			return true
+
+	return false
+
 func get_all_equipment() -> Array[Item]:
 	var result: Array[Item] = []
 	var seen_ids: Dictionary[String, bool] = {}
