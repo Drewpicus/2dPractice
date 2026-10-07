@@ -30,6 +30,15 @@ func _set_inventory(inventory: InventoryComponent) -> void:
 	if _inventory:
 		if not _inventory.item_removed.is_connected(_on_item_removed):
 			_inventory.item_removed.connect(_on_item_removed)
+	else:
+		_unequip_all()
+
+
+func on_removing() -> void:
+	if _inventory and _inventory.item_removed.is_connected(_on_item_removed):
+		_inventory.item_removed.disconnect(_on_item_removed)
+
+	_unequip_all()
 
 func equip(slot: StringName, item: Item) -> bool:
 	if not item:
@@ -119,6 +128,16 @@ func get_all_equipment() -> Array[Item]:
 		result.append(item)
 
 	return result
+
+func _unequip_all() -> void:
+	var equipped_slots: Array[StringName] = []
+
+	for slot in equipment.keys():
+		equipped_slots.append(StringName(slot))
+
+	for slot in equipped_slots:
+		unequip(slot)
+
 
 func _on_item_removed(item: Item) -> void:
 	for slot in equipment.keys():

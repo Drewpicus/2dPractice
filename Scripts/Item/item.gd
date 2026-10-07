@@ -8,6 +8,8 @@ var sprite: Texture2D
 var description: String
 var definition: ItemDefinition
 var _components: Dictionary[StringName, ItemComponent] = {}
+var _inventory_holder: Entity
+var _equipped_wearer: Entity
 
 signal component_added(component_id: StringName,component: ItemComponent)
 signal component_removing(component_id: StringName,component: ItemComponent)
@@ -96,9 +98,19 @@ func _register_component(component: ItemComponent) -> bool:
 
 	return true
 
+func get_inventory_holder() -> Entity:
+	return _inventory_holder
+
+
+func get_equipped_wearer() -> Entity:
+	return _equipped_wearer
+
+
 func on_added_to_inventory(
 	holder: Entity
 ) -> void:
+	_inventory_holder = holder
+
 	for component in get_components():
 		component.on_added_to_inventory(
 			holder
@@ -113,11 +125,16 @@ func on_removed_from_inventory(
 			holder
 		)
 
+	if _inventory_holder == holder:
+		_inventory_holder = null
+
 
 func on_equipped(
 	wearer: Entity,
 	slot: StringName
 ) -> void:
+	_equipped_wearer = wearer
+
 	for component in get_components():
 		component.on_equipped(
 			wearer,
@@ -134,6 +151,9 @@ func on_unequipped(
 			wearer,
 			slot
 		)
+
+	if _equipped_wearer == wearer:
+		_equipped_wearer = null
 
 func dispatch_event(event: GameEvent) -> void:
 	if not event:
