@@ -12,6 +12,7 @@ var _terrain_originals: Dictionary[Vector2i, StringName] = {}
 @onready var movement_system: WorldMovementSystem = $MovementSystem
 @onready var replication_system: WorldReplicationSystem = $ReplicationSystem
 @onready var tick_system: WorldTickSystem = $TickSystem
+@onready var pathfinding_system: WorldPathfindingSystem = $PathfindingSystem
 
 var world_data: WorldData
 
@@ -52,6 +53,8 @@ func generate_world(
 	)
 
 	terrain.render(world_data)
+
+	pathfinding_system.rebuild()
 
 func start_new_world(
 	world_size: Vector2i,

@@ -18,6 +18,8 @@ func _physics_process(_delta: float) -> void:
 	if not root_entity.is_simulated_locally():
 		return
 
+	_update_path_direction()
+
 	root_entity.velocity = (
 		input_direction.normalized()
 		* base_speed
@@ -27,8 +29,6 @@ func _physics_process(_delta: float) -> void:
 		root_entity.move_and_slide()
 
 	_record_simulated_input()
-	
-	_update_path_direction()
 
 
 func _record_simulated_input() -> void:
