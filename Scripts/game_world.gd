@@ -776,6 +776,9 @@ func _apply_runtime_components(entity: Entity, runtime_components: Dictionary) -
 func submit_movement_input(entity: Entity, sequence: int, direction: Vector2) -> void:
 	movement_system.submit_movement_input(entity, sequence, direction)
 
+func submit_move_to(entity: Entity, destination: Vector2) -> void:
+	movement_system.submit_move_to(entity, destination)
+
 func record_simulated_movement(entity: Entity, sequence: int) -> void:
 	movement_system.record_simulated_movement(entity, sequence)
 

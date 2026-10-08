@@ -104,6 +104,99 @@ func submit_movement_input(entity: Entity, sequence: int, direction: Vector2) ->
 
 	_receive_movement_input.rpc_id(1, entity.instance_id, sequence, direction)
 
+func submit_move_to(
+	entity: Entity,
+	destination: Vector2
+) -> void:
+	if not entity:
+		return
+
+	# Ordinary offline play can apply immediately.
+	if not MultiplayerManager.session_active:
+		world.move_entity_to(
+			entity,
+			destination
+		)
+		return
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	# A player may only submit movement for
+	# the Entity they locally control.
+	if not controller.is_locally_controlled():
+		return
+
+	# Host can validate and apply immediately.
+	if MultiplayerManager.is_world_authority():
+		_apply_move_to_request(
+			multiplayer.get_unique_id(),
+			entity.instance_id,
+			destination
+		)
+		return
+
+	# Clients request the destination.
+	# The host calculates the actual path.
+	_receive_move_to_request.rpc_id(
+		1,
+		entity.instance_id,
+		destination
+	)
+
+
+@rpc(
+	"any_peer",
+	"call_remote",
+	"reliable",
+	7
+)
+func _receive_move_to_request(
+	entity_instance_id: String,
+	destination: Vector2
+) -> void:
+	if not MultiplayerManager.is_world_authority():
+		return
+
+	_apply_move_to_request(
+		multiplayer.get_remote_sender_id(),
+		entity_instance_id,
+		destination
+	)
+
+
+func _apply_move_to_request(
+	sender_peer_id: int,
+	entity_instance_id: String,
+	destination: Vector2
+) -> void:
+	var entity := RuntimeObjectRegistry.get_entity(
+		entity_instance_id
+	)
+
+	if not entity:
+		return
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	# A client cannot tell somebody else's
+	# controlled Entity where to go.
+	if controller.controller_peer_id != sender_peer_id:
+		return
+
+	world.move_entity_to(
+		entity,
+		destination
+	)
 
 @rpc("any_peer", "call_remote", "unreliable_ordered", 1)
 func _receive_movement_input(entity_instance_id: String, sequence: int, direction: Vector2) -> void:

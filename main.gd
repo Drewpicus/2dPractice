@@ -59,9 +59,9 @@ func _initialize_game_world() -> void:
 	var player := game_world.get_entity_controlled_by_peer(1)
 
 	if player:
-		game_world.move_entity_to(
+		game_world.submit_move_to(
 			player,
-			Vector2(-500, 0)
+			Vector2(650, 650)
 		)
 
 func _spawn_players() -> void:
