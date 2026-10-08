@@ -1,0 +1,27 @@
+{
+	"item_id": "base:smolderapple",
+	"item_name": "Smolderapple",
+	"sprite": "res://Assets/smolderapple.png",
+	"description": "It's cracking from inner heat.",
+	"components": [
+		{
+			"component_id": "base:consumable",
+			"parameters":
+				{
+					"healing": 10.0,
+					"require_missing_health": "false",
+					"entity_components_to_add": [
+						{
+							"component_id": "base:fire_resistant",
+							"parameters": {}
+						}
+					],
+					"entity_components_to_remove": [
+						{
+							"component_id": "base:equipment"
+						}
+					]
+				}
+		}
+	]
+}

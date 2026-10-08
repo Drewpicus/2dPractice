@@ -130,6 +130,8 @@ func _spawn_test_items() -> void:
 		var ring = game_world.create_item(&"base:blink_ring")
 		game_world.spawn_dropped_item(ring,Vector2(-300,-500))
 		
+		var apple = game_world.create_item(&"base:apple")
+		game_world.spawn_dropped_item(apple,Vector2(200,-400))
 		break
 
 	for chest in all_entities:

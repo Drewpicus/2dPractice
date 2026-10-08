@@ -2,7 +2,7 @@ extends Node
 class_name WorldTickSystem
 
 
-@export var tick_interval: float = 1.0
+@export var tick_interval: float = 2.0
 
 var _elapsed: float = 0.0
 var _tick_index: int = 0

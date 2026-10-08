@@ -1,0 +1,16 @@
+{
+	"item_id": "base:apple",
+	"item_name": "Apple",
+	"sprite": "res://Assets/apple.png",
+	"description": "It's shiny! Reminds you of a fruit.",
+	"components": [
+		{
+			"component_id": "base:consumable",
+			"parameters":
+				{
+					"healing": 5.0,
+					"require_missing_health": "true"
+				}
+		}
+	]
+}

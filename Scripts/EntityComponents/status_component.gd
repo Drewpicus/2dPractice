@@ -281,7 +281,7 @@ func _handle_world_tick(
 		if effect.duration < 0.0:
 			continue
 
-		effect.duration -= event.delta_seconds
+		effect.duration -= 1.0
 		duration_changed = true
 
 		if effect.duration <= 0.0:
