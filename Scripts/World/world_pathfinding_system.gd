@@ -100,6 +100,21 @@ func find_path(
 
 	_refresh_blockers(entity)
 
+	# The Entity is already physically standing here.
+	# Its actual position may be legal even if the center
+	# of this 4x4 navigation cell would overlap something.
+	#
+	# Always allow the starting cell so it can path out.
+	if _grid.is_in_boundsv(start_cell):
+		_grid.set_point_solid(
+			start_cell,
+			false
+		)
+
+	_blocked_cells.erase(
+		start_cell
+	)
+
 	var cell_path := _grid.get_id_path(
 		start_cell,
 		destination_cell
