@@ -11,23 +11,80 @@ func _init() -> void:
 func should_show(_interactor: Entity, _target: Entity) -> bool:
 	return true
 
-func can_perform(_interactor: Entity, _target: Entity) -> bool:
-	if not _interactor.has_component(&"base:interactor"):
+func can_perform(
+	interactor: Entity,
+	target: Entity
+) -> bool:
+	if not interactor.has_component(
+		&"base:interactor"
+	):
 		return false
-	if not _target.has_component(&"base:health"):
+
+	if not target.has_component(
+		&"base:health"
+	):
 		return false
-	if _interactor.global_position.distance_to(_target.global_position) > _interactor.get_component(&"base:interactor").reach:
+
+	var interactor_component := interactor.get_component(
+		&"base:interactor"
+	) as InteractorComponent
+
+	if (
+		interactor.global_position.distance_to(
+			target.global_position
+		)
+		> interactor_component.reach
+	):
 		return false
+
+	var combat := interactor.get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	if (
+		combat
+		and combat.current_combat
+		and combat.current_combat.started
+	):
+		if not combat.current_combat.is_active(
+			interactor
+		):
+			return false
+
+		if not combat.can_spend_action():
+			return false
+
 	return true
 
 func perform(
 	interactor: Entity,
 	target: Entity
 ) -> void:
-	AttackSystem.perform_mainhand_attack(
-		interactor,
-		target
+	var resolution := (
+		AttackSystem.perform_mainhand_attack(
+			interactor,
+			target
+		)
 	)
+
+	if not resolution:
+		return
+
+	var combat := interactor.get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	if (
+		combat
+		and combat.current_combat
+		and combat.current_combat.started
+	):
+		combat.spend_action()
+
+		print(
+			interactor.entity_name,
+			" used their Action."
+		)
 
 func requires_authority() -> bool:
 	return true

@@ -63,3 +63,15 @@ func spend_movement(
 
 	movement_remaining -= amount
 	return true
+
+
+func can_spend_action() -> bool:
+	return action_available
+
+
+func spend_action() -> bool:
+	if not can_spend_action():
+		return false
+
+	action_available = false
+	return true
