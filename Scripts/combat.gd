@@ -11,7 +11,7 @@ var combatants: Array[Entity] = []
 var disengaged: Array[Entity] = []
 
 ## Current initiative order.
-## For now this is just combatant insertion order.
+## Combatants sorted in descending initiative order.
 var turn_order: Array[Entity] = []
 
 ## Array rather than a single Entity because later
