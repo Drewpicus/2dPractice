@@ -89,6 +89,33 @@ func find_path(
 
 	return path
 
+func get_path_distance(
+	entity: Entity,
+	destination: Vector2
+) -> float:
+	if not entity:
+		return INF
+
+	var path := find_path(
+		entity,
+		destination
+	)
+
+	if path.is_empty():
+		return INF
+
+	var distance := 0.0
+	var previous_position := entity.global_position
+
+	for waypoint in path:
+		distance += previous_position.distance_to(
+			waypoint
+		)
+
+		previous_position = waypoint
+
+	return distance
+
 func _refresh_blockers(
 	moving_entity: Entity
 ) -> void:

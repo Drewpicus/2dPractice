@@ -962,3 +962,12 @@ func move_entity_to(
 		return false
 
 	return movement.follow_path(path)
+
+func get_path_distance(
+	entity: Entity,
+	destination: Vector2
+) -> float:
+	return pathfinding_system.get_path_distance(
+		entity,
+		destination
+	)
