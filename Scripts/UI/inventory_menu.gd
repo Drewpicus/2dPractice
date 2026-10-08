@@ -153,6 +153,11 @@ func _rebuild_actions() -> void:
 			_drop_selected
 		)
 
+	var consumable := _selected_item.get_component(&"base:consumable") as ConsumableItemComponent
+
+	if (consumable and consumable.can_consume(_viewer)):
+		_add_action_button("Consume", _consume_selected)
+
 	if not _viewer_equipment:
 		return
 
@@ -256,6 +261,25 @@ func _drop_selected() -> void:
 		return
 
 	world.submit_drop_item(
+		_viewer,
+		_selected_item
+	)
+
+func _consume_selected() -> void:
+	if not _selected_item:
+		return
+
+	if not is_instance_valid(_viewer):
+		return
+
+	var world := GameWorld.find_world(
+		_viewer
+	)
+
+	if not world:
+		return
+
+	world.submit_consume_item(
 		_viewer,
 		_selected_item
 	)
