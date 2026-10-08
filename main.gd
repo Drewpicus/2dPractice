@@ -56,6 +56,7 @@ func _initialize_game_world() -> void:
 			test_burning(entity)
 			break
 
+
 func _spawn_players() -> void:
 	var peer_ids: Array[int] = [1]
 

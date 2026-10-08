@@ -29,6 +29,25 @@ func render(world_data: WorldData) -> void:
 
 			_render_cell(cell, terrain_id)
 
+func has_terrain(
+	terrain_id: StringName
+) -> bool:
+	return TERRAIN_TILES.has(
+		terrain_id
+	)
+
+
+func render_cell(
+	cell: Vector2i,
+	terrain_id: StringName
+) -> void:
+	erase_cell(cell)
+
+	_render_cell(
+		cell,
+		terrain_id
+	)
+
 func _render_cell(
 	cell: Vector2i,
 	terrain_id: StringName

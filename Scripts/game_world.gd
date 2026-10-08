@@ -82,6 +82,77 @@ func _receive_world_generation(
 		world_seed
 	)
 
+func set_terrain(
+	cell: Vector2i,
+	terrain_id: StringName
+) -> bool:
+	if (
+		MultiplayerManager.session_active
+		and not MultiplayerManager.is_world_authority()
+	):
+		return false
+
+	if not _apply_terrain_change(
+		cell,
+		terrain_id
+	):
+		return false
+
+	if MultiplayerManager.session_active:
+		_receive_terrain_change.rpc(
+			cell,
+			String(terrain_id)
+		)
+
+	return true
+
+
+func _apply_terrain_change(
+	cell: Vector2i,
+	terrain_id: StringName
+) -> bool:
+	if not world_data:
+		return false
+
+	if not world_data.in_bounds(cell):
+		return false
+
+	if not GameID.is_valid(terrain_id):
+		return false
+
+	if not terrain.has_terrain(terrain_id):
+		push_error(
+			"Unknown terrain ID: %s"
+			% terrain_id
+		)
+		return false
+
+	world_data.set_terrain(
+		cell,
+		terrain_id
+	)
+
+	terrain.render_cell(
+		cell,
+		terrain_id
+	)
+
+	return true
+
+
+@rpc("authority", "call_remote", "reliable")
+func _receive_terrain_change(
+	cell: Vector2i,
+	terrain_id_string: String
+) -> void:
+	if MultiplayerManager.is_world_authority():
+		return
+
+	_apply_terrain_change(
+		cell,
+		StringName(terrain_id_string)
+	)
+
 func cell_to_world(cell: Vector2i) -> Vector2:
 	return terrain.to_global(terrain.map_to_local(cell))
 
