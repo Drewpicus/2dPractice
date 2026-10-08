@@ -23,6 +23,43 @@ func _set_pc_component(component: PlayerControllerComponent) -> void:
 func _process(delta: float) -> void:
 	if not MultiplayerManager.is_world_authority():
 		return
+
+	if not enabled:
+		return
+
+	var combat := get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	if (
+		combat
+		and combat.current_combat
+		and combat.current_combat.started
+	):
+		if movement_component:
+			movement_component.input_direction = Vector2.ZERO
+
+		if combat.current_combat.is_active(
+			root_entity
+		):
+			combat.current_combat.end_turn(
+				root_entity
+			)
+
+		return
+
+	if not movement_component:
+		return
+
+	direction_timer -= delta
+
+	if direction_timer <= 0:
+		dir = new_direction()
+		direction_timer += 1
+
+	movement_component.input_direction = dir
+	if not MultiplayerManager.is_world_authority():
+		return
 	
 	if enabled:
 		if not movement_component:

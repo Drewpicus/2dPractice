@@ -68,6 +68,9 @@
 		},
 		{
 			"component_id": "base:combat"
+		},
+		{
+			"component_id": "base:ai_controller"
 		}
 	]
 }
