@@ -205,8 +205,8 @@ func _start_test_combat(
 
 	test_combat = CombatManager.new_combat()
 
-	test_combat.add_combatant(player)
-	test_combat.add_combatant(mean_guy)
+	test_combat.add_combatant(player,0)
+	test_combat.add_combatant(mean_guy,1)
 
 	if not test_combat.start():
 		push_error("Could not start test combat.")

@@ -18,6 +18,13 @@ var turn_order: Array[Entity] = []
 ## similar initiatives may act concurrently.
 var active_combatants: Array[Entity] = []
 
+## Which side each combatant belongs to within this Combat.
+var combat_sides: Dictionary = {}
+
+## Number of entries in turn_order occupied by the
+## currently active turn group.
+var _active_group_size: int = 0
+
 var round_number: int = 0
 var _turn_index: int = -1
 var started: bool = false
@@ -25,9 +32,13 @@ var initiative_scores: Dictionary = {}
 
 func add_combatant(
 	entity: Entity,
+	side_id: int,
 	respect_disengagement: bool = false
 ) -> void:
 	if not entity:
+		return
+
+	if side_id < 0:
 		return
 
 	if entity in combatants:
@@ -51,9 +62,10 @@ func add_combatant(
 
 	combat_component.current_combat = self
 
+	combat_sides[entity] = side_id
+
 	disengaged.erase(entity)
 	combatants.append(entity)
-
 
 func remove_combatant(entity: Entity) -> void:
 	if not entity:
@@ -71,6 +83,7 @@ func remove_combatant(entity: Entity) -> void:
 		combat_component.end_turn()
 
 	combatants.erase(entity)
+	combat_sides.erase(entity)
 	turn_order.erase(entity)
 	active_combatants.erase(entity)
 
@@ -148,21 +161,39 @@ func _begin_current_turn() -> void:
 	):
 		return
 
-	var entity := turn_order[_turn_index]
-
 	active_combatants.clear()
-	active_combatants.append(entity)
+	_active_group_size = 0
 
-	var combat_component := entity.get_component(
-		&"base:combat"
-	) as CombatComponent
+	var first_entity := turn_order[_turn_index]
+	var active_side := get_combat_side(
+		first_entity
+	)
 
-	if combat_component:
-		combat_component.begin_turn()
+	var index := _turn_index
 
+	while index < turn_order.size():
+		var entity := turn_order[index]
+
+		if get_combat_side(entity) != active_side:
+			break
+
+		active_combatants.append(entity)
+		_active_group_size += 1
+
+		var combat_component := entity.get_component(
+			&"base:combat"
+		) as CombatComponent
+
+		if combat_component:
+			combat_component.begin_turn()
+
+		index += 1
 
 func _advance_turn() -> void:
-	_turn_index += 1
+	if _active_group_size <= 0:
+		return
+
+	_turn_index += _active_group_size
 
 	if _turn_index >= turn_order.size():
 		_turn_index = 0
@@ -213,4 +244,14 @@ func _sort_by_initiative(
 		initiative_scores.get(a, 0)
 	) > int(
 		initiative_scores.get(b, 0)
+	)
+
+func get_combat_side(
+	entity: Entity
+) -> int:
+	if not combat_sides.has(entity):
+		return -1
+
+	return int(
+		combat_sides[entity]
 	)

@@ -13,6 +13,7 @@ var reaction_available: bool = false
 
 func add_to_combat(
 	combat: Combat,
+	side_id: int,
 	respect_disengagement: bool = false
 ) -> void:
 	if not combat:
@@ -23,6 +24,7 @@ func add_to_combat(
 
 	combat.add_combatant(
 		root_entity,
+		side_id,
 		respect_disengagement
 	)
 
