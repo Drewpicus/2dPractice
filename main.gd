@@ -152,6 +152,9 @@ func _spawn_test_items() -> void:
 		
 		var sword = game_world.create_item(&"base:sword")
 		inventory.add_item(sword)
+		
+		var bottle = game_world.create_item(&"base:water_bottle")
+		inventory.add_item(bottle)
 
 func test_burning(entity: Entity) -> void:
 	var status := entity.get_component(

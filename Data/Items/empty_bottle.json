@@ -1,0 +1,7 @@
+{
+	"item_id": "base:empty_bottle",
+	"item_name": "Empty Bottle",
+	"sprite": "res://Assets/empty_bottle.png",
+	"description": "It's a empy bottle.",
+	"components": []
+}

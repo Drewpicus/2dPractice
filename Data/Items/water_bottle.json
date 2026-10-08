@@ -1,0 +1,22 @@
+{
+	"item_id": "base:water_bottle",
+	"item_name": "Water Bottle",
+	"sprite": "res://Assets/water_bottle.png",
+	"description": "In case you tryna drink som'm.",
+	"components": [
+		{
+			"component_id": "base:consumable",
+			"parameters":
+				{
+					"remainder_item_id": "base:empty_bottle",
+					"status_effects": [
+						{
+						"effect_id": "base:wet",
+						"duration_ticks": 10
+						}
+					],
+					"require_missing_health": false
+				}
+		}
+	]
+}
