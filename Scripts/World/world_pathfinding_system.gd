@@ -5,13 +5,13 @@ class_name WorldPathfindingSystem
 
 var _grid := AStarGrid2D.new()
 var _grid_size := 32.0
-var _entity_blocked_cells: Dictionary[Vector2i, bool] = {}
+var _blocked_cells: Dictionary[Vector2i, bool] = {}
 
 func rebuild() -> void:
 	if not world.world_data:
 		return
 
-	_entity_blocked_cells.clear()
+	_blocked_cells.clear()
 	
 	var data := world.world_data
 
@@ -55,7 +55,7 @@ func find_path(
 	):
 		return path
 
-	_refresh_entity_blockers(entity)
+	_refresh_blockers(entity)
 
 	var cell_path := _grid.get_id_path(
 		start_cell,
@@ -89,27 +89,71 @@ func find_path(
 
 	return path
 
-func _refresh_entity_blockers(
-	excluded_entity: Entity = null
+func _refresh_blockers(
+	moving_entity: Entity
 ) -> void:
-	# Clear the Entity blockers from the previous query.
-	for cell in _entity_blocked_cells:
+	# Clear everything that was marked solid
+	# for the previous path query.
+	for cell in _blocked_cells:
 		if _grid.is_in_boundsv(cell):
 			_grid.set_point_solid(
 				cell,
 				false
 			)
 
-	_entity_blocked_cells.clear()
+	_blocked_cells.clear()
 
-	# Mark the current cells of every solid Entity.
+	_add_terrain_blockers(
+		moving_entity
+	)
+
+	_add_entity_blockers(
+		moving_entity
+	)
+
+
+func _add_terrain_blockers(
+	moving_entity: Entity
+) -> void:
+	var data := world.world_data
+
+	var minimum := data.get_min_cell()
+	var maximum := data.get_max_cell()
+
+	for y in range(
+		minimum.y,
+		maximum.y + 1
+	):
+		for x in range(
+			minimum.x,
+			maximum.x + 1
+		):
+			var cell := Vector2i(
+				x,
+				y
+			)
+
+			var terrain_id := data.get_terrain(
+				cell
+			)
+
+			if not _terrain_blocks_entity(
+				moving_entity,
+				terrain_id
+			):
+				continue
+
+			_block_cell(cell)
+
+
+func _add_entity_blockers(
+	moving_entity: Entity
+) -> void:
 	for entity in world.get_entities():
 		if not entity:
 			continue
 
-		# The mover obviously needs to be allowed
-		# to leave its own starting cell.
-		if entity == excluded_entity:
+		if entity == moving_entity:
 			continue
 
 		if not entity.solid:
@@ -119,12 +163,25 @@ func _refresh_entity_blockers(
 			entity.global_position
 		)
 
-		if not _grid.is_in_boundsv(cell):
-			continue
+		_block_cell(cell)
 
-		_entity_blocked_cells[cell] = true
 
-		_grid.set_point_solid(
-			cell,
-			true
-		)
+func _block_cell(
+	cell: Vector2i
+) -> void:
+	if not _grid.is_in_boundsv(cell):
+		return
+
+	_blocked_cells[cell] = true
+
+	_grid.set_point_solid(
+		cell,
+		true
+	)
+
+
+func _terrain_blocks_entity(
+	_entity: Entity,
+	terrain_id: StringName
+) -> bool:
+	return terrain_id == &"base:water"
