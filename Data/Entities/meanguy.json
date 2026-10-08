@@ -1,7 +1,7 @@
 {
-	"entity_id": "base:player",
-	"entity_name": "Player",
-	"sprite": "res://Assets/man.png",
+	"entity_id": "base:meanguy",
+	"entity_name": "Mean Guy",
+	"sprite": "res://Assets/meanguy.png",
 	"solid": true,
 	"draw_layer": 0,
 
@@ -14,7 +14,7 @@
 		{
 			"component_id": "base:info",
 			"parameters": {
-				"description": "Your you!"
+				"description": "A grumpy villain, what a grouch."
 			}
 		},
 		{
@@ -29,7 +29,7 @@
 		{
 			"component_id": "base:health",
 			"parameters": {
-				"max_health": 20
+				"max_health": 15
 			}
 		},
 		{
@@ -62,7 +62,6 @@
 			"component_id": "base:ability",
 			"parameters": {
 				"ability_ids": [
-					"base:heal",
 					"base:throw"
 				]
 			}
