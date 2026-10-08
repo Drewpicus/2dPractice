@@ -143,6 +143,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		event is InputEventMouseButton
 		and event.button_index == MOUSE_BUTTON_LEFT
 		and event.pressed
+		and not event.shift_pressed
 	):
 		var world := GameWorld.find_world(
 			root_entity
