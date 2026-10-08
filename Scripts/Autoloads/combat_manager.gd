@@ -9,11 +9,19 @@ func new_combat() -> Combat:
 	print(_get_combats())
 	return combat
 
-func end_combat(id:int) -> void:
-	var combat_to_end: Combat = _get_combat_by_id(id)
-	if combat_to_end == null:
+func end_combat(id: int) -> void:
+	var combat_to_end := _get_combat_by_id(
+		id
+	)
+
+	if not combat_to_end:
 		return
-	combats.erase(combat_to_end)
+
+	combat_to_end.end()
+
+	combats.erase(
+		combat_to_end
+	)
 
 func _get_combats() -> Array[Combat]:
 	return combats

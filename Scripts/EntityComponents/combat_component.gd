@@ -78,3 +78,25 @@ func spend_action() -> bool:
 
 	action_available = false
 	return true
+
+func on_event(event: GameEvent) -> void:
+	if not event is DeathAppliedEvent:
+		return
+
+	var death_event := event as DeathAppliedEvent
+
+	# Death events also get sent to the source,
+	# so only react when this Entity is the one
+	# that actually died.
+	if death_event.target != root_entity:
+		return
+
+	if current_combat:
+		current_combat.remove_combatant(
+			root_entity
+		)
+
+func clear_combat_resources() -> void:
+	movement_remaining = 0.0
+	action_available = false
+	reaction_available = false

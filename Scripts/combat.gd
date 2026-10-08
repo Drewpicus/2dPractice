@@ -74,22 +74,66 @@ func remove_combatant(entity: Entity) -> void:
 	if entity not in combatants:
 		return
 
+	var removed_turn_index := turn_order.find(
+		entity
+	)
+
+	var removed_from_active_group := false
+
+	if (
+		started
+		and removed_turn_index >= 0
+	):
+		removed_from_active_group = (
+			removed_turn_index >= _turn_index
+			and removed_turn_index
+				< _turn_index + _active_group_size
+		)
+
 	var combat_component := entity.get_component(
 		&"base:combat"
 	) as CombatComponent
 
 	if combat_component:
 		combat_component.current_combat = null
-		combat_component.end_turn()
+		combat_component.clear_combat_resources()
 
 	combatants.erase(entity)
 	combat_sides.erase(entity)
-	turn_order.erase(entity)
+	initiative_scores.erase(entity)
 	active_combatants.erase(entity)
+
+	if removed_turn_index >= 0:
+		turn_order.remove_at(
+			removed_turn_index
+		)
+
+		if removed_turn_index < _turn_index:
+			_turn_index -= 1
+		elif removed_from_active_group:
+			_active_group_size -= 1
 
 	if entity not in disengaged:
 		disengaged.append(entity)
 
+	# Once only one side remains, the fight is over.
+	if (
+		started
+		and _remaining_side_count() <= 1
+	):
+		CombatManager.end_combat(
+			combat_id
+		)
+		return
+
+	# If the removed Entity was the final unfinished
+	# member of the current group, continue combat.
+	if (
+		started
+		and removed_from_active_group
+		and active_combatants.is_empty()
+	):
+		_advance_turn()
 
 func start() -> bool:
 	if started:
@@ -113,6 +157,32 @@ func start() -> bool:
 
 	return true
 
+func end() -> void:
+	started = false
+
+	for entity in combatants:
+		if not is_instance_valid(entity):
+			continue
+
+		var combat_component := entity.get_component(
+			&"base:combat"
+		) as CombatComponent
+
+		if (
+			combat_component
+			and combat_component.current_combat == self
+		):
+			combat_component.current_combat = null
+			combat_component.clear_combat_resources()
+
+	combatants.clear()
+	turn_order.clear()
+	active_combatants.clear()
+	combat_sides.clear()
+	initiative_scores.clear()
+
+	_turn_index = -1
+	_active_group_size = 0
 
 func end_turn(entity: Entity) -> bool:
 	if not started:
@@ -190,9 +260,6 @@ func _begin_current_turn() -> void:
 		index += 1
 
 func _advance_turn() -> void:
-	if _active_group_size <= 0:
-		return
-
 	_turn_index += _active_group_size
 
 	if _turn_index >= turn_order.size():
@@ -255,3 +322,16 @@ func get_combat_side(
 	return int(
 		combat_sides[entity]
 	)
+
+func _remaining_side_count() -> int:
+	var sides: Dictionary = {}
+
+	for entity in combatants:
+		var side := get_combat_side(
+			entity
+		)
+
+		if side >= 0:
+			sides[side] = true
+
+	return sides.size()
