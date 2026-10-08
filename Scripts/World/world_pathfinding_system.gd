@@ -4,13 +4,15 @@ class_name WorldPathfindingSystem
 @onready var world: GameWorld = get_parent() as GameWorld
 
 var _grid := AStarGrid2D.new()
-var _grid_size := 8.0
+var _grid_size := 32.0
 var _entity_blocked_cells: Dictionary[Vector2i, bool] = {}
 
 func rebuild() -> void:
 	if not world.world_data:
 		return
 
+	_entity_blocked_cells.clear()
+	
 	var data := world.world_data
 
 	var minimum := data.get_min_cell()
