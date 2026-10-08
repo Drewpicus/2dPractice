@@ -525,7 +525,17 @@ func _apply_ability(
 	if not ability.can_use(use):
 		return
 
-	ability.perform(use)
+	if not ability.can_pay_combat_cost(
+		user
+	):
+		return
+
+	if not ability.perform(use):
+		return
+
+	ability.spend_combat_cost(
+		user
+	)
 
 func submit_consume_item(
 	consumer: Entity,
