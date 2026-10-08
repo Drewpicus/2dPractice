@@ -44,7 +44,7 @@ func _initialize_game_world() -> void:
 	game_world.spawn_entity(&"base:stopsign",Vector2(-200, -100))
 	game_world.spawn_entity(&"base:goblin",Vector2(198, 95))
 	game_world.spawn_entity(&"base:goblin",Vector2(-30, 125))
-	game_world.spawn_entity(&"base:rock",Vector2(-250, 152))
+	game_world.spawn_entity(&"base:rock",Vector2(-250, 0))
 	game_world.spawn_entity(&"base:tree",Vector2(216, -130))
 	game_world.spawn_entity(&"base:chest",Vector2(32, 256))
 	
@@ -61,7 +61,7 @@ func _initialize_game_world() -> void:
 	if player:
 		game_world.move_entity_to(
 			player,
-			Vector2(300, 400)
+			Vector2(-500, 0)
 		)
 
 func _spawn_players() -> void:

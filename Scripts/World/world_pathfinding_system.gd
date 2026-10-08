@@ -4,8 +4,8 @@ class_name WorldPathfindingSystem
 @onready var world: GameWorld = get_parent() as GameWorld
 
 var _grid := AStarGrid2D.new()
-var _grid_size := 32.0
-
+var _grid_size := 8.0
+var _entity_blocked_cells: Dictionary[Vector2i, bool] = {}
 
 func rebuild() -> void:
 	if not world.world_data:
@@ -53,6 +53,8 @@ func find_path(
 	):
 		return path
 
+	_refresh_entity_blockers(entity)
+
 	var cell_path := _grid.get_id_path(
 		start_cell,
 		destination_cell
@@ -84,3 +86,43 @@ func find_path(
 		path.append(destination)
 
 	return path
+
+func _refresh_entity_blockers(
+	excluded_entity: Entity = null
+) -> void:
+	# Clear the Entity blockers from the previous query.
+	for cell in _entity_blocked_cells:
+		if _grid.is_in_boundsv(cell):
+			_grid.set_point_solid(
+				cell,
+				false
+			)
+
+	_entity_blocked_cells.clear()
+
+	# Mark the current cells of every solid Entity.
+	for entity in world.get_entities():
+		if not entity:
+			continue
+
+		# The mover obviously needs to be allowed
+		# to leave its own starting cell.
+		if entity == excluded_entity:
+			continue
+
+		if not entity.solid:
+			continue
+
+		var cell := world.world_to_cell(
+			entity.global_position
+		)
+
+		if not _grid.is_in_boundsv(cell):
+			continue
+
+		_entity_blocked_cells[cell] = true
+
+		_grid.set_point_solid(
+			cell,
+			true
+		)
