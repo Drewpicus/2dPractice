@@ -2,7 +2,7 @@ extends EntityComponent
 class_name MovementComponent
 
 @export var base_speed : float = 100
-@export var waypoint_tolerance: float = 4.0
+@export var waypoint_tolerance: float = 1.0
 
 var input_direction : Vector2 = Vector2.ZERO
 var input_sequence: int = -1

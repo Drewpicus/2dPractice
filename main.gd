@@ -47,7 +47,8 @@ func _initialize_game_world() -> void:
 	game_world.spawn_entity(&"base:rock",Vector2(-250, 0))
 	game_world.spawn_entity(&"base:tree",Vector2(216, -130))
 	game_world.spawn_entity(&"base:chest",Vector2(32, 256))
-	
+	game_world.spawn_entity(&"base:meanguy",Vector2(550, -500))
+
 	_spawn_test_items()
 	var world_entities = game_world.get_entities()
 	world_entities.shuffle()
