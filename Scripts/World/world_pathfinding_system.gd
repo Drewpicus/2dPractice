@@ -10,17 +10,6 @@ var _grid := AStarGrid2D.new()
 
 var _blocked_cells: Dictionary[Vector2i, bool] = {}
 
-# Used to test whether an Entity's actual collision
-# footprint intersects a navigation cell.
-var _nav_cell_shape := RectangleShape2D.new()
-
-
-func _ready() -> void:
-	_nav_cell_shape.size = Vector2(
-		NAV_CELL_SIZE,
-		NAV_CELL_SIZE
-	)
-
 
 func rebuild() -> void:
 	if not world.world_data:
@@ -513,107 +502,6 @@ func _collision_rect_in_terrain(
 		minimum,
 		maximum - minimum
 	)
-
-func _collision_intersects_nav_cell(
-	collision: CollisionShape2D,
-	cell: Vector2i
-) -> bool:
-	var local_center := (
-		_nav_cell_local_center(cell)
-	)
-
-	var cell_local_transform := Transform2D(
-		0.0,
-		local_center
-	)
-
-	var cell_global_transform := (
-		world.terrain.global_transform
-		* cell_local_transform
-	)
-
-	return collision.shape.collide(
-		collision.global_transform,
-		_nav_cell_shape,
-		cell_global_transform
-	)
-
-
-func _collision_nav_region(
-	collision: CollisionShape2D
-) -> Rect2i:
-	var rect := collision.shape.get_rect()
-
-	var corners := [
-		rect.position,
-		Vector2(
-			rect.end.x,
-			rect.position.y
-		),
-		rect.end,
-		Vector2(
-			rect.position.x,
-			rect.end.y
-		)
-	]
-
-	var first_world = (
-		collision.global_transform
-		* corners[0]
-	)
-
-	var first_local := world.terrain.to_local(
-		first_world
-	)
-
-	var minimum := first_local
-	var maximum := first_local
-
-	for i in range(1, corners.size()):
-		var world_point = (
-			collision.global_transform
-			* corners[i]
-		)
-
-		var local_point := world.terrain.to_local(
-			world_point
-		)
-
-		minimum.x = minf(
-			minimum.x,
-			local_point.x
-		)
-
-		minimum.y = minf(
-			minimum.y,
-			local_point.y
-		)
-
-		maximum.x = maxf(
-			maximum.x,
-			local_point.x
-		)
-
-		maximum.y = maxf(
-			maximum.y,
-			local_point.y
-		)
-
-	var minimum_cell := _local_to_nav_cell(
-		minimum
-	)
-
-	var maximum_cell := _local_to_nav_cell(
-		maximum
-	)
-
-	return Rect2i(
-		minimum_cell,
-		maximum_cell
-			- minimum_cell
-			+ Vector2i.ONE
-	)
-
 
 func _terrain_cell_nav_region(
 	terrain_cell: Vector2i
