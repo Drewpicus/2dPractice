@@ -2,9 +2,14 @@ extends EntityComponent
 class_name MovementComponent
 
 @export var base_speed : float = 100
+@export var waypoint_tolerance: float = 4.0
 
 var input_direction : Vector2 = Vector2.ZERO
 var input_sequence: int = -1
+
+var _path: PackedVector2Array = []
+var _path_index: int = 0
+
 
 func _physics_process(_delta: float) -> void:
 	if not root_entity:
@@ -22,6 +27,8 @@ func _physics_process(_delta: float) -> void:
 		root_entity.move_and_slide()
 
 	_record_simulated_input()
+	
+	_update_path_direction()
 
 
 func _record_simulated_input() -> void:
@@ -54,3 +61,50 @@ func _record_simulated_input() -> void:
 		controller.record_predicted_position(
 			input_sequence
 		)
+
+func follow_path(
+	path: PackedVector2Array
+) -> bool:
+	if path.is_empty():
+		return false
+
+	_path = path
+	_path_index = 0
+
+	return true
+
+
+func cancel_path() -> void:
+	_path.clear()
+	_path_index = 0
+	input_direction = Vector2.ZERO
+
+
+func has_path() -> bool:
+	return not _path.is_empty()
+
+func _update_path_direction() -> void:
+	if _path.is_empty():
+		return
+
+	if _path_index >= _path.size():
+		cancel_path()
+		return
+
+	var target := _path[_path_index]
+
+	if (
+		root_entity.global_position.distance_to(target)
+		<= waypoint_tolerance
+	):
+		_path_index += 1
+
+		if _path_index >= _path.size():
+			cancel_path()
+			return
+
+		target = _path[_path_index]
+
+	input_direction = (
+		target - root_entity.global_position
+	).normalized()
