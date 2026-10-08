@@ -100,3 +100,14 @@ func clear_combat_resources() -> void:
 	movement_remaining = 0.0
 	action_available = false
 	reaction_available = false
+
+func can_spend_reaction() -> bool:
+	return reaction_available
+
+
+func spend_reaction() -> bool:
+	if not can_spend_reaction():
+		return false
+
+	reaction_available = false
+	return true

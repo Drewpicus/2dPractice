@@ -97,14 +97,3 @@ func spend_combat_cost(
 			return combat.spend_reaction()
 
 	return false
-
-func can_spend_reaction() -> bool:
-	return reaction_available
-
-
-func spend_reaction() -> bool:
-	if not can_spend_reaction():
-		return false
-
-	reaction_available = false
-	return true
