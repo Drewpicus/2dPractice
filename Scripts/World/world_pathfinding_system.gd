@@ -155,7 +155,6 @@ func find_path(
 
 	return path
 
-
 func get_path_distance(
 	entity: Entity,
 	destination: Vector2
@@ -168,11 +167,21 @@ func get_path_distance(
 		destination
 	)
 
+	return measure_path(
+		entity.global_position,
+		path
+	)
+
+
+func measure_path(
+	start_position: Vector2,
+	path: PackedVector2Array
+) -> float:
 	if path.is_empty():
 		return INF
 
 	var distance := 0.0
-	var previous_position := entity.global_position
+	var previous_position := start_position
 
 	for waypoint in path:
 		distance += previous_position.distance_to(
@@ -182,7 +191,6 @@ func get_path_distance(
 		previous_position = waypoint
 
 	return distance
-
 
 func world_to_nav_cell(
 	world_position: Vector2

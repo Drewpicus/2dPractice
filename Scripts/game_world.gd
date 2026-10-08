@@ -953,6 +953,27 @@ func move_entity_to(
 	if not movement:
 		return false
 
+	var combat := entity.get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	var in_combat := (
+		combat
+		and combat.current_combat
+		and combat.current_combat.started
+	)
+
+	if in_combat:
+		if not combat.current_combat.is_active(
+			entity
+		):
+			return false
+
+		# For now, a combat move must finish before
+		# another destination can be chosen.
+		if movement.has_path():
+			return false
+
 	var path := pathfinding_system.find_path(
 		entity,
 		destination
@@ -961,7 +982,36 @@ func move_entity_to(
 	if path.is_empty():
 		return false
 
-	return movement.follow_path(path)
+	var movement_cost := 0.0
+
+	if in_combat:
+		movement_cost = pathfinding_system.measure_path(
+			entity.global_position,
+			path
+		)
+
+		if not combat.can_spend_movement(
+			movement_cost
+		):
+			return false
+
+	if not movement.follow_path(path):
+		return false
+
+	if in_combat:
+		combat.spend_movement(
+			movement_cost
+		)
+
+		print(
+			entity.entity_name,
+			" spent ",
+			movement_cost,
+			" movement. Remaining: ",
+			combat.movement_remaining
+		)
+
+	return true
 
 func get_path_distance(
 	entity: Entity,

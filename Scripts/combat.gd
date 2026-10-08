@@ -103,6 +103,13 @@ func end_turn(entity: Entity) -> bool:
 	if entity not in active_combatants:
 		return false
 
+	var movement := entity.get_component(
+		&"base:movement"
+	) as MovementComponent
+
+	if movement:
+		movement.cancel_path()
+
 	var combat_component := entity.get_component(
 		&"base:combat"
 	) as CombatComponent

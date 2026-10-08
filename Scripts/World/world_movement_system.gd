@@ -245,6 +245,18 @@ func _set_entity_movement_input(
 	if direction.length_squared() > 1.0:
 		direction = direction.normalized()
 
+	var combat := entity.get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	if (
+		direction != Vector2.ZERO
+		and combat
+		and combat.current_combat
+		and combat.current_combat.started
+	):
+		direction = Vector2.ZERO
+
 	# Deliberate directional input takes control away
 	# from an automatically-followed path.
 	if (
