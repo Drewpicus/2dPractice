@@ -134,6 +134,10 @@ func _spawn_test_items() -> void:
 		game_world.spawn_dropped_item(apple,Vector2(200,-400))
 		break
 
+		var smapple = game_world.create_item(&"base:smolderapple")
+		game_world.spawn_dropped_item(smapple,Vector2(300,500))
+		break
+
 	for chest in all_entities:
 		if not chest.entity_id == &"base:chest":
 			continue

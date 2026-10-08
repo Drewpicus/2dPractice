@@ -169,7 +169,7 @@ func _configuration_is_valid() -> bool:
 	for component_value in entity_components_to_remove:
 		var component_id_to_check := StringName(component_value)
 
-		if not GameID.is_valid(component_id):
+		if not GameID.is_valid(component_id_to_check):
 			push_error("Invalid Consumable component removal ID: %s" % component_id_to_check)
 			return false
 

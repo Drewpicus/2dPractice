@@ -9,7 +9,7 @@
 			"parameters":
 				{
 					"healing": 5.0,
-					"require_missing_health": "true"
+					"require_missing_health": true
 				}
 		}
 	]

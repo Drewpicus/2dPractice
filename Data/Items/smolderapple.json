@@ -9,7 +9,7 @@
 			"parameters":
 				{
 					"healing": 10.0,
-					"require_missing_health": "false",
+					"require_missing_health": false,
 					"entity_components_to_add": [
 						{
 							"component_id": "base:fire_resistant",
@@ -17,9 +17,7 @@
 						}
 					],
 					"entity_components_to_remove": [
-						{
-							"component_id": "base:equipment"
-						}
+							"base:equipment"
 					]
 				}
 		}
