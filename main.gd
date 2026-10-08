@@ -132,7 +132,6 @@ func _spawn_test_items() -> void:
 		
 		var apple = game_world.create_item(&"base:apple")
 		game_world.spawn_dropped_item(apple,Vector2(200,-400))
-		break
 
 		var smapple = game_world.create_item(&"base:smolderapple")
 		game_world.spawn_dropped_item(smapple,Vector2(300,500))
