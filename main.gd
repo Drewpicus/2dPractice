@@ -56,14 +56,6 @@ func _initialize_game_world() -> void:
 			test_burning(entity)
 			break
 
-	var player := game_world.get_entity_controlled_by_peer(1)
-
-	if player:
-		game_world.submit_move_to(
-			player,
-			Vector2(650, 650)
-		)
-
 func _spawn_players() -> void:
 	var peer_ids: Array[int] = [1]
 
