@@ -29,8 +29,16 @@ static func load_world(world: GameWorld, path: String = DEFAULT_SAVE_PATH) -> bo
 		return false
 
 	##NOTE: will change
-	if MultiplayerManager.session_active:
-		push_warning("Loading a world during an active multiplayer session is not supported yet because I can't figure out how.")
+	if not MultiplayerManager.is_world_authority():
+		push_warning(
+			"Only the world authority can load a world."
+		)
+		return false
+
+	if MultiplayerManager.has_remote_peers():
+		push_warning(
+			"Loading a world while remote peers are connected is not supported yet."
+		)
 		return false
 
 	if not FileAccess.file_exists(path):

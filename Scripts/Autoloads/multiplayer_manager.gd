@@ -231,3 +231,7 @@ func _on_server_disconnected() -> void:
 ##True if your game is the host server; honest runtime check every time
 func is_world_authority() -> bool:
 	return multiplayer.is_server()
+
+##True if there are any clients on the server
+func has_remote_peers() -> bool:
+	return not multiplayer.get_peers().is_empty()
