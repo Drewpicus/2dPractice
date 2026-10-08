@@ -2,6 +2,7 @@ extends EntityComponent
 class_name CombatComponent
 
 @export var movement_per_turn: float = 160.0
+@export var initiative_bonus: int = 0
 
 var current_combat: Combat
 

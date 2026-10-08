@@ -21,7 +21,7 @@ var active_combatants: Array[Entity] = []
 var round_number: int = 0
 var _turn_index: int = -1
 var started: bool = false
-
+var initiative_scores: Dictionary = {}
 
 func add_combatant(
 	entity: Entity,
@@ -85,7 +85,12 @@ func start() -> bool:
 	if combatants.is_empty():
 		return false
 
+	_roll_initiative()
+
 	turn_order = combatants.duplicate()
+	turn_order.sort_custom(
+		_sort_by_initiative
+	)
 
 	started = true
 	round_number = 1
@@ -164,3 +169,48 @@ func _advance_turn() -> void:
 		round_number += 1
 
 	_begin_current_turn()
+
+func _roll_initiative() -> void:
+	initiative_scores.clear()
+
+	for entity in combatants:
+		var combat_component := entity.get_component(
+			&"base:combat"
+		) as CombatComponent
+
+		if not combat_component:
+			continue
+
+		var roll := randi_range(
+			1,
+			4
+		)
+
+		var score := (
+			roll
+			+ combat_component.initiative_bonus
+		)
+
+		initiative_scores[entity] = score
+
+		print(
+			entity.entity_name,
+			" initiative: ",
+			score,
+			" (",
+			roll,
+			" + ",
+			combat_component.initiative_bonus,
+			")"
+		)
+
+
+func _sort_by_initiative(
+	a: Entity,
+	b: Entity
+) -> bool:
+	return int(
+		initiative_scores.get(a, 0)
+	) > int(
+		initiative_scores.get(b, 0)
+	)
