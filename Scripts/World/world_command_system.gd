@@ -7,7 +7,9 @@ const COMMAND_TAKE_ITEM := &"base:take_item"
 const COMMAND_EQUIP_ITEM := &"base:equip_item"
 const COMMAND_UNEQUIP_ITEM := &"base:unequip_item"
 const COMMAND_DROP_ITEM := &"base:drop_item"
+const COMMAND_CONSUME_ITEM := &"base:consume_item"
 const COMMAND_ABILITY := &"base:ability"
+
 
 func _submit_command(command_id: StringName, actor: Entity, arguments: Dictionary = {}) -> void:
 	if not actor:
@@ -78,6 +80,13 @@ func _apply_command(sender_peer_id: int, command_id: StringName, arguments: Dict
 				String(arguments.get("target_entity_id", "")),
 				arguments.get("target_position", Vector2.ZERO),
 				bool(arguments.get("has_target_position", false)),
+				String(arguments.get("item_id", ""))
+			)
+		
+		COMMAND_CONSUME_ITEM:
+			_apply_consume_item(
+				sender_peer_id,
+				String(arguments.get("consumer_id", "")),
 				String(arguments.get("item_id", ""))
 			)
 
@@ -517,3 +526,133 @@ func _apply_ability(
 		return
 
 	ability.perform(use)
+
+func submit_consume_item(
+	consumer: Entity,
+	item: Item
+) -> void:
+	if not consumer or not item:
+		return
+
+	_submit_command(
+		COMMAND_CONSUME_ITEM,
+		consumer,
+		{
+			"consumer_id": consumer.instance_id,
+			"item_id": item.instance_id
+		}
+	)
+
+
+func _apply_consume_item(
+	sender_peer_id: int,
+	consumer_instance_id: String,
+	item_instance_id: String
+) -> void:
+	var consumer := RuntimeObjectRegistry.get_entity(
+		consumer_instance_id
+	)
+
+	var item := RuntimeObjectRegistry.get_item(
+		item_instance_id
+	)
+
+	if not consumer or not item:
+		return
+
+	var controller := consumer.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if controller.controller_peer_id != sender_peer_id:
+		return
+
+	_perform_consume_item(
+		consumer,
+		item
+	)
+
+
+func _perform_consume_item(
+	consumer: Entity,
+	item: Item
+) -> bool:
+	var inventory := consumer.get_component(
+		&"base:inventory"
+	) as InventoryComponent
+
+	if not inventory:
+		return false
+
+	if item not in inventory.items:
+		return false
+
+	var consumable := item.get_component(
+		&"base:consumable"
+	) as ConsumableItemComponent
+
+	if not consumable:
+		return false
+
+	if not consumable.can_consume(
+		consumer
+	):
+		return false
+
+	var remainder_item_id := consumable.remainder_item_id
+
+	if not consumable.apply_to(
+		consumer
+	):
+		return false
+
+	# Applying the Consumable may itself have removed the
+	# InventoryComponent, so reacquire it afterward.
+	inventory = consumer.get_component(
+		&"base:inventory"
+	) as InventoryComponent
+
+	if inventory and item in inventory.items:
+		inventory.remove_item(
+			item
+		)
+
+	var world := GameWorld.find_world(
+		consumer
+	)
+
+	if not world:
+		return false
+
+	world.remove_item(
+		item
+	)
+
+	if remainder_item_id.is_empty():
+		return true
+
+	var remainder := world.create_item(
+		remainder_item_id
+	)
+
+	if not remainder:
+		return true
+
+	inventory = consumer.get_component(
+		&"base:inventory"
+	) as InventoryComponent
+
+	if inventory:
+		inventory.add_item(
+			remainder
+		)
+	else:
+		world.spawn_dropped_item(
+			remainder,
+			consumer.global_position
+		)
+
+	return true

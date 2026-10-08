@@ -793,6 +793,9 @@ func submit_unequip_item(entity: Entity, slot: StringName) -> void:
 func submit_drop_item(entity: Entity, item: Item) -> void:
 	command_system.submit_drop_item(entity, item)
 
+func submit_consume_item(consumer: Entity, item: Item) -> void:
+	command_system.submit_consume_item(consumer, item)
+
 func submit_ability(ability: Ability, use: AbilityUse) -> void:
 	command_system.submit_ability(ability, use)
 
