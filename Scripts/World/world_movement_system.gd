@@ -137,14 +137,28 @@ func _apply_movement_input(sender_peer_id: int, entity_instance_id: String, sequ
 	_set_entity_movement_input(entity, direction, sequence)
 
 
-func _set_entity_movement_input(entity: Entity, direction: Vector2, sequence: int = -1) -> void:
-	var movement := entity.get_component(&"base:movement") as MovementComponent
+func _set_entity_movement_input(
+	entity: Entity,
+	direction: Vector2,
+	sequence: int = -1
+) -> void:
+	var movement := entity.get_component(
+		&"base:movement"
+	) as MovementComponent
 
 	if not movement:
 		return
 
 	if direction.length_squared() > 1.0:
 		direction = direction.normalized()
+
+	# Deliberate directional input takes control away
+	# from an automatically-followed path.
+	if (
+		direction != Vector2.ZERO
+		and movement.has_path()
+	):
+		movement.cancel_path()
 
 	movement.input_direction = direction
 
