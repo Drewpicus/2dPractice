@@ -929,3 +929,33 @@ func request_inventory(viewer: Entity, _owner: Entity) -> void:
 	inventory_requested.emit(viewer, _owner)
 
 #endregion
+
+func move_entity_to(
+	entity: Entity,
+	destination: Vector2
+) -> bool:
+	if not entity:
+		return false
+
+	if (
+		MultiplayerManager.session_active
+		and not MultiplayerManager.is_world_authority()
+	):
+		return false
+
+	var movement := entity.get_component(
+		&"base:movement"
+	) as MovementComponent
+
+	if not movement:
+		return false
+
+	var path := pathfinding_system.find_path(
+		entity,
+		destination
+	)
+
+	if path.is_empty():
+		return false
+
+	return movement.follow_path(path)
