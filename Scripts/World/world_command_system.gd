@@ -9,7 +9,7 @@ const COMMAND_UNEQUIP_ITEM := &"base:unequip_item"
 const COMMAND_DROP_ITEM := &"base:drop_item"
 const COMMAND_CONSUME_ITEM := &"base:consume_item"
 const COMMAND_ABILITY := &"base:ability"
-
+const COMMAND_END_TURN := &"base:end_turn"
 
 func _submit_command(command_id: StringName, actor: Entity, arguments: Dictionary = {}) -> void:
 	if not actor:
@@ -88,6 +88,12 @@ func _apply_command(sender_peer_id: int, command_id: StringName, arguments: Dict
 				sender_peer_id,
 				String(arguments.get("consumer_id", "")),
 				String(arguments.get("item_id", ""))
+			)
+
+		COMMAND_END_TURN:
+			_apply_end_turn(
+				sender_peer_id,
+				String(arguments.get("entity_id", ""))
 			)
 
 		_:
@@ -666,3 +672,61 @@ func _perform_consume_item(
 		)
 
 	return true
+
+func submit_end_turn(
+	entity: Entity
+) -> void:
+	if not entity:
+		return
+
+	_submit_command(
+		COMMAND_END_TURN,
+		entity,
+		{
+			"entity_id": entity.instance_id
+		}
+	)
+
+
+func _apply_end_turn(
+	sender_peer_id: int,
+	entity_instance_id: String
+) -> void:
+	var entity := RuntimeObjectRegistry.get_entity(
+		entity_instance_id
+	)
+
+	if not entity:
+		return
+
+	var controller := entity.get_component(
+		&"base:player_controller"
+	) as PlayerControllerComponent
+
+	if not controller:
+		return
+
+	if controller.controller_peer_id != sender_peer_id:
+		return
+
+	var combat := entity.get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	if not combat:
+		return
+
+	if not combat.current_combat:
+		return
+
+	if not combat.current_combat.started:
+		return
+
+	if not combat.current_combat.is_active(
+		entity
+	):
+		return
+
+	combat.current_combat.end_turn(
+		entity
+	)

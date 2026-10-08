@@ -91,16 +91,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("load_world"):
 		SaveManager.load_world(game_world)
 
-	if (
-		event.is_action_pressed("space")
-		and test_combat
-		and not test_combat.active_combatants.is_empty()
-	):
-		var active := test_combat.active_combatants[0]
-
-		if test_combat.end_turn(active):
-			_print_test_combat_state()
-
 func _spawn_test_items() -> void:
 	var all_entities = game_world.get_entities()
 	

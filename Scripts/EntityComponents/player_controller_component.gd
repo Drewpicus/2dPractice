@@ -157,6 +157,18 @@ func _unhandled_input(event: InputEvent) -> void:
 
 		return
 
+	if event.is_action_pressed("space"):
+		var world := GameWorld.find_world(
+			root_entity
+		)
+
+		if world:
+			world.command_system.submit_end_turn(
+				root_entity
+			)
+
+		return
+
 	_quick_action(event,"quick_attack",&"base:health",&"base:attack")
 	_quick_action(event,"quick_inspect",&"base:info",&"base:inspect",_get_entity_under_mouse(false))
 
