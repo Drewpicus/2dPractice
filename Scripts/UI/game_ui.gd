@@ -52,13 +52,31 @@ func _unhandled_input(event: InputEvent) -> void:
 
 		return
 
-	if (
-		event.is_action_pressed("select")
-		and ability_targeting.is_targeting()
-	):
-		_provide_ability_target(
-			controlled_entity
+	if event.is_action_pressed("select"):
+		if ability_targeting.is_targeting():
+			_provide_ability_target(
+				controlled_entity
+			)
+
+			get_viewport().set_input_as_handled()
+			return
+
+		# Shift + left click belongs to quick attack,
+		# not ordinary click-to-move.
+		if (
+			event is InputEventMouseButton
+			and event.shift_pressed
+		):
+			return
+
+		interaction_menu._on_empty_pressed()
+
+		game_world.submit_move_to(
+			controlled_entity,
+			controlled_entity.get_global_mouse_position()
 		)
+
+		get_viewport().set_input_as_handled()
 		return
 
 	if event.is_action_pressed("inventory"):
@@ -66,9 +84,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("interact_menu"):
 		_open_interaction_menu(controlled_entity)
-
-	if event.is_action_pressed("select"):
-		interaction_menu._on_empty_pressed()
 
 	if event.is_action_pressed("close_menu"):
 		ability_targeting.cancel()

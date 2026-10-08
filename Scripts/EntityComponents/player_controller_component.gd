@@ -138,24 +138,6 @@ func _discard_acknowledged_predictions(
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_locally_controlled():
 		return
-	
-	if (
-		event is InputEventMouseButton
-		and event.button_index == MOUSE_BUTTON_LEFT
-		and event.pressed
-		and not event.shift_pressed
-	):
-		var world := GameWorld.find_world(
-			root_entity
-		)
-
-		if world:
-			world.submit_move_to(
-				root_entity,
-				root_entity.get_global_mouse_position()
-			)
-
-		return
 
 	if event.is_action_pressed("space"):
 		var world := GameWorld.find_world(
