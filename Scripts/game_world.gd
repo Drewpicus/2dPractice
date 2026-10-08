@@ -3,6 +3,8 @@ class_name GameWorld
 
 @onready var entities: Node2D = $Entities
 var _items: Dictionary[String, Item] = {}
+var _terrain_overrides: Dictionary[Vector2i, StringName] = {}
+var _terrain_originals: Dictionary[Vector2i, StringName] = {}
 
 @onready var terrain: TerrainRenderer = $Terrain
 @onready var entity_spawner: MultiplayerSpawner = $EntitySpawner
@@ -35,10 +37,19 @@ static func find_world(node: Node) -> GameWorld:
 
 #region World Terrain
 
-func generate_world(world_size: Vector2i, seed: int) -> void:
+func generate_world(
+	world_size: Vector2i,
+	seed: int
+) -> void:
+	_terrain_overrides.clear()
+	_terrain_originals.clear()
+
 	var generator := WorldGenerator.new()
 
-	world_data = generator.generate(world_size, seed)
+	world_data = generator.generate(
+		world_size,
+		seed
+	)
 
 	terrain.render(world_data)
 
@@ -127,6 +138,11 @@ func _apply_terrain_change(
 		)
 		return false
 
+	if not _terrain_originals.has(cell):
+		_terrain_originals[cell] = world_data.get_terrain(
+			cell
+		)
+
 	world_data.set_terrain(
 		cell,
 		terrain_id
@@ -136,6 +152,14 @@ func _apply_terrain_change(
 		cell,
 		terrain_id
 	)
+
+	var original_terrain := _terrain_originals[cell]
+
+	if terrain_id == original_terrain:
+		_terrain_overrides.erase(cell)
+		_terrain_originals.erase(cell)
+	else:
+		_terrain_overrides[cell] = terrain_id
 
 	return true
 
@@ -420,7 +444,9 @@ func serialize_state() -> Dictionary:
 				world_data.size.x,
 				world_data.size.y
 			],
-			"seed": world_data.get_seed()
+			"seed": world_data.get_seed(),
+			"terrain_overrides":
+					serialize_terrain_overrides()
 		},
 		"items": serialize_items(),
 		"entities": serialize_entities()
@@ -474,6 +500,17 @@ func deserialize_state(state: Dictionary) -> bool:
 		world_data_state["seed"]
 	)
 
+	var terrain_override_states = world_data_state.get(
+		"terrain_overrides",
+		[]
+	)
+
+	if not terrain_override_states is Array:
+		push_error(
+			"Serialized terrain overrides must be an Array."
+		)
+		return false
+
 	var item_states = state.get(
 		"items",
 		[]
@@ -498,6 +535,9 @@ func deserialize_state(state: Dictionary) -> bool:
 		world_size,
 		world_seed
 	)
+	
+	if not _apply_saved_terrain_overrides(terrain_override_states):
+		return false
 
 	var result := RuntimeStateLoader.reconstruct(
 		item_states,
@@ -553,6 +593,73 @@ func clear_runtime_state() -> void:
 			entities.remove_child(entity)
 
 		entity.queue_free()
+
+func serialize_terrain_overrides() -> Array:
+	var states: Array = []
+
+	for cell_value in _terrain_overrides:
+		var cell: Vector2i = cell_value
+		var terrain_id := _terrain_overrides[cell]
+
+		states.append({
+			"cell": [
+				cell.x,
+				cell.y
+			],
+			"terrain_id": String(terrain_id)
+		})
+
+	return states
+
+func _apply_saved_terrain_overrides(
+	states: Array
+) -> bool:
+	for state_value in states:
+		if not state_value is Dictionary:
+			push_error(
+				"Serialized terrain override must be a Dictionary."
+			)
+			return false
+
+		var state := state_value as Dictionary
+
+		var cell_data = state.get(
+			"cell",
+			[]
+		)
+
+		if (
+			not cell_data is Array
+			or cell_data.size() != 2
+		):
+			push_error(
+				"Serialized terrain override cell must contain two values."
+			)
+			return false
+
+		var cell := Vector2i(
+			int(cell_data[0]),
+			int(cell_data[1])
+		)
+
+		var terrain_id := StringName(
+			state.get(
+				"terrain_id",
+				""
+			)
+		)
+
+		if not _apply_terrain_change(
+			cell,
+			terrain_id
+		):
+			push_error(
+				"Could not restore terrain override at %s."
+				% cell
+			)
+			return false
+
+	return true
 
 #endregion
 
