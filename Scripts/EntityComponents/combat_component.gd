@@ -55,16 +55,34 @@ func can_spend_movement(
 	if amount < 0.0:
 		return false
 
-	return amount <= movement_remaining
+	return (
+		amount <= movement_remaining
+		or is_equal_approx(
+			amount,
+			movement_remaining
+		)
+	)
 
 
 func spend_movement(
 	amount: float
 ) -> bool:
-	if not can_spend_movement(amount):
+	if not can_spend_movement(
+		amount
+	):
 		return false
 
-	movement_remaining -= amount
+	# If this is effectively the rest of the
+	# movement budget, consume it completely rather
+	# than preserving floating-point residue.
+	if is_equal_approx(
+		amount,
+		movement_remaining
+	):
+		movement_remaining = 0.0
+	else:
+		movement_remaining -= amount
+
 	return true
 
 
