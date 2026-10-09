@@ -99,7 +99,11 @@ func remove_combatant(entity: Entity) -> void:
 
 	if entity not in combatants:
 		return
-
+	
+	var removed_side := get_combat_side(
+		entity
+	)
+	
 	var removed_turn_index := turn_order.find(
 		entity
 	)
@@ -126,6 +130,8 @@ func remove_combatant(entity: Entity) -> void:
 
 	combatants.erase(entity)
 	combat_sides.erase(entity)
+	if (removed_side >= 0 and not _side_has_combatants(removed_side)):
+		_remove_hostilities_for_side(removed_side)
 	initiative_scores.erase(entity)
 	active_combatants.erase(entity)
 
@@ -744,3 +750,35 @@ func has_remaining_hostility() -> bool:
 			return true
 
 	return false
+
+func _side_has_combatants(
+	side_id: int
+) -> bool:
+	for combatant in combatants:
+		if get_combat_side(
+			combatant
+		) == side_id:
+			return true
+
+	return false
+
+
+func _remove_hostilities_for_side(
+	side_id: int
+) -> void:
+	for index in range(
+		hostile_side_pairs.size() - 1,
+		-1,
+		-1
+	):
+		var pair := hostile_side_pairs[
+			index
+		]
+
+		if (
+			pair.x == side_id
+			or pair.y == side_id
+		):
+			hostile_side_pairs.remove_at(
+				index
+			)

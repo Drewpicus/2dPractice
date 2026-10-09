@@ -256,7 +256,33 @@ func engage_hostile(
 
 	# Already participating in the same fight.
 	if actor_combat and target_combat:
-		return actor_combat == target_combat
+		if actor_combat != target_combat:
+			# Merging two already-running combats is still
+			# intentionally unsupported.
+			return false
+
+		var actor_side := actor_combat.get_combat_side(
+			actor
+		)
+
+		var target_side := actor_combat.get_combat_side(
+			target
+		)
+
+		# For now, don't support betrayal within a side.
+		# Splitting an active combat side deserves its own
+		# deliberate implementation.
+		if actor_side == target_side:
+			return false
+
+		# A hostile action establishes contextual hostility
+		# even if the factions are normally neutral/friendly.
+		actor_combat.set_sides_hostile(
+			actor_side,
+			target_side
+		)
+
+		return true
 
 	# Actor is already fighting. The new hostile Entity
 	# joins as another opposing side.
@@ -374,7 +400,8 @@ func _next_side_id(
 
 func _choose_side_for_entity(
 	combat: Combat,
-	entity: Entity
+	entity: Entity,
+	excluded_side: int = -1
 ) -> int:
 	if not combat or not entity:
 		return -1
@@ -383,25 +410,23 @@ func _choose_side_for_entity(
 		entity
 	)
 
-	# A real faction already represented in the fight
-	# is the strongest reason to join that side.
-	#
-	# Unaligned is excluded deliberately: two unrelated
-	# factionless creatures are not automatically allies.
 	if faction != FactionManager.UNALIGNED_FACTION:
 		for combatant in combat.combatants:
+			var side := combat.get_combat_side(
+				combatant
+			)
+
+			if side == excluded_side:
+				continue
+
 			if (
 				FactionManager.get_entity_faction(
 					combatant
 				)
 				== faction
 			):
-				return combat.get_combat_side(
-					combatant
-				)
+				return side
 
-	# Otherwise an Entity may join a side if it and
-	# every member of that side are mutually friendly.
 	var checked_sides: Dictionary = {}
 
 	for combatant in combat.combatants:
@@ -410,6 +435,9 @@ func _choose_side_for_entity(
 		)
 
 		if side < 0:
+			continue
+
+		if side == excluded_side:
 			continue
 
 		if checked_sides.has(side):

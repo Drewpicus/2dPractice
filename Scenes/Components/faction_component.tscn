@@ -4,3 +4,4 @@
 
 [node name="FactionComponent" type="Node" unique_id=1374856446]
 script = ExtResource("1_cjtlj")
+component_id = &"base:faction"
