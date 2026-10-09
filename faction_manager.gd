@@ -13,7 +13,7 @@ enum ATTITUDE {
 }
 
 
-func get_entity_faction(
+static func get_entity_faction(
 	entity: Entity
 ) -> StringName:
 	if not entity:
@@ -31,7 +31,7 @@ func get_entity_faction(
 
 	return component.faction_id
 
-func get_relation(
+static func get_relation(
 	source_faction: StringName,
 	target_faction: StringName
 ) -> int:
@@ -49,7 +49,7 @@ func get_relation(
 		)
 	)
 
-func get_entity_relation(
+static func get_entity_relation(
 	source: Entity,
 	target: Entity
 ) -> int:
@@ -58,7 +58,7 @@ func get_entity_relation(
 		get_entity_faction(target)
 	)
 
-func classify_relation(
+static func classify_relation(
 	score: int
 ) -> ATTITUDE:
 	if score <= HOSTILE_THRESHOLD:
@@ -70,7 +70,7 @@ func classify_relation(
 	return ATTITUDE.NEUTRAL
 
 
-func get_entity_attitude(
+static func get_entity_attitude(
 	source: Entity,
 	target: Entity
 ) -> ATTITUDE:
@@ -79,4 +79,29 @@ func get_entity_attitude(
 			source,
 			target
 		)
+	)
+
+static func is_hostile(
+	source: Entity,
+	target: Entity
+) -> bool:
+	return (
+		get_entity_attitude(
+			source,
+			target
+		)
+		== ATTITUDE.HOSTILE
+	)
+
+
+static func is_friendly(
+	source: Entity,
+	target: Entity
+) -> bool:
+	return (
+		get_entity_attitude(
+			source,
+			target
+		)
+		== ATTITUDE.FRIENDLY
 	)

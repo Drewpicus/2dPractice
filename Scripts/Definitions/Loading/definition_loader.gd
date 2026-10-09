@@ -15,6 +15,7 @@ static func load_all_definitions() -> void:
 	_load_named_directory(ENTITY_DIRECTORY,"entity")
 	_load_named_directory(ELEMENT_DIRECTORY,"element")
 	_load_named_directory(WEAPONTYPE_DIRECTORY,"weapontype")
+	_load_named_directory(FACTION_DIRECTORY,"faction")
 
 ##Loads the directory from the [param directory_path] and registers all the files in the
 ##[DefinitionRegistry]. [param directory_name] is a [String] like "entity" or "weapontype"
