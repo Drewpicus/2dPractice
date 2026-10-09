@@ -43,10 +43,14 @@ func begin_turn() -> void:
 	action_available = true
 	reaction_available = true
 
+	notify_state_changed()
+
 
 func end_turn() -> void:
 	movement_remaining = 0.0
 	action_available = false
+
+	notify_state_changed()
 
 
 func can_spend_movement(
@@ -83,6 +87,8 @@ func spend_movement(
 	else:
 		movement_remaining -= amount
 
+	notify_state_changed()
+
 	return true
 
 
@@ -95,6 +101,9 @@ func spend_action() -> bool:
 		return false
 
 	action_available = false
+
+	notify_state_changed()
+
 	return true
 
 func on_event(event: GameEvent) -> void:
@@ -119,6 +128,8 @@ func clear_combat_resources() -> void:
 	action_available = false
 	reaction_available = false
 
+	notify_state_changed()
+
 func can_spend_reaction() -> bool:
 	return reaction_available
 
@@ -128,4 +139,42 @@ func spend_reaction() -> bool:
 		return false
 
 	reaction_available = false
+
+	notify_state_changed()
+
 	return true
+
+func serialize_state() -> Dictionary:
+	return {
+		"movement_remaining":
+			movement_remaining,
+		"action_available":
+			action_available,
+		"reaction_available":
+			reaction_available
+	}
+
+
+func deserialize_state(
+	state: Dictionary
+) -> void:
+	movement_remaining = float(
+		state.get(
+			"movement_remaining",
+			movement_remaining
+		)
+	)
+
+	action_available = bool(
+		state.get(
+			"action_available",
+			action_available
+		)
+	)
+
+	reaction_available = bool(
+		state.get(
+			"reaction_available",
+			reaction_available
+		)
+	)

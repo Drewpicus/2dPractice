@@ -30,6 +30,8 @@ var _turn_index: int = -1
 var started: bool = false
 var initiative_scores: Dictionary = {}
 
+signal state_changed
+
 func add_combatant(
 	entity: Entity,
 	side_id: int,
@@ -66,6 +68,9 @@ func add_combatant(
 
 	disengaged.erase(entity)
 	combatants.append(entity)
+	
+	if started:
+		state_changed.emit()
 
 func remove_combatant(entity: Entity) -> void:
 	if not entity:
@@ -134,6 +139,9 @@ func remove_combatant(entity: Entity) -> void:
 		and active_combatants.is_empty()
 	):
 		_advance_turn()
+	
+	if started:
+		state_changed.emit()
 
 func start() -> bool:
 	if started:
@@ -154,6 +162,7 @@ func start() -> bool:
 	_turn_index = 0
 
 	_begin_current_turn()
+	state_changed.emit()
 
 	return true
 
@@ -207,12 +216,10 @@ func end_turn(entity: Entity) -> bool:
 
 	active_combatants.erase(entity)
 
-	# Later, when multiple combatants can share a turn,
-	# we wait until all members of the active group finish.
-	if not active_combatants.is_empty():
-		return true
+	if active_combatants.is_empty():
+		_advance_turn()
 
-	_advance_turn()
+	state_changed.emit()
 
 	return true
 
@@ -423,3 +430,141 @@ func serialize_state() -> Dictionary:
 		"combat_sides": serialized_sides,
 		"initiative_scores": serialized_initiative
 	}
+
+func deserialize_state(
+	state: Dictionary
+) -> void:
+	# Clear old CombatComponent links before rebuilding
+	# this snapshot.
+	for entity in combatants:
+		if not is_instance_valid(entity):
+			continue
+
+		var combat_component := entity.get_component(
+			&"base:combat"
+		) as CombatComponent
+
+		if (
+			combat_component
+			and combat_component.current_combat == self
+		):
+			combat_component.current_combat = null
+
+	combat_id = int(
+		state.get(
+			"combat_id",
+			combat_id
+		)
+	)
+
+	started = bool(
+		state.get(
+			"started",
+			false
+		)
+	)
+
+	round_number = int(
+		state.get(
+			"round_number",
+			0
+		)
+	)
+
+	combatants = _resolve_entity_ids(
+		state.get(
+			"combatants",
+			[]
+		)
+	)
+
+	disengaged = _resolve_entity_ids(
+		state.get(
+			"disengaged",
+			[]
+		)
+	)
+
+	turn_order = _resolve_entity_ids(
+		state.get(
+			"turn_order",
+			[]
+		)
+	)
+
+	active_combatants = _resolve_entity_ids(
+		state.get(
+			"active_combatants",
+			[]
+		)
+	)
+
+	combat_sides.clear()
+
+	var side_state = state.get(
+		"combat_sides",
+		{}
+	)
+
+	if side_state is Dictionary:
+		for instance_id in side_state:
+			var entity := RuntimeObjectRegistry.get_entity(
+				String(instance_id)
+			)
+
+			if not entity:
+				continue
+
+			combat_sides[entity] = int(
+				side_state[instance_id]
+			)
+
+	initiative_scores.clear()
+
+	var initiative_state = state.get(
+		"initiative_scores",
+		{}
+	)
+
+	if initiative_state is Dictionary:
+		for instance_id in initiative_state:
+			var entity := RuntimeObjectRegistry.get_entity(
+				String(instance_id)
+			)
+
+			if not entity:
+				continue
+
+			initiative_scores[entity] = int(
+				initiative_state[instance_id]
+			)
+
+	# Re-establish the Entity → Combat relationship
+	# on this peer.
+	for entity in combatants:
+		var combat_component := entity.get_component(
+			&"base:combat"
+		) as CombatComponent
+
+		if combat_component:
+			combat_component.current_combat = self
+
+func _resolve_entity_ids(
+	values: Variant
+) -> Array[Entity]:
+	var result: Array[Entity] = []
+
+	if not values is Array:
+		return result
+
+	for value in values:
+		var entity := RuntimeObjectRegistry.get_entity(
+			String(value)
+		)
+
+		if entity:
+			result.append(
+				entity
+			)
+
+	return result
