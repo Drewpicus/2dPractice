@@ -1080,3 +1080,10 @@ func get_path_distance(
 		entity,
 		destination
 	)
+
+func submit_end_turn(
+	entity: Entity
+) -> void:
+	command_system.submit_end_turn(
+		entity
+	)

@@ -16,6 +16,7 @@
 [ext_resource type="Script" uid="uid://cinxuuh06ilsq" path="res://Scripts/UI/ability_menu.gd" id="14_wsu2k"]
 [ext_resource type="Script" uid="uid://r54bxxup4g72" path="res://Scripts/UI/ability_targeting.gd" id="15_k12tt"]
 [ext_resource type="Script" uid="uid://kmdc0wen7b52" path="res://Scripts/UI/debug_hud.gd" id="17_h1bgf"]
+[ext_resource type="Script" uid="uid://22hukclvn6wd" path="res://Scripts/UI/combat_hud.gd" id="19_fevyy"]
 [ext_resource type="Script" uid="uid://du6k7n4fgllb6" path="res://Scripts/UI/interaction_menu.gd" id="21_o1aky"]
 [ext_resource type="Script" uid="uid://cpefuibv0hxx" path="res://Scripts/UI/inventory_menu.gd" id="22_kwxat"]
 
@@ -163,3 +164,38 @@ offset_right = -10.0
 offset_bottom = 323.0
 grow_horizontal = 0
 script = ExtResource("17_h1bgf")
+
+[node name="CombatHUD" type="PanelContainer" parent="UI" unique_id=56497665]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -96.5
+offset_right = 78.0
+offset_bottom = 96.5
+grow_vertical = 2
+script = ExtResource("19_fevyy")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/CombatHUD" unique_id=844395400]
+layout_mode = 2
+
+[node name="Round" type="Label" parent="UI/CombatHUD/VBoxContainer" unique_id=541709818]
+layout_mode = 2
+
+[node name="Active" type="Label" parent="UI/CombatHUD/VBoxContainer" unique_id=1010133970]
+layout_mode = 2
+
+[node name="TurnOrder" type="Label" parent="UI/CombatHUD/VBoxContainer" unique_id=1799026601]
+layout_mode = 2
+
+[node name="Movement" type="Label" parent="UI/CombatHUD/VBoxContainer" unique_id=1238537741]
+layout_mode = 2
+
+[node name="Action" type="Label" parent="UI/CombatHUD/VBoxContainer" unique_id=87926043]
+layout_mode = 2
+
+[node name="Reaction" type="Label" parent="UI/CombatHUD/VBoxContainer" unique_id=1553635554]
+layout_mode = 2
+
+[node name="EndTurn" type="Button" parent="UI/CombatHUD/VBoxContainer" unique_id=1599629771]
+layout_mode = 2
+text = "End Turn"

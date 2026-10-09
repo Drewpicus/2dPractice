@@ -145,10 +145,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		)
 
 		if world:
-			world.command_system.submit_end_turn(
-				root_entity
-			)
-
+			world.submit_end_turn(root_entity)
 		return
 
 	_quick_action(event,"quick_attack",&"base:health",&"base:attack")
