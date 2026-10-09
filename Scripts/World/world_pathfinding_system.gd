@@ -192,6 +192,62 @@ func measure_path(
 
 	return distance
 
+func trim_path(
+	start_position: Vector2,
+	path: PackedVector2Array,
+	max_distance: float
+) -> PackedVector2Array:
+	var result := PackedVector2Array()
+
+	if path.is_empty():
+		return result
+
+	if max_distance <= 0.0:
+		return result
+
+	var remaining_distance := max_distance
+	var previous_position := start_position
+
+	for waypoint in path:
+		var segment_distance := (
+			previous_position.distance_to(
+				waypoint
+			)
+		)
+
+		if segment_distance <= 0.0:
+			previous_position = waypoint
+			continue
+
+		if segment_distance <= remaining_distance:
+			result.append(
+				waypoint
+			)
+
+			remaining_distance -= segment_distance
+			previous_position = waypoint
+
+			if remaining_distance <= 0.0:
+				break
+
+			continue
+
+		var fraction := (
+			remaining_distance
+			/ segment_distance
+		)
+
+		result.append(
+			previous_position.lerp(
+				waypoint,
+				fraction
+			)
+		)
+
+		break
+
+	return result
+
 func world_to_nav_cell(
 	world_position: Vector2
 ) -> Vector2i:

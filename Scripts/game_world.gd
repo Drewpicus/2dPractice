@@ -990,6 +990,23 @@ func move_entity_to(
 			path
 		)
 
+		if movement_cost > combat.movement_remaining:
+			path = pathfinding_system.trim_path(
+				entity.global_position,
+				path,
+				combat.movement_remaining
+			)
+
+			if path.is_empty():
+				return false
+
+			movement_cost = (
+				pathfinding_system.measure_path(
+					entity.global_position,
+					path
+				)
+			)
+
 		if not combat.can_spend_movement(
 			movement_cost
 		):
