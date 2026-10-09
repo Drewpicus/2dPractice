@@ -18,6 +18,12 @@ var turn_order: Array[Entity] = []
 ## similar initiatives may act concurrently.
 var active_combatants: Array[Entity] = []
 
+## Pairs of sides that are actively hostile to one another
+## in this particular Combat.
+##
+## Pairs are normalized so the smaller side ID is x.
+var hostile_side_pairs: Array[Vector2i] = []
+
 ## Which side each combatant belongs to within this Combat.
 var combat_sides: Dictionary = {}
 
@@ -136,10 +142,10 @@ func remove_combatant(entity: Entity) -> void:
 	if entity not in disengaged:
 		disengaged.append(entity)
 
-	# Once only one side remains, the fight is over.
+	# Once no hostile pairs remain, the fight is over.
 	if (
 		started
-		and _remaining_side_count() <= 1
+		and not has_remaining_hostility()
 	):
 		CombatManager.end_combat(
 			combat_id
@@ -165,7 +171,7 @@ func start() -> bool:
 	if combatants.is_empty():
 		return false
 
-	if _remaining_side_count() < 2:
+	if not has_remaining_hostility():
 		return false
 
 	for entity in combatants:
@@ -212,6 +218,7 @@ func end() -> void:
 	active_combatants.clear()
 	combat_sides.clear()
 	initiative_scores.clear()
+	hostile_side_pairs.clear()
 
 	_turn_index = -1
 	_active_group_size = 0
@@ -397,10 +404,19 @@ func get_opponents(
 		if combatant == entity:
 			continue
 
-		if get_combat_side(combatant) == side:
+		var other_side := get_combat_side(
+			combatant
+		)
+
+		if not are_sides_hostile(
+			side,
+			other_side
+		):
 			continue
 
-		result.append(combatant)
+		result.append(
+			combatant
+		)
 
 	return result
 
@@ -409,6 +425,7 @@ func serialize_state() -> Dictionary:
 	var disengaged_ids: Array[String] = []
 	var turn_order_ids: Array[String] = []
 	var active_ids: Array[String] = []
+	var serialized_hostilities: Array = []
 
 	var serialized_sides: Dictionary = {}
 	var serialized_initiative: Dictionary = {}
@@ -447,6 +464,14 @@ func serialize_state() -> Dictionary:
 			combat_sides[entity]
 		)
 
+	for pair in hostile_side_pairs:
+		serialized_hostilities.append(
+			[
+				pair.x,
+				pair.y
+			]
+		)
+
 	for entity in initiative_scores:
 		if not is_instance_valid(entity):
 			continue
@@ -466,7 +491,8 @@ func serialize_state() -> Dictionary:
 		"turn_order": turn_order_ids,
 		"active_combatants": active_ids,
 		"combat_sides": serialized_sides,
-		"initiative_scores": serialized_initiative
+		"initiative_scores": serialized_initiative,
+		"hostile_side_pairs": serialized_hostilities
 	}
 
 func deserialize_state(
@@ -543,6 +569,39 @@ func deserialize_state(
 		"combat_sides",
 		{}
 	)
+	
+	hostile_side_pairs.clear()
+
+	var hostility_state = state.get(
+		"hostile_side_pairs",
+		[]
+	)
+
+	if hostility_state is Array:
+		for pair_value in hostility_state:
+			if (
+				not pair_value is Array
+				or pair_value.size() != 2
+			):
+				continue
+
+			var side_a := int(
+				pair_value[0]
+			)
+
+			var side_b := int(
+				pair_value[1]
+			)
+
+			if side_a == side_b:
+				continue
+
+			hostile_side_pairs.append(
+				Vector2i(
+					min(side_a, side_b),
+					max(side_a, side_b)
+				)
+			)
 
 	if side_state is Dictionary:
 		for instance_id in side_state:
@@ -621,3 +680,67 @@ func _stop_combatant_movement(
 		movement.cancel_path()
 
 	entity.velocity = Vector2.ZERO
+
+func set_sides_hostile(
+	side_a: int,
+	side_b: int
+) -> void:
+	if side_a < 0 or side_b < 0:
+		return
+
+	if side_a == side_b:
+		return
+
+	var pair := Vector2i(
+		min(side_a, side_b),
+		max(side_a, side_b)
+	)
+
+	if pair in hostile_side_pairs:
+		return
+
+	hostile_side_pairs.append(
+		pair
+	)
+
+	if started:
+		state_changed.emit()
+
+
+func are_sides_hostile(
+	side_a: int,
+	side_b: int
+) -> bool:
+	if side_a < 0 or side_b < 0:
+		return false
+
+	if side_a == side_b:
+		return false
+
+	var pair := Vector2i(
+		min(side_a, side_b),
+		max(side_a, side_b)
+	)
+
+	return pair in hostile_side_pairs
+
+
+func has_remaining_hostility() -> bool:
+	var remaining_sides: Dictionary = {}
+
+	for entity in combatants:
+		var side := get_combat_side(
+			entity
+		)
+
+		if side >= 0:
+			remaining_sides[side] = true
+
+	for pair in hostile_side_pairs:
+		if (
+			remaining_sides.has(pair.x)
+			and remaining_sides.has(pair.y)
+		):
+			return true
+
+	return false

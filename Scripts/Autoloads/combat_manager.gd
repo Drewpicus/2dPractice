@@ -261,35 +261,67 @@ func engage_hostile(
 	# Actor is already fighting. The new hostile Entity
 	# joins as another opposing side.
 	if actor_combat:
-		var new_side := _next_side_id(
-			actor_combat
+		var target_side := _choose_side_for_entity(
+			actor_combat,
+			target
 		)
 
 		actor_combat.add_combatant(
 			target,
-			new_side
+			target_side
 		)
 
-		return (
+		if (
 			target_component.current_combat
-			== actor_combat
+			!= actor_combat
+		):
+			return false
+
+		_apply_faction_hostilities(
+			actor_combat,
+			target_side
 		)
+
+		# The actual hostile action always establishes
+		# hostility regardless of normal faction attitude.
+		actor_combat.set_sides_hostile(
+			actor_combat.get_combat_side(actor),
+			target_side
+		)
+
+		return true
 
 	# Same situation in reverse.
 	if target_combat:
-		var new_side := _next_side_id(
-			target_combat
+		var actor_side := _choose_side_for_entity(
+			target_combat,
+			actor
 		)
 
 		target_combat.add_combatant(
 			actor,
-			new_side
+			actor_side
 		)
 
-		return (
+		if (
 			actor_component.current_combat
-			== target_combat
+			!= target_combat
+		):
+			return false
+
+		_apply_faction_hostilities(
+			target_combat,
+			actor_side
 		)
+
+		# Regardless of normal faction relations, Actor
+		# just performed a hostile action against Target.
+		target_combat.set_sides_hostile(
+			actor_side,
+			target_combat.get_combat_side(target)
+		)
+
+		return true
 
 	# Neither is fighting yet: create a new two-sided
 	# combat.
@@ -305,6 +337,11 @@ func engage_hostile(
 
 	combat.add_combatant(
 		target,
+		1
+	)
+
+	combat.set_sides_hostile(
+		0,
 		1
 	)
 
@@ -334,3 +371,111 @@ func _next_side_id(
 		side_id += 1
 
 	return side_id
+
+func _choose_side_for_entity(
+	combat: Combat,
+	entity: Entity
+) -> int:
+	if not combat or not entity:
+		return -1
+
+	var faction := FactionManager.get_entity_faction(
+		entity
+	)
+
+	# A real faction already represented in the fight
+	# is the strongest reason to join that side.
+	#
+	# Unaligned is excluded deliberately: two unrelated
+	# factionless creatures are not automatically allies.
+	if faction != FactionManager.UNALIGNED_FACTION:
+		for combatant in combat.combatants:
+			if (
+				FactionManager.get_entity_faction(
+					combatant
+				)
+				== faction
+			):
+				return combat.get_combat_side(
+					combatant
+				)
+
+	# Otherwise an Entity may join a side if it and
+	# every member of that side are mutually friendly.
+	var checked_sides: Dictionary = {}
+
+	for combatant in combat.combatants:
+		var side := combat.get_combat_side(
+			combatant
+		)
+
+		if side < 0:
+			continue
+
+		if checked_sides.has(side):
+			continue
+
+		checked_sides[side] = true
+
+		var compatible := true
+
+		for member in combat.combatants:
+			if combat.get_combat_side(member) != side:
+				continue
+
+			if (
+				not FactionManager.is_friendly(
+					entity,
+					member
+				)
+				or not FactionManager.is_friendly(
+					member,
+					entity
+				)
+			):
+				compatible = false
+				break
+
+		if compatible:
+			return side
+
+	return _next_side_id(
+		combat
+	)
+
+func _apply_faction_hostilities(
+	combat: Combat,
+	side_id: int
+) -> void:
+	if not combat:
+		return
+
+	for member in combat.combatants:
+		if combat.get_combat_side(member) != side_id:
+			continue
+
+		for other in combat.combatants:
+			var other_side := combat.get_combat_side(
+				other
+			)
+
+			if (
+				other_side < 0
+				or other_side == side_id
+			):
+				continue
+
+			if (
+				FactionManager.is_hostile(
+					member,
+					other
+				)
+				or FactionManager.is_hostile(
+					other,
+					member
+				)
+			):
+				combat.set_sides_hostile(
+					side_id,
+					other_side
+				)
