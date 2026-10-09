@@ -68,30 +68,96 @@ func new_direction() -> Vector2:
 func _take_combat_turn(
 	combat: Combat
 ) -> void:
+	# A movement decision from an earlier frame
+	# is still being carried out.
+	if (
+		movement_component
+		and movement_component.has_path()
+	):
+		return
+
 	var target := _get_nearest_opponent(
 		combat
 	)
 
-	if target:
-		_try_attack(
-			target
+	if not target:
+		_end_combat_turn(
+			combat
 		)
+		return
 
-	# The attack may have killed the last opponent,
-	# which would have ended this Combat.
+	# First try whatever we can already do
+	# from our current position.
+	if _try_attack(
+		target
+	):
+		_end_combat_turn(
+			combat
+		)
+		return
+
 	var combat_component := get_component(
 		&"base:combat"
 	) as CombatComponent
 
+	var interactor := get_component(
+		&"base:interactor"
+	) as InteractorComponent
+
 	if (
 		combat_component
-		and combat_component.current_combat == combat
-		and combat.started
-		and combat.is_active(root_entity)
+		and interactor
+		and combat_component.movement_remaining > 0.0
+		and root_entity.global_position.distance_to(
+			target.global_position
+		) > interactor.reach
 	):
-		combat.end_turn(
+		var world := GameWorld.find_world(
 			root_entity
 		)
+
+		if world:
+			var started_moving := (
+				world.move_entity_to_entity(
+					root_entity,
+					target,
+					interactor.reach
+				)
+			)
+
+			# The path may take many physics frames.
+			# Don't end the turn while it is running.
+			if (
+				started_moving
+				and movement_component
+				and movement_component.has_path()
+			):
+				return
+
+	_end_combat_turn(
+		combat
+	)
+
+func _end_combat_turn(
+	combat: Combat
+) -> void:
+	var combat_component := get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	# An attack may have killed the final opponent
+	# and ended the Combat already.
+	if (
+		not combat_component
+		or combat_component.current_combat != combat
+		or not combat.started
+		or not combat.is_active(root_entity)
+	):
+		return
+
+	combat.end_turn(
+		root_entity
+	)
 
 func _get_nearest_opponent(
 	combat: Combat
