@@ -1,7 +1,6 @@
 extends Node2D
 
 @onready var game_world: GameWorld = $GameWorld
-var test_combat: Combat
 
 func _ready() -> void:
 	DefinitionLoader.load_all_definitions()

@@ -70,6 +70,10 @@ func add_combatant(
 	combatants.append(entity)
 
 	if started:
+		_stop_combatant_movement(
+			entity
+		)
+
 		_roll_initiative_for(
 			entity
 		)
@@ -163,6 +167,11 @@ func start() -> bool:
 
 	if _remaining_side_count() < 2:
 		return false
+
+	for entity in combatants:
+		_stop_combatant_movement(
+			entity
+		)
 
 	_roll_initiative()
 
@@ -597,3 +606,18 @@ func _resolve_entity_ids(
 			)
 
 	return result
+
+func _stop_combatant_movement(
+	entity: Entity
+) -> void:
+	if not entity:
+		return
+
+	var movement := entity.get_component(
+		&"base:movement"
+	) as MovementComponent
+
+	if movement:
+		movement.cancel_path()
+
+	entity.velocity = Vector2.ZERO
