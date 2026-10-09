@@ -946,6 +946,54 @@ func move_entity_to(
 	):
 		return false
 
+	var path := pathfinding_system.find_path(
+		entity,
+		destination
+	)
+
+	return _move_entity_along_path(
+		entity,
+		path
+	)
+
+func move_entity_to_entity(
+	entity: Entity,
+	target: Entity,
+	stopping_distance: float = 0.0
+) -> bool:
+	if not entity or not target:
+		return false
+
+	if stopping_distance < 0.0:
+		return false
+
+	if (
+		MultiplayerManager.session_active
+		and not MultiplayerManager.is_world_authority()
+	):
+		return false
+
+	var path := pathfinding_system.find_path_to_entity(
+		entity,
+		target,
+		stopping_distance
+	)
+
+	return _move_entity_along_path(
+		entity,
+		path
+	)
+
+func _move_entity_along_path(
+	entity: Entity,
+	path: PackedVector2Array
+) -> bool:
+	if not entity:
+		return false
+
+	if path.is_empty():
+		return false
+
 	var movement := entity.get_component(
 		&"base:movement"
 	) as MovementComponent
@@ -973,14 +1021,6 @@ func move_entity_to(
 		# another destination can be chosen.
 		if movement.has_path():
 			return false
-
-	var path := pathfinding_system.find_path(
-		entity,
-		destination
-	)
-
-	if path.is_empty():
-		return false
 
 	var movement_cost := 0.0
 
@@ -1012,7 +1052,9 @@ func move_entity_to(
 		):
 			return false
 
-	if not movement.follow_path(path):
+	if not movement.follow_path(
+		path
+	):
 		return false
 
 	if in_combat:
