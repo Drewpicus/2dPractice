@@ -358,3 +358,68 @@ func get_opponents(
 		result.append(combatant)
 
 	return result
+
+func serialize_state() -> Dictionary:
+	var combatant_ids: Array[String] = []
+	var disengaged_ids: Array[String] = []
+	var turn_order_ids: Array[String] = []
+	var active_ids: Array[String] = []
+
+	var serialized_sides: Dictionary = {}
+	var serialized_initiative: Dictionary = {}
+
+	for entity in combatants:
+		if is_instance_valid(entity):
+			combatant_ids.append(
+				entity.instance_id
+			)
+
+	for entity in disengaged:
+		if is_instance_valid(entity):
+			disengaged_ids.append(
+				entity.instance_id
+			)
+
+	for entity in turn_order:
+		if is_instance_valid(entity):
+			turn_order_ids.append(
+				entity.instance_id
+			)
+
+	for entity in active_combatants:
+		if is_instance_valid(entity):
+			active_ids.append(
+				entity.instance_id
+			)
+
+	for entity in combat_sides:
+		if not is_instance_valid(entity):
+			continue
+
+		serialized_sides[
+			entity.instance_id
+		] = int(
+			combat_sides[entity]
+		)
+
+	for entity in initiative_scores:
+		if not is_instance_valid(entity):
+			continue
+
+		serialized_initiative[
+			entity.instance_id
+		] = int(
+			initiative_scores[entity]
+		)
+
+	return {
+		"combat_id": combat_id,
+		"started": started,
+		"round_number": round_number,
+		"combatants": combatant_ids,
+		"disengaged": disengaged_ids,
+		"turn_order": turn_order_ids,
+		"active_combatants": active_ids,
+		"combat_sides": serialized_sides,
+		"initiative_scores": serialized_initiative
+	}
