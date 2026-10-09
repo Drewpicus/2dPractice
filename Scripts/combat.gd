@@ -68,8 +68,19 @@ func add_combatant(
 
 	disengaged.erase(entity)
 	combatants.append(entity)
-	
+
 	if started:
+		_roll_initiative_for(
+			entity
+		)
+
+		# Late joiners act at the end of the current
+		# round. Starting next round, normal initiative
+		# order applies again.
+		turn_order.append(
+			entity
+		)
+
 		state_changed.emit()
 
 func remove_combatant(entity: Entity) -> void:
@@ -148,6 +159,9 @@ func start() -> bool:
 		return false
 
 	if combatants.is_empty():
+		return false
+
+	if _remaining_side_count() < 2:
 		return false
 
 	_roll_initiative()
@@ -273,41 +287,56 @@ func _advance_turn() -> void:
 		_turn_index = 0
 		round_number += 1
 
+		turn_order.sort_custom(
+			_sort_by_initiative
+		)
+
 	_begin_current_turn()
 
 func _roll_initiative() -> void:
 	initiative_scores.clear()
 
 	for entity in combatants:
-		var combat_component := entity.get_component(
-			&"base:combat"
-		) as CombatComponent
-
-		if not combat_component:
-			continue
-
-		var roll := randi_range(
-			1,
-			4
+		_roll_initiative_for(
+			entity
 		)
 
-		var score := (
-			roll
-			+ combat_component.initiative_bonus
-		)
 
-		initiative_scores[entity] = score
+func _roll_initiative_for(
+	entity: Entity
+) -> void:
+	if not entity:
+		return
 
-		print(
-			entity.entity_name,
-			" initiative: ",
-			score,
-			" (",
-			roll,
-			" + ",
-			combat_component.initiative_bonus,
-			")"
-		)
+	var combat_component := entity.get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	if not combat_component:
+		return
+
+	var roll := randi_range(
+		1,
+		4
+	)
+
+	var score := (
+		roll
+		+ combat_component.initiative_bonus
+	)
+
+	initiative_scores[entity] = score
+
+	print(
+		entity.entity_name,
+		" initiative: ",
+		score,
+		" (",
+		roll,
+		" + ",
+		combat_component.initiative_bonus,
+		")"
+	)
 
 
 func _sort_by_initiative(

@@ -13,5 +13,8 @@ func can_perform(_interactor: Entity, _target: Entity) -> bool:
 func perform(_interactor: Entity, _target: Entity) -> void:
 	pass
 
+func is_hostile() -> bool:
+	return false
+
 func requires_authority() -> bool:
 	return false

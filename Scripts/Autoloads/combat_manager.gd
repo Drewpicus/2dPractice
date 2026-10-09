@@ -168,22 +168,6 @@ func _receive_combat_state(
 	combat.deserialize_state(
 		state
 	)
-	print(
-		"Peer ",
-		multiplayer.get_unique_id(),
-		" Combat ",
-		combat.combat_id,
-		" | round ",
-		combat.round_number,
-		" | combatants ",
-		combat.combatants.map(
-			func(entity: Entity): return entity.entity_name
-		),
-		" | active ",
-		combat.active_combatants.map(
-			func(entity: Entity): return entity.entity_name
-		)
-	)
 
 @rpc(
 	"authority",
@@ -237,3 +221,116 @@ func clear_all_combats() -> void:
 		)
 
 	combats.clear()
+
+func engage_hostile(
+	actor: Entity,
+	target: Entity
+) -> bool:
+	if not actor or not target:
+		return false
+
+	if actor == target:
+		return false
+
+	if (
+		MultiplayerManager.session_active
+		and not MultiplayerManager.is_world_authority()
+	):
+		return false
+
+	var actor_component := actor.get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	var target_component := target.get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	# Some destructible things can be attacked without
+	# actually participating in turn-based combat.
+	if not actor_component or not target_component:
+		return true
+
+	var actor_combat := actor_component.current_combat
+	var target_combat := target_component.current_combat
+
+	# Already participating in the same fight.
+	if actor_combat and target_combat:
+		return actor_combat == target_combat
+
+	# Actor is already fighting. The new hostile Entity
+	# joins as another opposing side.
+	if actor_combat:
+		var new_side := _next_side_id(
+			actor_combat
+		)
+
+		actor_combat.add_combatant(
+			target,
+			new_side
+		)
+
+		return (
+			target_component.current_combat
+			== actor_combat
+		)
+
+	# Same situation in reverse.
+	if target_combat:
+		var new_side := _next_side_id(
+			target_combat
+		)
+
+		target_combat.add_combatant(
+			actor,
+			new_side
+		)
+
+		return (
+			actor_component.current_combat
+			== target_combat
+		)
+
+	# Neither is fighting yet: create a new two-sided
+	# combat.
+	var combat := new_combat()
+
+	if not combat:
+		return false
+
+	combat.add_combatant(
+		actor,
+		0
+	)
+
+	combat.add_combatant(
+		target,
+		1
+	)
+
+	if (
+		actor_component.current_combat != combat
+		or target_component.current_combat != combat
+	):
+		combat.end()
+		_unregister_combat(combat)
+		return false
+
+	if not combat.start():
+		combat.end()
+		_unregister_combat(combat)
+		return false
+
+	return true
+
+
+func _next_side_id(
+	combat: Combat
+) -> int:
+	var side_id := 0
+	var used_sides := combat.combat_sides.values()
+
+	while side_id in used_sides:
+		side_id += 1
+
+	return side_id

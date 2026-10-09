@@ -48,7 +48,7 @@ func _initialize_game_world() -> void:
 	game_world.spawn_entity(&"base:rock",Vector2(-250, 0))
 	game_world.spawn_entity(&"base:tree",Vector2(216, -130))
 	game_world.spawn_entity(&"base:chest",Vector2(32, 256))
-	var mean_guy := game_world.spawn_entity(&"base:meanguy",Vector2(550, -500))
+	game_world.spawn_entity(&"base:meanguy",Vector2(550, -500))
 
 	_spawn_test_items()
 	var world_entities = game_world.get_entities()
@@ -57,8 +57,6 @@ func _initialize_game_world() -> void:
 		if entity.entity_id == &"base:goblin":
 			test_burning(entity)
 			break
-	
-	_start_test_combat(mean_guy)
 
 func _spawn_players() -> void:
 	var peer_ids: Array[int] = [1]
@@ -179,58 +177,3 @@ func test_burning(entity: Entity) -> void:
 
 	if applied:
 		print("Final duration: ", burning.duration)
-
-func _start_test_combat(
-	mean_guy: Entity
-) -> void:
-	if not mean_guy:
-		return
-
-	var player := game_world.get_entity_controlled_by_peer(
-		1
-	)
-
-	if not player:
-		return
-
-	test_combat = CombatManager.new_combat()
-
-	test_combat.add_combatant(player,0)
-	test_combat.add_combatant(mean_guy,1)
-
-	if not test_combat.start():
-		push_error("Could not start test combat.")
-		return
-
-	_print_test_combat_state()
-
-
-func _print_test_combat_state() -> void:
-	if not test_combat:
-		return
-
-	if test_combat.active_combatants.is_empty():
-		return
-
-	var active := test_combat.active_combatants[0]
-
-	var combat_component := active.get_component(
-		&"base:combat"
-	) as CombatComponent
-
-	print(
-		"Round ",
-		test_combat.round_number,
-		" | Active: ",
-		active.entity_name
-	)
-
-	if combat_component:
-		print(
-			"Movement: ",
-			combat_component.movement_remaining,
-			" | Action: ",
-			combat_component.action_available,
-			" | Reaction: ",
-			combat_component.reaction_available
-		)

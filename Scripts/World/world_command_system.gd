@@ -154,6 +154,13 @@ func _apply_interaction(sender_peer_id: int, interaction_id: StringName, interac
 	if not selected_interaction.requires_authority():
 		return
 
+	if selected_interaction.is_hostile():
+		if not CombatManager.engage_hostile(
+			interactor,
+			target
+		):
+			return
+
 	if not selected_interaction.can_perform(interactor, target):
 		return
 

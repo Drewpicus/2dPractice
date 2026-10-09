@@ -569,6 +569,7 @@ func deserialize_state(state: Dictionary) -> bool:
 	return true
 
 func clear_runtime_state() -> void:
+	CombatManager.clear_all_combats()
 	var current_items := get_items()
 	var current_entities := get_entities()
 

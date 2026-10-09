@@ -86,5 +86,8 @@ func perform(
 			" used their Action."
 		)
 
+func is_hostile() -> bool:
+	return true
+
 func requires_authority() -> bool:
 	return true
