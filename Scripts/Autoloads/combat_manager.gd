@@ -168,7 +168,22 @@ func _receive_combat_state(
 	combat.deserialize_state(
 		state
 	)
-
+	print(
+		"Peer ",
+		multiplayer.get_unique_id(),
+		" Combat ",
+		combat.combat_id,
+		" | round ",
+		combat.round_number,
+		" | combatants ",
+		combat.combatants.map(
+			func(entity: Entity): return entity.entity_name
+		),
+		" | active ",
+		combat.active_combatants.map(
+			func(entity: Entity): return entity.entity_name
+		)
+	)
 
 @rpc(
 	"authority",
@@ -209,3 +224,16 @@ func _unique_combat_id() -> int:
 		new_id += 1
 
 	return new_id
+
+func clear_all_combats() -> void:
+	var current_combats := combats.duplicate()
+
+	for combat in current_combats:
+		if combat:
+			combat.end()
+
+		_unregister_combat(
+			combat
+		)
+
+	combats.clear()

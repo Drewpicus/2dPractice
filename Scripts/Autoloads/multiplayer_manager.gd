@@ -173,6 +173,7 @@ func disconnect_session() -> void:
 
 ##Clears all multiplayer session-related data
 func _reset_session() -> void:
+	CombatManager.clear_all_combats()
 	if multiplayer.multiplayer_peer:
 		multiplayer.multiplayer_peer = null
 
