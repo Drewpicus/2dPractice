@@ -155,6 +155,144 @@ func find_path(
 
 	return path
 
+func find_path_to_entity(
+	entity: Entity,
+	target: Entity,
+	stopping_distance: float = 0.0
+) -> PackedVector2Array:
+	var path := PackedVector2Array()
+
+	if not entity or not target:
+		return path
+
+	if entity == target:
+		return path
+
+	if stopping_distance < 0.0:
+		return path
+
+	if not world.world_data:
+		return path
+
+	# Already close enough. Return a valid zero-distance
+	# path rather than making "already there" look the
+	# same as "no route exists".
+	if (
+		entity.global_position.distance_to(
+			target.global_position
+		)
+		<= stopping_distance
+	):
+		path.append(
+			entity.global_position
+		)
+		return path
+
+	var start_world_cell := world.world_to_cell(
+		entity.global_position
+	)
+
+	var target_world_cell := world.world_to_cell(
+		target.global_position
+	)
+
+	if not world.world_data.in_bounds(
+		start_world_cell
+	):
+		return path
+
+	if not world.world_data.in_bounds(
+		target_world_cell
+	):
+		return path
+
+	var start_cell := world_to_nav_cell(
+		entity.global_position
+	)
+
+	var target_cell := world_to_nav_cell(
+		target.global_position
+	)
+
+	if not _grid.is_in_boundsv(
+		start_cell
+	):
+		return path
+
+	if not _grid.is_in_boundsv(
+		target_cell
+	):
+		return path
+
+	_refresh_blockers(
+		entity
+	)
+
+	# As with ordinary find_path(), the Entity must
+	# always be allowed to leave its current cell.
+	_grid.set_point_solid(
+		start_cell,
+		false
+	)
+
+	_blocked_cells.erase(
+		start_cell
+	)
+
+	# The target itself may be solid. In that case,
+	# ask AStarGrid2D for the nearest reachable point
+	# toward the target instead.
+	var cell_path := _grid.get_id_path(
+		start_cell,
+		target_cell,
+		true
+	)
+
+	if cell_path.is_empty():
+		return path
+
+	for i in range(
+		1,
+		cell_path.size()
+	):
+		var cell := cell_path[i]
+
+		var waypoint := nav_cell_to_world(
+			cell
+		)
+
+		# If we actually reached the target's nav cell
+		# and its exact position is legal, preserve the
+		# exact position just like find_path() does.
+		if (
+			i == cell_path.size() - 1
+			and cell == target_cell
+			and not _position_overlaps_solid_entity(
+				entity,
+				target.global_position
+			)
+		):
+			waypoint = target.global_position
+
+		path.append(
+			waypoint
+		)
+
+		# Stop as soon as the path gets us close enough.
+		if (
+			waypoint.distance_to(
+				target.global_position
+			)
+			<= stopping_distance
+		):
+			return path
+
+	# A partial path existed, but it could not get
+	# close enough to satisfy the requested distance.
+	path.clear()
+
+	return path
+
 func get_path_distance(
 	entity: Entity,
 	destination: Vector2
