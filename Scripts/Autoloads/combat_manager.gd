@@ -287,9 +287,14 @@ func engage_hostile(
 	# Actor is already fighting. The new hostile Entity
 	# joins as another opposing side.
 	if actor_combat:
+		var actor_side := actor_combat.get_combat_side(
+			actor
+		)
+
 		var target_side := _choose_side_for_entity(
 			actor_combat,
-			target
+			target,
+			actor_side
 		)
 
 		actor_combat.add_combatant(
@@ -319,9 +324,14 @@ func engage_hostile(
 
 	# Same situation in reverse.
 	if target_combat:
+		var target_side := target_combat.get_combat_side(
+			target
+		)
+
 		var actor_side := _choose_side_for_entity(
 			target_combat,
-			actor
+			actor,
+			target_side
 		)
 
 		target_combat.add_combatant(
