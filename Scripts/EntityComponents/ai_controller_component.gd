@@ -64,3 +64,86 @@ func new_direction() -> Vector2:
 	new_dir.x = (randf()*2)-1
 	new_dir.y = (randf()*2)-1
 	return new_dir
+
+func _take_combat_turn(
+	combat: Combat
+) -> void:
+	var target := _get_nearest_opponent(
+		combat
+	)
+
+	if target:
+		_try_attack(
+			target
+		)
+
+	# The attack may have killed the last opponent,
+	# which would have ended this Combat.
+	var combat_component := get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	if (
+		combat_component
+		and combat_component.current_combat == combat
+		and combat.started
+		and combat.is_active(root_entity)
+	):
+		combat.end_turn(
+			root_entity
+		)
+
+func _get_nearest_opponent(
+	combat: Combat
+) -> Entity:
+	var nearest: Entity
+	var nearest_distance := INF
+
+	for opponent in combat.get_opponents(
+		root_entity
+	):
+		if not is_instance_valid(opponent):
+			continue
+
+		var distance := (
+			root_entity.global_position.distance_squared_to(
+				opponent.global_position
+			)
+		)
+
+		if distance < nearest_distance:
+			nearest = opponent
+			nearest_distance = distance
+
+	return nearest
+
+func _try_attack(
+	target: Entity
+) -> bool:
+	var interactable := target.get_component(
+		&"base:interactable"
+	) as InteractableComponent
+
+	if not interactable:
+		return false
+
+	for interaction in interactable.get_interactions(
+		root_entity
+	):
+		if interaction.interaction_id != &"base:attack":
+			continue
+
+		if not interaction.can_perform(
+			root_entity,
+			target
+		):
+			return false
+
+		interaction.perform(
+			root_entity,
+			target
+		)
+
+		return true
+
+	return false
