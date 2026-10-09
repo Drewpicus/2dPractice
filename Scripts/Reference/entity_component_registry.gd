@@ -17,6 +17,7 @@ const COMPONENT_SCENES: Dictionary = {
 	&"base:ability": preload("res://Scenes/Components/ability_component.tscn"),
 	&"base:capability": preload("res://Scenes/Components/capability_component.tscn"),
 	&"base:combat": preload("res://Scenes/Components/combat_component.tscn"),
+	&"base:faction": preload("res://Scenes/Components/faction_component.tscn"),
 	&"base:stat_block": preload("res://Scenes/Components/stat_block_component.tscn"),
 	&"base:inventory": preload("res://Scenes/Components/inventory_component.tscn"),
 	&"base:equipment": preload("res://Scenes/Components/equipment_component.tscn"),

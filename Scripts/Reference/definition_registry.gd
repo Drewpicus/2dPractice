@@ -5,6 +5,7 @@ static var _entity_definitions: Dictionary[StringName, EntityDefinition] = {}
 static var _item_definitions: Dictionary[StringName, ItemDefinition] = {}
 static var _element_definitions: Dictionary[StringName, ElementDefinition] = {}
 static var _weapontype_definitions: Dictionary[StringName, WeaponTypeDefinition] = {}
+static var _faction_definitions: Dictionary[StringName, FactionDefinition] = {}
 
 static func register_entity(definition: EntityDefinition) -> bool:
 	if not definition:
@@ -66,6 +67,34 @@ static func register_weapontype(definition: WeaponTypeDefinition) -> bool:
 	_weapontype_definitions[definition.weapontype_id] = definition
 	return true
 
+static func register_faction(
+	definition: FactionDefinition
+) -> bool:
+	if not definition:
+		return false
+
+	if not GameID.is_valid(
+		definition.faction_id
+	):
+		return false
+
+	if _faction_definitions.has(
+		definition.faction_id
+	):
+		push_error(
+			"FactionDefinition ID already registered: %s"
+			% definition.faction_id
+		)
+		return false
+
+	_faction_definitions[
+		definition.faction_id
+	] = definition
+
+	return true
+
+
+
 static func get_entity(entity_id: StringName) -> EntityDefinition:
 	return _entity_definitions.get(entity_id)
 
@@ -77,7 +106,13 @@ static func get_element(element_id: StringName) -> ElementDefinition:
 
 static func get_weapontype(weapontype_id: StringName) -> WeaponTypeDefinition:
 	return _weapontype_definitions.get(weapontype_id)
-	
+
+static func get_faction(
+	faction_id: StringName
+) -> FactionDefinition:
+	return _faction_definitions.get(
+		faction_id
+	)
 
 static func has_entity(entity_id: StringName) -> bool:
 	return _entity_definitions.has(entity_id)
@@ -91,8 +126,16 @@ static func has_element(element_id: StringName) -> bool:
 static func has_weapontype(weapontype_id: StringName) -> bool:
 	return _weapontype_definitions.has(weapontype_id)
 
+static func has_faction(
+	faction_id: StringName
+) -> bool:
+	return _faction_definitions.has(
+		faction_id
+	)
+
 static func clear() -> void:
 	_entity_definitions.clear()
 	_item_definitions.clear()
 	_element_definitions.clear()
 	_weapontype_definitions.clear()
+	_faction_definitions.clear()

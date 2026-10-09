@@ -71,6 +71,12 @@
 		},
 		{
 			"component_id": "base:ai_controller"
+		},
+		{
+			"component_id": "base:faction",
+			"parameters": {
+				"faction_id": "base:monsters"
+			}
 		}
 	]
 }

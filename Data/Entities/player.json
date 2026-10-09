@@ -69,6 +69,12 @@
 		},
 		{
 			"component_id": "base:combat"
+		},
+		{
+			"component_id": "base:faction",
+			"parameters": {
+				"faction_id": "base:magiwarriors"
+			}
 		}
 	]
 }

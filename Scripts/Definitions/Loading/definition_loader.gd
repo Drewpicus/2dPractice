@@ -5,6 +5,7 @@ const ITEM_DIRECTORY := "res://Data/Items"
 const ENTITY_DIRECTORY := "res://Data/Entities"
 const ELEMENT_DIRECTORY := "res://Data/Elements"
 const WEAPONTYPE_DIRECTORY := "res://Data/WeaponTypes"
+const FACTION_DIRECTORY := "res://Data/Factions"
 
 ##Builds the entire [DefinitionRegistry]
 static func load_all_definitions() -> void:
@@ -207,6 +208,81 @@ static func load_weapontype_definition(path: String) -> WeaponTypeDefinition:
 		return null
 
 	definition.weapontype_name = String(data.get("weapontype_name", ""))
+
+	return definition
+
+static func load_faction_definition(
+	path: String
+) -> FactionDefinition:
+	var data := _load_json(
+		path
+	)
+
+	if data.is_empty():
+		return null
+
+	var definition := FactionDefinition.new()
+
+	definition.faction_id = StringName(
+		data.get(
+			"faction_id",
+			""
+		)
+	)
+
+	if not GameID.is_valid(
+		definition.faction_id
+	):
+		push_error(
+			"Invalid faction ID in definition %s: %s"
+			% [
+				path,
+				definition.faction_id
+			]
+		)
+		return null
+
+	definition.faction_name = String(
+		data.get(
+			"faction_name",
+			""
+		)
+	)
+
+	var relation_data = data.get(
+		"default_relations",
+		{}
+	)
+
+	if not relation_data is Dictionary:
+		push_error(
+			"Faction relations must be a Dictionary: %s"
+			% path
+		)
+		return null
+
+	for target_key in relation_data:
+		var target_id := StringName(
+			target_key
+		)
+
+		if not GameID.is_valid(
+			target_id
+		):
+			push_error(
+				"Invalid faction relation ID in %s: %s"
+				% [
+					path,
+					target_id
+				]
+			)
+			return null
+
+		definition.default_relations[
+			target_id
+		] = int(
+			relation_data[target_key]
+		)
 
 	return definition
 

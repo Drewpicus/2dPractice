@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c2f1t8l8i131e"]
+
+[ext_resource type="Script" uid="uid://ngm3wnlouu5m" path="res://Scripts/EntityComponents/faction_component.gd" id="1_cjtlj"]
+
+[node name="FactionComponent" type="Node" unique_id=1374856446]
+script = ExtResource("1_cjtlj")

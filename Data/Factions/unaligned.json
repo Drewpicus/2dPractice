@@ -1,0 +1,9 @@
+{
+	"faction_id": "base:unaligned",
+	"faction_name": "Unaligned",
+	"default_relations": {
+		"base:unaligned": 0,
+		"base:magiwarriors": 0,
+		"base:monsters": -50
+	}
+}
