@@ -335,3 +335,26 @@ func _remaining_side_count() -> int:
 			sides[side] = true
 
 	return sides.size()
+
+func get_opponents(
+	entity: Entity
+) -> Array[Entity]:
+	var result: Array[Entity] = []
+
+	var side := get_combat_side(
+		entity
+	)
+
+	if side < 0:
+		return result
+
+	for combatant in combatants:
+		if combatant == entity:
+			continue
+
+		if get_combat_side(combatant) == side:
+			continue
+
+		result.append(combatant)
+
+	return result
