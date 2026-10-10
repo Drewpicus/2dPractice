@@ -51,9 +51,6 @@ func _process(delta: float) -> void:
 
 		return
 
-	if not movement_component:
-		return
-
 	perception_timer -= delta
 
 	if perception_timer <= 0.0:
@@ -67,6 +64,9 @@ func _process(delta: float) -> void:
 				hostile
 			)
 			return
+
+	if not movement_component:
+		return
 
 	direction_timer -= delta
 
