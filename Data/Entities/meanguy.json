@@ -29,7 +29,7 @@
 		{
 			"component_id": "base:health",
 			"parameters": {
-				"max_health": 15
+				"max_health": 6
 			}
 		},
 		{
@@ -47,7 +47,7 @@
 		{
 			"component_id": "base:movement",
 			"parameters":{
-				"base_speed": 20
+				"base_speed": 30
 			}
 		},
 		{
@@ -77,6 +77,12 @@
 			"parameters": {
 				"faction_id": "base:monsters"
 			}
+		},
+		{
+			"component_id": "base:perception",
+			"parameters": {
+				"perception_range": 150.0
+				}
 		}
 	]
 }

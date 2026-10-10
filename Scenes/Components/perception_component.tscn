@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://wm4be1u870qh"]
+
+[ext_resource type="Script" uid="uid://nexugputc8kl" path="res://Scripts/EntityComponents/perception_component.gd" id="1_bltid"]
+
+[node name="PerceptionComponent" type="Node" unique_id=1365844138]
+script = ExtResource("1_bltid")
+component_id = &"base:perception"

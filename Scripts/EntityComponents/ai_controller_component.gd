@@ -8,6 +8,9 @@ var direction_timer : float = 1.0
 var dir : Vector2 = Vector2.ZERO
 var enabled := true
 
+var perception_timer: float = 0.0
+var perception_interval: float = 0.25
+
 func on_added() -> void:
 	dir = new_direction()
 	watch_sibling(&"base:movement", _set_movement_component)
@@ -50,6 +53,20 @@ func _process(delta: float) -> void:
 
 	if not movement_component:
 		return
+
+	perception_timer -= delta
+
+	if perception_timer <= 0.0:
+		perception_timer += perception_interval
+
+		var hostile := _get_nearest_perceived_hostile()
+
+		if hostile:
+			CombatManager.engage_hostile(
+				root_entity,
+				hostile
+			)
+			return
 
 	direction_timer -= delta
 
@@ -213,3 +230,41 @@ func _try_attack(
 		return true
 
 	return false
+
+func _get_nearest_perceived_hostile() -> Entity:
+	var perception := get_component(
+		&"base:perception"
+	) as PerceptionComponent
+
+	if not perception:
+		return null
+
+	var nearest: Entity
+	var nearest_distance := INF
+
+	for candidate in perception.get_perceived_entities():
+		if not candidate:
+			continue
+
+		if not candidate.has_component(
+			&"base:combat"
+		):
+			continue
+
+		if not FactionManager.is_hostile(
+			root_entity,
+			candidate
+		):
+			continue
+
+		var distance := (
+			root_entity.global_position.distance_squared_to(
+				candidate.global_position
+			)
+		)
+
+		if distance < nearest_distance:
+			nearest = candidate
+			nearest_distance = distance
+
+	return nearest

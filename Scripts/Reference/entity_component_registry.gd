@@ -14,6 +14,7 @@ const COMPONENT_SCENES: Dictionary = {
 	##Creatures
 	&"base:ai_controller": preload("res://Scenes/Components/ai_controller_component.tscn"),
 	&"base:movement": preload("res://Scenes/Components/movement_component.tscn"),
+	&"base:perception": preload("res://Scenes/Components/perception_component.tscn"),
 	&"base:ability": preload("res://Scenes/Components/ability_component.tscn"),
 	&"base:capability": preload("res://Scenes/Components/capability_component.tscn"),
 	&"base:combat": preload("res://Scenes/Components/combat_component.tscn"),
