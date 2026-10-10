@@ -20,7 +20,7 @@
 		{
 			"component_id": "base:interactor",
 			"parameters": {
-				"reach": 64
+				"reach": 48
 			}
 		},
 		{
