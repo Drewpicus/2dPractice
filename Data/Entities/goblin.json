@@ -24,6 +24,9 @@
 			"component_id": "base:status"
 		},
 		{
+			"component_id": "base:combat"
+		},
+		{
 			"component_id": "base:fire_resistant"
 		},
 		{

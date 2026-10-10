@@ -34,36 +34,47 @@ func _process(delta: float) -> void:
 		&"base:combat"
 	) as CombatComponent
 
-	if (
-		combat_component
-		and combat_component.current_combat
-		and combat_component.current_combat.started
-	):
-		if movement_component:
-			movement_component.input_direction = Vector2.ZERO
+	var current_combat: Combat = null
 
-		if combat_component.current_combat.is_active(
-			root_entity
-		):
-			_take_combat_turn(
-				combat_component.current_combat
-			)
+	if combat_component:
+		current_combat = combat_component.current_combat
 
-		return
-
+	# Perception keeps running whether we're in combat or not.
 	perception_timer -= delta
 
 	if perception_timer <= 0.0:
 		perception_timer += perception_interval
 
-		var hostile := _get_nearest_perceived_hostile()
+		var hostile := _get_nearest_engageable_hostile(
+			current_combat
+		)
 
 		if hostile:
 			CombatManager.engage_hostile(
 				root_entity,
 				hostile
 			)
-			return
+
+	# Perception may have just caused us to enter combat,
+	# so check the current state again afterward.
+	if combat_component:
+		current_combat = combat_component.current_combat
+
+	if (
+		current_combat
+		and current_combat.started
+	):
+		if movement_component:
+			movement_component.input_direction = Vector2.ZERO
+
+		if current_combat.is_active(
+			root_entity
+		):
+			_take_combat_turn(
+				current_combat
+			)
+
+		return
 
 	if not movement_component:
 		return
@@ -75,7 +86,6 @@ func _process(delta: float) -> void:
 		direction_timer += 1
 
 	movement_component.input_direction = dir
-
 func new_direction() -> Vector2:
 	var new_dir : Vector2
 	new_dir.x = (randf()*2)-1
@@ -231,7 +241,9 @@ func _try_attack(
 
 	return false
 
-func _get_nearest_perceived_hostile() -> Entity:
+func _get_nearest_engageable_hostile(
+	current_combat: Combat = null
+) -> Entity:
 	var perception := get_component(
 		&"base:perception"
 	) as PerceptionComponent
@@ -246,10 +258,27 @@ func _get_nearest_perceived_hostile() -> Entity:
 		if not candidate:
 			continue
 
-		if not candidate.has_component(
+		var candidate_combat := candidate.get_component(
 			&"base:combat"
-		):
+		) as CombatComponent
+
+		if not candidate_combat:
 			continue
+
+		# If we're already fighting, don't repeatedly
+		# rediscover combatants already in this fight.
+		if current_combat:
+			if (
+				candidate_combat.current_combat
+				== current_combat
+			):
+				continue
+
+			# Merging two existing Combats isn't supported
+			# yet, so don't try to engage somebody already
+			# participating in a different one.
+			if candidate_combat.current_combat:
+				continue
 
 		if not FactionManager.is_hostile(
 			root_entity,

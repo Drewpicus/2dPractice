@@ -29,3 +29,6 @@ func perform(
 		interactor,
 		target
 	)
+
+func is_hostile() -> bool:
+	return true
