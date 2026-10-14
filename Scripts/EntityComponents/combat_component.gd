@@ -9,7 +9,7 @@ var current_combat: Combat
 var movement_remaining: float = 0.0
 var action_available: bool = false
 var reaction_available: bool = false
-
+var action_spent_before_next_turn: bool = false
 
 func add_to_combat(
 	combat: Combat,
@@ -40,7 +40,10 @@ func remove_from_combat() -> void:
 
 func begin_turn() -> void:
 	movement_remaining = movement_per_turn
-	action_available = true
+
+	action_available = (not action_spent_before_next_turn)
+	action_spent_before_next_turn = false
+
 	reaction_available = true
 
 	notify_state_changed()
@@ -106,6 +109,29 @@ func spend_action() -> bool:
 
 	return true
 
+func spend_action_for_current_or_next_turn() -> bool:
+	if (
+		not current_combat
+		or not current_combat.started
+	):
+		return false
+
+	# If our turn is already active, spend it normally.
+	if current_combat.is_active(
+		root_entity
+	):
+		return spend_action()
+
+	# Otherwise this Action was used before our first
+	# turn began. Remember that for begin_turn().
+	if action_spent_before_next_turn:
+		return false
+
+	action_spent_before_next_turn = true
+	notify_state_changed()
+
+	return true
+
 func on_event(event: GameEvent) -> void:
 	if not event is DeathAppliedEvent:
 		return
@@ -127,6 +153,7 @@ func clear_combat_resources() -> void:
 	movement_remaining = 0.0
 	action_available = false
 	reaction_available = false
+	action_spent_before_next_turn = false
 
 	notify_state_changed()
 
@@ -151,7 +178,9 @@ func serialize_state() -> Dictionary:
 		"action_available":
 			action_available,
 		"reaction_available":
-			reaction_available
+			reaction_available,
+		"action_spent_before_next_turn":
+			action_spent_before_next_turn
 	}
 
 
@@ -176,5 +205,12 @@ func deserialize_state(
 		state.get(
 			"reaction_available",
 			reaction_available
+		)
+	)
+	
+	action_spent_before_next_turn = bool(
+		state.get(
+			"action_spent_before_next_turn",
+			false
 		)
 	)

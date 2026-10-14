@@ -1058,19 +1058,6 @@ func _move_entity_along_path(
 	):
 		return false
 
-	if in_combat:
-		combat.spend_movement(
-			movement_cost
-		)
-
-		print(
-			entity.entity_name,
-			" spent ",
-			movement_cost,
-			" movement. Remaining: ",
-			combat.movement_remaining
-		)
-
 	return true
 
 func get_path_distance(

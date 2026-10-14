@@ -11,7 +11,7 @@ var _path: PackedVector2Array = []
 var _path_index: int = 0
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if not root_entity:
 		return
 
@@ -20,16 +20,75 @@ func _physics_process(_delta: float) -> void:
 
 	_update_path_direction()
 
+	var combat := get_component(
+		&"base:combat"
+	) as CombatComponent
+
+	var in_combat := (
+		combat
+		and combat.current_combat
+		and combat.current_combat.started
+	)
+
+	if in_combat:
+		if not combat.current_combat.is_active(
+			root_entity
+		):
+			cancel_path()
+			root_entity.velocity = Vector2.ZERO
+			_record_simulated_input()
+			return
+
+		if combat.movement_remaining <= 0.0:
+			cancel_path()
+			root_entity.velocity = Vector2.ZERO
+			_record_simulated_input()
+			return
+
+	var movement_speed := base_speed
+
+	# Don't allow this physics step to attempt more
+	# movement than remains in the combat budget.
+	if (
+		in_combat
+		and delta > 0.0
+	):
+		movement_speed = min(
+			movement_speed,
+			combat.movement_remaining / delta
+		)
+
 	root_entity.velocity = (
 		input_direction.normalized()
-		* base_speed
+		* movement_speed
+	)
+
+	var position_before := (
+		root_entity.global_position
 	)
 
 	if root_entity.velocity != Vector2.ZERO:
 		root_entity.move_and_slide()
 
-	_record_simulated_input()
+	var distance_moved := (
+		position_before.distance_to(
+			root_entity.global_position
+		)
+	)
 
+	if (
+		in_combat
+		and distance_moved > 0.0
+	):
+		combat.spend_movement(
+			distance_moved
+		)
+
+		if combat.movement_remaining <= 0.0:
+			cancel_path()
+			root_entity.velocity = Vector2.ZERO
+
+	_record_simulated_input()
 
 func _record_simulated_input() -> void:
 	if input_sequence < 0:

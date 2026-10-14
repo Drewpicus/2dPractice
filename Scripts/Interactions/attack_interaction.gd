@@ -78,15 +78,21 @@ func perform(
 		combat
 		and combat.current_combat
 		and combat.current_combat.started
-	):
-		combat.spend_action()
-
-		print(
-			interactor.entity_name,
-			" used their Action."
+		and combat.current_combat.is_active(
+			interactor
 		)
+		and combat.can_spend_action()
+	):
+		if combat.spend_action():
+			print(
+				interactor.entity_name,
+				" used their Action."
+			)
 
 func is_hostile() -> bool:
+	return true
+
+func spends_action_when_opening_combat() -> bool:
 	return true
 
 func requires_authority() -> bool:

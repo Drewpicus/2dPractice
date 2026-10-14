@@ -16,5 +16,8 @@ func perform(_interactor: Entity, _target: Entity) -> void:
 func is_hostile() -> bool:
 	return false
 
+func spends_action_when_opening_combat() -> bool:
+	return false
+	
 func requires_authority() -> bool:
 	return false

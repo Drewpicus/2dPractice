@@ -153,18 +153,72 @@ func _apply_interaction(sender_peer_id: int, interaction_id: StringName, interac
 
 	if not selected_interaction.requires_authority():
 		return
+	
+	var opening_hostile_action := false
 
 	if selected_interaction.is_hostile():
+		var combat_component := interactor.get_component(
+			&"base:combat"
+		) as CombatComponent
+
+		opening_hostile_action = (
+			not combat_component
+			or not combat_component.current_combat
+			or not combat_component.current_combat.started
+		)
+
+		# Validate the opening action BEFORE starting combat,
+		# otherwise initiative could make the same action
+		# suddenly invalid.
+		if (
+			opening_hostile_action
+			and not selected_interaction.can_perform(
+				interactor,
+				target
+			)
+		):
+			return
+
 		if not CombatManager.engage_hostile(
 			interactor,
 			target
 		):
 			return
 
-	if not selected_interaction.can_perform(interactor, target):
+		if opening_hostile_action:
+			combat_component = interactor.get_component(
+				&"base:combat"
+			) as CombatComponent
+
+			if (
+				selected_interaction
+					.spends_action_when_opening_combat()
+				and combat_component
+				and combat_component.current_combat
+				and combat_component.current_combat.started
+			):
+				combat_component.spend_action_for_current_or_next_turn()
+
+			# This was already validated before combat
+			# began. Do not run can_perform() again now
+			# that initiative has been established.
+			selected_interaction.perform(
+				interactor,
+				target
+			)
+
+			return
+
+	if not selected_interaction.can_perform(
+		interactor,
+		target
+	):
 		return
 
-	selected_interaction.perform(interactor, target)
+	selected_interaction.perform(
+		interactor,
+		target
+	)
 
 
 func submit_take_item(viewer: Entity, source: Entity, item: Item) -> void:
