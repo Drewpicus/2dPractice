@@ -100,24 +100,52 @@ func _apply_command(sender_peer_id: int, command_id: StringName, arguments: Dict
 			push_warning("Unknown command ID :( : %s" % command_id)
 
 
-func submit_interaction(interaction: Interaction, interactor: Entity, target: Entity) -> void:
+func submit_interaction(
+	interaction: Interaction,
+	interactor: Entity,
+	target: Entity
+) -> void:
 	if not interaction or not interactor or not target:
 		return
 
-	if not interaction.can_perform(interactor, target):
+	if not interaction.can_perform(
+		interactor,
+		target
+	):
 		return
 
-	if not interaction.requires_authority():
-		interaction.perform(interactor, target)
-		return
-
-	_submit_command(COMMAND_INTERACTION, interactor,
-		{
-			"interaction_id": String(interaction.interaction_id),
-			"interactor_id": interactor.instance_id,
-			"target_id": target.instance_id
-		}
+	var requires_authority := (
+		interaction.requires_authority()
 	)
+
+	var hostile := interaction.is_hostile()
+
+	# Either the interaction itself needs authority,
+	# or its hostility needs to be established by
+	# the world authority.
+	if requires_authority or hostile:
+		_submit_command(
+			COMMAND_INTERACTION,
+			interactor,
+			{
+				"interaction_id":
+					String(interaction.interaction_id),
+				"interactor_id":
+					interactor.instance_id,
+				"target_id":
+					target.instance_id
+			}
+		)
+
+	# Non-authoritative interactions still perform
+	# locally. For something like Pickpocket this
+	# opens the local player's UI, while the command
+	# above handles the hostile combat consequence.
+	if not requires_authority:
+		interaction.perform(
+			interactor,
+			target
+		)
 
 
 func _apply_interaction(sender_peer_id: int, interaction_id: StringName, interactor_instance_id: String, target_instance_id: String) -> void:
@@ -151,7 +179,14 @@ func _apply_interaction(sender_peer_id: int, interaction_id: StringName, interac
 	if not selected_interaction:
 		return
 
-	if not selected_interaction.requires_authority():
+	var requires_authority := (
+		selected_interaction.requires_authority()
+	)
+
+	if (
+		not requires_authority
+		and not selected_interaction.is_hostile()
+	):
 		return
 	
 	var opening_hostile_action := false
@@ -199,13 +234,11 @@ func _apply_interaction(sender_peer_id: int, interaction_id: StringName, interac
 			):
 				combat_component.spend_action_for_current_or_next_turn()
 
-			# This was already validated before combat
-			# began. Do not run can_perform() again now
-			# that initiative has been established.
-			selected_interaction.perform(
-				interactor,
-				target
-			)
+			if requires_authority:
+				selected_interaction.perform(
+					interactor,
+					target
+				)
 
 			return
 
