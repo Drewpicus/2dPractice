@@ -248,10 +248,11 @@ func _apply_interaction(sender_peer_id: int, interaction_id: StringName, interac
 	):
 		return
 
-	selected_interaction.perform(
-		interactor,
-		target
-	)
+	if requires_authority:
+		selected_interaction.perform(
+			interactor,
+			target
+		)
 
 
 func submit_take_item(viewer: Entity, source: Entity, item: Item) -> void:
