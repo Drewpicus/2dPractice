@@ -178,9 +178,7 @@ func serialize_state() -> Dictionary:
 		"action_available":
 			action_available,
 		"reaction_available":
-			reaction_available,
-		"action_spent_before_next_turn":
-			action_spent_before_next_turn
+			reaction_available
 	}
 
 
@@ -205,12 +203,5 @@ func deserialize_state(
 		state.get(
 			"reaction_available",
 			reaction_available
-		)
-	)
-	
-	action_spent_before_next_turn = bool(
-		state.get(
-			"action_spent_before_next_turn",
-			false
 		)
 	)
